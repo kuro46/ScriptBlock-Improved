@@ -1,0 +1,15 @@
+# Eclipse
+.project
+.classpath
+.settings
+
+# Idea
+.idea
+*.iml
+*.iws
+*.ipr
+
+# Gradle
+build
+.gradle
+!gradle-wrapper.jar

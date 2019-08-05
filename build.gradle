@@ -1,0 +1,55 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
+
+plugins {
+    id 'com.github.sherter.google-java-format' version '0.8'
+    id 'com.github.johnrengelman.shadow' version '5.1.0'
+    id "com.github.spotbugs" version "2.0.0"
+    id 'java'
+}
+
+group = 'com.github.kuro46'
+version = '0.1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots" }
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    // Bukkit
+    compileOnly "org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT"
+    // CommandUtility
+    implementation "com.github.kuro46:CommandUtility:v0.3.0"
+}
+
+processResources {
+    filter { String line ->
+        line.replace('$version', version)
+    }
+}
+
+googleJavaFormat {
+  options style: 'AOSP'
+}
+
+// Shadow settings
+
+shadowJar {
+    minimize()
+    archiveFileName = "ScriptBlock-Improved.jar"
+}
+
+task relocateShadowJar(type: ConfigureShadowRelocation) {
+    target = tasks.shadowJar
+    prefix = 'com.github.kuro46.scriptblockimproved.libs'
+}
+
+tasks.shadowJar.dependsOn tasks.relocateShadowJar
+
+// SpotBugs settings
+
+tasks.withType(com.github.spotbugs.SpotBugsTask) {
+  reports.xml.enabled = false
+  reports.html.enabled = true
+}
