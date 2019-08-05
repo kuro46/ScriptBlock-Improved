@@ -1,0 +1,22 @@
+name: ScriptBlock-Improved
+version: $version
+author: shirokuro
+description: Improved ScriptBlock
+load: STARTUP
+loadbefore:
+  - Vault
+main: com.github.kuro46.scriptblockimproved.SBIPlugin
+commands:
+  sbi:
+    description: Main command of ScriptBlock-Improved
+    usage: "Usage: /<command> help"
+    permission: sbi.admin
+permissions:
+  sbi.*:
+    default: op
+    description: Main permission of ScriptBlock-Improved
+    children:
+      sbi.admin: true
+  sbi.admin:
+    default: op
+    description: ScriptBlock-Improved administration permission.
