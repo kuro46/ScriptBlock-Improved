@@ -1,9 +1,9 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
 
 plugins {
-    id 'com.github.sherter.google-java-format' version '0.8'
     id 'com.github.johnrengelman.shadow' version '5.1.0'
     id "com.github.spotbugs" version "2.0.0"
+    id 'checkstyle'
     id 'java'
 }
 
@@ -27,10 +27,6 @@ processResources {
     filter { String line ->
         line.replace('$version', version)
     }
-}
-
-googleJavaFormat {
-  options style: 'AOSP'
 }
 
 // Shadow settings
