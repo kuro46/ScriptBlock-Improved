@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+"-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+"https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!--
+Checkstyle configuration that checks the Google coding conventions from Google Java Style
+that can be found at https://google.github.io/styleguide/javaguide.html
+Checkstyle is very configurable. Be sure to read the documentation at
+http://checkstyle.sf.net (or in your downloaded distribution).
+To completely disable a check, just comment it out or delete it from the file.
+Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
+-->
+
+<module name = "Checker">
+    <property name="charset" value="UTF-8"/>
+    <property name="severity" value="error"/>
+    <property name="fileExtensions" value="java, properties, xml"/>
+
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
+    </module>
+
+    <module name="TreeWalker">
+        <!-- max line length -->
+        <module name="LineLength">
+            <property name="max" value="100"/>
+            <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+        </module>
+
+        <!-- indentation -->
+        <module name="Indentation"/>
+
+        <!-- whitespaces -->
+        <module name="EmptyForInitializerPad"/>
+        <module name="EmptyForIteratorPad"/>
+        <module name="GenericWhitespace"/>
+        <module name="MethodParamPad"/>
+        <module name="NoLineWrap"/>
+        <module name="NoWhitespaceAfter"/>
+        <module name="NoWhitespaceBefore"/>
+        <module name="OperatorWrap"/>
+        <module name="ParenPad"/>
+        <module name="SingleSpaceSeparator"/>
+        <module name="TypecastParenPad"/>
+        <module name="WhitespaceAfter"/>
+        <module name="WhitespaceAround"/>
+
+        <!-- curly braces -->
+        <module name="LeftCurly"/>
+    </module>
+</module>
