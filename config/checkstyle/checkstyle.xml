@@ -39,5 +39,11 @@
 
         <!-- curly braces -->
         <module name="LeftCurly"/>
+
+        <!-- imports -->
+        <module name="AvoidStarImport"/>
+        <module name="ImportOrder"/>
+        <module name="RedundantImport"/>
+        <module name="UnusedImports"/>
     </module>
 </module>
