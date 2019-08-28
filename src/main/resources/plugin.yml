@@ -2,6 +2,7 @@ name: ScriptBlock-Improved
 version: $version
 author: shirokuro
 description: Improved ScriptBlock
+website: https://github.com/kuro46/ScriptBlock-Improved/
 load: STARTUP
 loadbefore:
   - Vault
