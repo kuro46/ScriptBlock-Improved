@@ -16,7 +16,7 @@
         <!-- max line length -->
         <module name="LineLength">
             <property name="max" value="100"/>
-            <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+            <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://|.*?\(&quot;.*?&quot;\);??$|.*?//.*?$"/>
         </module>
 
         <!-- indentation -->

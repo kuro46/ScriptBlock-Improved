@@ -20,7 +20,12 @@ dependencies {
     // Bukkit
     compileOnly "org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT"
     // CommandUtility
-    implementation "com.github.kuro46:CommandUtility:v0.3.0"
+    implementation "com.github.kuro46:CommandUtility:493af33"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 processResources {
