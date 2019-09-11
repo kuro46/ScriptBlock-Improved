@@ -19,3 +19,8 @@
 
 - Java8かそれ以上
 - 殆どのバージョンのBukkitを実装したサーバー
+
+## 開発者向け
+
+`./gradlew shadowjar`でshadeされたjarファイルをbuild/libs内に出力します。ファイル名は`ScriptBlock-Improved.jar`です。  
+`./gradlew build`でSpotBugsやcheckstyleを一括で実行できます。shadeされたjarは出力しません。
