@@ -21,6 +21,10 @@ dependencies {
     compileOnly "org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT"
     // CommandUtility
     implementation "com.github.kuro46:CommandUtility:493af33"
+    // Gson
+    implementation 'com.google.code.gson:gson:2.8.5'
+    // Guava
+    implementation 'com.google.guava:guava:28.1-jre'
 }
 
 java {
