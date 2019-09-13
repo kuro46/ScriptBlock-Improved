@@ -12,7 +12,7 @@ import com.github.kuro46.scriptblockimproved.script.option.placeholder.PlayerPla
 import com.github.kuro46.scriptblockimproved.script.option.placeholder.WorldPlaceholder;
 import com.github.kuro46.scriptblockimproved.script.serialize.ScriptSerializer;
 import com.github.kuro46.scriptblockimproved.script.serialize.UnsupportedVersionException;
-import com.github.kuro46.scriptblockimproved.script.trigger.LeftClickListener;
+import com.github.kuro46.scriptblockimproved.script.trigger.LeftClickTrigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.MoveTrigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.PressTrigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.RightClickTrigger;
@@ -116,7 +116,7 @@ public final class ScriptBlockImproved {
     private void registerTriggers() {
         triggers.register(new MoveTrigger());
         triggers.register(new RightClickTrigger());
-        triggers.register(new LeftClickListener());
+        triggers.register(new LeftClickTrigger());
         triggers.register(new PressTrigger());
     }
 

@@ -9,7 +9,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public final class LeftClickListener implements Trigger {
+public final class LeftClickTrigger implements Trigger {
 
     private static final long EXECUTION_COOLTIME_MS = 300;
 
