@@ -22,6 +22,14 @@ public final class ExecutionArguments {
         return args.get(index);
     }
 
+    public String getOrDefault(final int index, final String defaultValue) {
+        if (args.size() <= index) {
+            return defaultValue;
+        } else {
+            return args.get(index);
+        }
+    }
+
     public <T> Optional<T> get(final Class<T> clazz, final CommandSender sender, final int index) {
         Objects.requireNonNull(clazz, "'clazz' cannot be null");
         Objects.requireNonNull(sender, "'sender' cannot be null");
