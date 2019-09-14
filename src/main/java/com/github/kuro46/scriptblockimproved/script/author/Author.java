@@ -2,109 +2,92 @@ package com.github.kuro46.scriptblockimproved.script.author;
 
 import com.google.gson.JsonObject;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 public final class Author {
 
-    private final AuthorType type;
-    private final PlayerAuthor playerAuthor;
+    private final AuthorData data;
 
-    private Author(final AuthorType type, final PlayerAuthor playerAuthor) {
-        Objects.requireNonNull(type, "'type' cannot be null");
-
-        this.type = type;
-        this.playerAuthor = playerAuthor;
-    }
-
-    public static Author player(final String name, final UUID uniqueId, final long lastUpdated) {
-        Objects.requireNonNull(name, "'name' cannot be null");
-        Objects.requireNonNull(uniqueId, "'uniqueId' cannot be null");
-
-        return new Author(AuthorType.PLAYER, new PlayerAuthor(name, uniqueId, lastUpdated));
+    private Author(final AuthorData data) {
+        this.data = Objects.requireNonNull(data, "'data' cannot be null");
     }
 
     public static Author player(final String name, final UUID uniqueId) {
-        return player(name, uniqueId, System.currentTimeMillis());
+        return new Author(new PlayerAuthorData(name, uniqueId));
     }
 
     public static Author system() {
-        return new Author(AuthorType.SYSTEM, null);
+        return new Author(SystemAuthorData.getInstance());
     }
 
     public static Author console() {
-        return new Author(AuthorType.CONSOLE, null);
+        return new Author(ConsoleAuthorData.getInstance());
     }
 
     public static Author fromJson(final JsonObject json) {
         Objects.requireNonNull(json, "'json' cannot be null");
 
-        final AuthorType type = AuthorType.valueOf(json.get("type").getAsString().toUpperCase());
-        final PlayerAuthor playerAuthor;
-        if (type == AuthorType.PLAYER) {
-            playerAuthor = PlayerAuthor.fromJson(json.getAsJsonObject("playerData"));
-        } else {
-            playerAuthor = null;
+        final AuthorData data;
+        final String type = json.get("type").getAsString();
+        switch (type) {
+            case "system":
+                data = SystemAuthorData.getInstance();
+                break;
+            case "console":
+                data = ConsoleAuthorData.getInstance();
+                break;
+            case "player":
+                final JsonObject jsonData = json.getAsJsonObject("data");
+                final String name = jsonData.get("name").getAsString();
+                final UUID uniqueId = UUID.fromString(jsonData.get("uniqueId").getAsString());
+                data = new PlayerAuthorData(name, uniqueId);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown author type: " + type);
         }
-        return new Author(type, playerAuthor);
+
+        return new Author(data);
     }
 
     public JsonObject toJson() {
         final JsonObject json = new JsonObject();
-        json.addProperty("type", type.name());
-        if (isPlayer()) {
-            json.add("playerData", playerAuthor.toJson());
+        final String type;
+        if (data instanceof SystemAuthorData) {
+            type = "system";
+        } else if (data instanceof ConsoleAuthorData) {
+            type = "console";
+        } else if (data instanceof PlayerAuthorData) {
+            type = "player";
+            final JsonObject data = new JsonObject();
+            final PlayerAuthorData playerData = (PlayerAuthorData) this.data;
+            data.addProperty("name", playerData.getName());
+            data.addProperty("uniqueId", playerData.getUniqueId().toString());
+            json.add("data", data);
+        } else {
+            throw new IllegalArgumentException("Unknown data class: " + data.getClass());
         }
+
+        json.addProperty("type", type);
         return json;
     }
 
     public String getName() {
-        switch (type) {
-            case SYSTEM:
-                return "SYSTEM";
-            case CONSOLE:
-                return "CONSOLE";
-            case PLAYER:
-                return playerAuthor.getName();
-            default:
-                throw new IllegalArgumentException();
-        }
+        return data.getName();
     }
 
     public boolean isSystem() {
-        return type == AuthorType.SYSTEM;
+        return data instanceof SystemAuthorData;
     }
 
     public boolean isPlayer() {
-        return type == AuthorType.PLAYER;
+        return data instanceof PlayerAuthorData;
     }
 
     public boolean isConsole() {
-        return type == AuthorType.CONSOLE;
+        return data instanceof ConsoleAuthorData;
     }
 
-    public Optional<PlayerAuthor> getAsPlayer() {
-        return Optional.ofNullable(playerAuthor);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof Author)) return false;
-        Author castedOther = (Author) other;
-
-        if (playerAuthor == null) {
-            return castedOther.playerAuthor == null;
-        }
-
-        return this.playerAuthor.equals(castedOther.playerAuthor);
-    }
-
-    @Override
-    public int hashCode() {
-        if (playerAuthor != null) {
-            return playerAuthor.hashCode();
-        } else {
-            return 0;
-        }
+    public AuthorData getData() {
+        return data;
     }
 }

@@ -1,8 +1,6 @@
 package com.github.kuro46.scriptblockimproved.script.author;
 
-public enum AuthorType {
+public interface AuthorData {
 
-    PLAYER,
-    SYSTEM,
-    CONSOLE
+    String getName();
 }
