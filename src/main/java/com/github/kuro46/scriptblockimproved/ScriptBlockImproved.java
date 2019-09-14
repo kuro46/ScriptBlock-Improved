@@ -23,11 +23,15 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 public final class ScriptBlockImproved {
+
+    private static final Lock IO_LOCK = new ReentrantLock();
 
     private final OptionHandlers optionHandlers = new OptionHandlers();
     private final Placeholders placeholders = new Placeholders();
@@ -96,10 +100,13 @@ public final class ScriptBlockImproved {
         scripts.addListener(scripts -> {
             final Scripts copied = scripts.shallowCopy();
             new Thread(() -> {
+                IO_LOCK.lock();
                 try (BufferedWriter writer = Files.newBufferedWriter(scriptsPath)) {
                     ScriptSerializer.serialize(writer, copied);
                 } catch (IOException e) {
                     plugin.getLogger().log(Level.SEVERE, "Failed to save scripts", e);
+                } finally {
+                    IO_LOCK.unlock();
                 }
             }, "script-io-thread").start();
         });
