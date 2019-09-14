@@ -12,6 +12,7 @@ import com.github.kuro46.scriptblockimproved.command.handler.CommandsListener;
 import com.github.kuro46.scriptblockimproved.command.handler.ExecutionArguments;
 import com.github.kuro46.scriptblockimproved.script.BlockCoordinate;
 import com.github.kuro46.scriptblockimproved.script.Script;
+import com.github.kuro46.scriptblockimproved.script.ScriptSaver;
 import com.github.kuro46.scriptblockimproved.script.Scripts;
 import com.github.kuro46.scriptblockimproved.script.author.Author;
 import com.github.kuro46.scriptblockimproved.script.option.OptionHandlers;
@@ -39,21 +40,19 @@ public final class SBICommandExecutor {
     private final Scripts scripts;
     private final OptionHandlers handlers;
     private final Triggers triggers;
+    private final ScriptSaver scriptSaver;
 
     public SBICommandExecutor(
+        final ScriptSaver scriptSaver,
         final Actions actions,
         final Scripts scripts,
         final OptionHandlers handlers,
         final Triggers triggers) {
-        Objects.requireNonNull(actions, "'actions' cannot be null");
-        Objects.requireNonNull(scripts, "'scripts' cannot be null");
-        Objects.requireNonNull(handlers, "'handlers' cannot be null");
-        Objects.requireNonNull(triggers, "'triggers' cannot be null");
-
-        this.actions = actions;
-        this.scripts = scripts;
-        this.handlers = handlers;
-        this.triggers = triggers;
+        this.scriptSaver = Objects.requireNonNull(scriptSaver, "'scriptSaver' cannot be null");
+        this.actions = Objects.requireNonNull(actions, "'actions' cannot be null");
+        this.scripts = Objects.requireNonNull(scripts, "'scripts' cannot be null");
+        this.handlers = Objects.requireNonNull(handlers, "'handlers' cannot be null");
+        this.triggers = Objects.requireNonNull(triggers, "'triggers' cannot be null");
 
         final StringConverters converters = new StringConverters();
         converters.registerDefaults();
@@ -122,6 +121,11 @@ public final class SBICommandExecutor {
                 triggers(sender);
                 options(sender);
             })
+            .register(commands);
+        Command.builder()
+            .sections("sbi save")
+            .syntax("[fileName]")
+            .executor(this::save)
             .register(commands);
 
         Bukkit.getPluginCommand("sbi").setExecutor(commands);
@@ -353,5 +357,19 @@ public final class SBICommandExecutor {
             sender.sendMessage("Available triggers:");
             triggers.forEach(trigger -> sender.sendMessage("  " + trigger.getName()));
         }
+    }
+
+    private void save(final CommandSender sender, final ExecutionArguments args) {
+        final String fileName = args.getOrDefault(0, "scripts.json");
+        sender.sendMessage(String.format(
+                    "Saving scripts into '/ScriptBlock-Improved/%s'", fileName));
+        scriptSaver.saveAsync(fileName)
+            .whenComplete((result, error) -> {
+                if (error != null) {
+                    sender.sendMessage("Save failed!");
+                } else {
+                    sender.sendMessage("Successfully saved");
+                }
+            });
     }
 }

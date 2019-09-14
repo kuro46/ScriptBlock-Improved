@@ -4,6 +4,7 @@ import com.github.kuro46.scriptblockimproved.command.SBICommandExecutor;
 import com.github.kuro46.scriptblockimproved.command.clickaction.ActionExecutor;
 import com.github.kuro46.scriptblockimproved.command.clickaction.Actions;
 import com.github.kuro46.scriptblockimproved.script.ScriptExecutor;
+import com.github.kuro46.scriptblockimproved.script.ScriptSaver;
 import com.github.kuro46.scriptblockimproved.script.Scripts;
 import com.github.kuro46.scriptblockimproved.script.option.CommonOptionHandlers;
 import com.github.kuro46.scriptblockimproved.script.option.OptionHandlers;
@@ -19,19 +20,14 @@ import com.github.kuro46.scriptblockimproved.script.trigger.RightClickTrigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.Triggers;
 import com.google.common.base.Stopwatch;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 public final class ScriptBlockImproved {
-
-    private static final Lock IO_LOCK = new ReentrantLock();
 
     private final OptionHandlers optionHandlers = new OptionHandlers();
     private final Placeholders placeholders = new Placeholders();
@@ -42,6 +38,7 @@ public final class ScriptBlockImproved {
     private final Triggers triggers;
     private final Plugin plugin;
     private final Scripts scripts;
+    private final ScriptSaver scriptSaver;
 
     ScriptBlockImproved(final Initializer plugin) {
         try {
@@ -50,6 +47,9 @@ public final class ScriptBlockImproved {
             this.plugin = plugin;
             this.scriptsPath = initScriptsPath();
             this.scripts = loadScripts();
+            this.scriptSaver = new ScriptSaver(
+                    plugin.getDataFolder().toPath(),
+                    scripts);
             this.triggers = new Triggers(plugin);
             this.scriptExecutor = new ScriptExecutor(
                     placeholders,
@@ -98,17 +98,15 @@ public final class ScriptBlockImproved {
 
     private void registerScriptsListeners() {
         scripts.addListener(scripts -> {
-            final Scripts copied = scripts.shallowCopy();
-            new Thread(() -> {
-                IO_LOCK.lock();
-                try (BufferedWriter writer = Files.newBufferedWriter(scriptsPath)) {
-                    ScriptSerializer.serialize(writer, copied);
-                } catch (IOException e) {
-                    plugin.getLogger().log(Level.SEVERE, "Failed to save scripts", e);
-                } finally {
-                    IO_LOCK.unlock();
-                }
-            }, "script-io-thread").start();
+            scriptSaver.saveAsync("scripts.json")
+                .whenComplete((result, error) -> {
+                    if (error != null) {
+                        plugin.getLogger().log(
+                                Level.SEVERE,
+                                "Failed to save scripts."
+                                + "Type /sbi save for manually save.");
+                    }
+                });
         });
     }
 
@@ -128,7 +126,7 @@ public final class ScriptBlockImproved {
     }
 
     private void registerCommandExecutor() {
-        new SBICommandExecutor(actions, scripts, optionHandlers, triggers);
+        new SBICommandExecutor(scriptSaver, actions, scripts, optionHandlers, triggers);
     }
 
     private void registerPlaceholders() {
