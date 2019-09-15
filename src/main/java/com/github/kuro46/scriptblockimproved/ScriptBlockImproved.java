@@ -132,7 +132,7 @@ public final class ScriptBlockImproved {
 
     private void registerScriptsListeners() {
         scripts.addListener(scripts -> {
-            scriptSaver.saveAsync("scripts.json")
+            scriptSaver.saveAsync("scripts.json", true)
                 .whenComplete((result, error) -> {
                     if (error != null) {
                         plugin.getLogger().log(

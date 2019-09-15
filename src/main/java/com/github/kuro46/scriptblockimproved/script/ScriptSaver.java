@@ -23,9 +23,19 @@ public final class ScriptSaver {
         this.scripts = Objects.requireNonNull(scripts, "'scripts' cannot be null");
     }
 
-    public CompletableFuture<Void> saveAsync(final String fileName) {
+    public CompletableFuture<Void> saveAsync(final String fileName, final boolean overwrite) {
         final Scripts copied = scripts.shallowCopy();
         return CompletableFuture.runAsync(() -> {
+            final Path filePath = directory.resolve(fileName);
+            if (!overwrite && Files.exists(filePath)) {
+                throw new UncheckedIOException(new IOException("File already exists"));
+            }
+            try {
+                createFileIfNeeded(filePath);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+
             LOCK.lock();
             try (BufferedWriter writer = Files.newBufferedWriter(directory.resolve(fileName))) {
                 ScriptSerializer.serialize(writer, copied);
@@ -35,5 +45,13 @@ public final class ScriptSaver {
                 LOCK.unlock();
             }
         });
+    }
+
+    private void createFileIfNeeded(final Path path) throws IOException {
+        if (Files.exists(path)) {
+            return;
+        }
+
+        Files.createFile(path);
     }
 }

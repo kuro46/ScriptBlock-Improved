@@ -361,9 +361,11 @@ public final class SBICommandExecutor {
 
     private void save(final CommandSender sender, final ExecutionArguments args) {
         final String fileName = args.getOrDefault(0, "scripts.json");
+        final boolean canOverwrite = fileName.equals("scripts.json");
+
         sender.sendMessage(String.format(
                     "Saving scripts into '/ScriptBlock-Improved/%s'", fileName));
-        scriptSaver.saveAsync(fileName)
+        scriptSaver.saveAsync(fileName, canOverwrite)
             .whenComplete((result, error) -> {
                 if (error != null) {
                     sender.sendMessage("Save failed!");
