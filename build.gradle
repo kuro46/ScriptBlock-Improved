@@ -7,6 +7,8 @@ plugins {
     id 'java'
 }
 
+def spotbugsVer = '3.1.12'
+
 group = 'com.github.kuro46'
 version = '0.2.0-SNAPSHOT'
 
@@ -19,6 +21,8 @@ repositories {
 dependencies {
     // Bukkit
     compileOnly "org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT"
+    // SpotBugs Annotations
+    compileOnly "com.github.spotbugs:spotbugs-annotations:${spotbugsVer}"
     // CommandUtility
     implementation "com.github.kuro46:CommandUtility:493af33"
     // Gson
@@ -57,4 +61,8 @@ tasks.shadowJar.dependsOn tasks.relocateShadowJar
 tasks.withType(com.github.spotbugs.SpotBugsTask) {
   reports.xml.enabled = false
   reports.html.enabled = true
+}
+
+spotbugs {
+  toolVersion = spotbugsVer
 }

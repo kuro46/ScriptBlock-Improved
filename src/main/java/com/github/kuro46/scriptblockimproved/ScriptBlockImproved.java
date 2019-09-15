@@ -19,6 +19,7 @@ import com.github.kuro46.scriptblockimproved.script.trigger.PressTrigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.RightClickTrigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.Triggers;
 import com.google.common.base.Stopwatch;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,6 +29,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 public final class ScriptBlockImproved {
+
+    private static ScriptBlockImproved instance;
 
     private final OptionHandlers optionHandlers = new OptionHandlers();
     private final Placeholders placeholders = new Placeholders();
@@ -40,7 +43,7 @@ public final class ScriptBlockImproved {
     private final Scripts scripts;
     private final ScriptSaver scriptSaver;
 
-    ScriptBlockImproved(final Initializer plugin) {
+    private ScriptBlockImproved(final Initializer plugin) {
         try {
             final Stopwatch stopwatch = Stopwatch.createStarted();
 
@@ -70,6 +73,37 @@ public final class ScriptBlockImproved {
         } catch (IOException e) {
             throw new RuntimeException("Failed to initialize the plugin", e);
         }
+    }
+
+    @SuppressFBWarnings("LI_LAZY_INIT_STATIC") // This method always called by primary thread
+    static void initialize(final Initializer Initializer) {
+        if (!Bukkit.isPrimaryThread()) {
+            throw new IllegalStateException("This method must be called by primary thread");
+        }
+        if (instance != null) {
+            throw new IllegalStateException("The plugin is already initialized");
+        }
+        instance = new ScriptBlockImproved(Initializer);
+    }
+
+    public static ScriptBlockImproved getInstance() {
+        return instance;
+    }
+
+    public OptionHandlers getOptionHandlers() {
+        return optionHandlers;
+    }
+
+    public Triggers getTriggers() {
+        return triggers;
+    }
+
+    public Scripts getScripts() {
+        return scripts;
+    }
+
+    public Placeholders getPlaceholders() {
+        return placeholders;
     }
 
     private Path initScriptsPath() throws IOException {

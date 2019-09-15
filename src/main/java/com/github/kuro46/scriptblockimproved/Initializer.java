@@ -6,6 +6,6 @@ public final class Initializer extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        new ScriptBlockImproved(this);
+        ScriptBlockImproved.initialize(this);
     }
 }
