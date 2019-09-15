@@ -45,5 +45,5 @@ dependencies {
 
 #### 主なGradleタスク
 
-`./gradlew pluginjar`サーバー導入用のjarファイルを生成します。ファイル名は`ScriptBlock-Improved.jar`です。  
-`./gradlew build`でSpotBugsやcheckstyleを一括で実行できます。shadeされたjarは出力しません。
+`./gradlew pluginjar`で、サーバー導入用のjarファイルを生成できます。(ファイル名にバージョンを含みません)  
+`./gradlew build`でSpotBugsやcheckstyleを一括で実行できます。
