@@ -48,20 +48,27 @@ processResources {
 shadowJar {
     minimize()
     archiveFileName = "ScriptBlock-Improved.jar"
-}
 
-task relocateShadowJar(type: ConfigureShadowRelocation) {
-    target = tasks.shadowJar
-    prefix = 'com.github.kuro46.scriptblockimproved.libs'
+    relocate 'arrow', 'com.github.kuro46.scriptblockimproved.libs.arrow'
+    relocate 'com.google', 'com.github.kuro46.scriptblockimproved.libs.google'
+    relocate 'kotlin', 'com.github.kuro46.scriptblockimproved.libs.kotlin'
+    relocate 'org.checkerframework', 'com.github.kuro46.scriptblockimproved.libs.checkerframework'
+    relocate 'org.codehaus', 'com.github.kuro46.scriptblockimproved.libs.codehaus'
+    relocate 'org.jetbrains', 'com.github.kuro46.scriptblockimproved.libs.jetbrains'
+    relocate 'com.github.kuro46.commandutility', 'com.github.kuro46.scriptblockimproved.libs.commandutility'
 }
-
-tasks.shadowJar.dependsOn tasks.relocateShadowJar
 
 // SpotBugs settings
 
 tasks.withType(com.github.spotbugs.SpotBugsTask) {
   reports.xml.enabled = false
   reports.html.enabled = true
+}
+
+artifacts {
+    archives shadowJar {
+        archiveFileName = "ScriptBlock-Improved-${version}.jar"
+    }
 }
 
 spotbugs {
