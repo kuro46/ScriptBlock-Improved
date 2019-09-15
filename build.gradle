@@ -4,6 +4,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '5.1.0'
     id "com.github.spotbugs" version "2.0.0"
     id 'checkstyle'
+    id 'maven'
     id 'java'
 }
 
