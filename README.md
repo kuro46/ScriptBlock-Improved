@@ -1,6 +1,6 @@
 日本語 | [English](docs/README_EN.md)
 
-# ScriptBlock-Improved
+# ScriptBlock-Improved [![jitpack](https://jitpack.io/v/kuro46/ScriptBlock-Improved.svg)](https://jitpack.io/#kuro46/ScriptBlock-Improved)
 
 [ScriptBlock](https://dev.bukkit.org/projects/scriptblock)の設計や機能を改善したプラグインです
 
@@ -24,6 +24,26 @@
 - 殆どのバージョンのBukkitを実装したサーバー
 
 ## 開発者向け
+
+### APIを使う
+
+#### 依存関係に追加する
+
+##### Gradle
+
+```groovy
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    implementation 'com.github.kuro46:ScriptBlock-Improved:v0.2.1'
+}
+```
+
+### SBIに変更を加える
+
+#### 主なGradleタスク
 
 `./gradlew shadowjar`でshadeされたjarファイルをbuild/libs内に出力します。ファイル名は`ScriptBlock-Improved.jar`です。  
 `./gradlew build`でSpotBugsやcheckstyleを一括で実行できます。shadeされたjarは出力しません。
