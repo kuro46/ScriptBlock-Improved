@@ -12,17 +12,19 @@ import com.github.kuro46.scriptblockimproved.command.handler.CommandsListener;
 import com.github.kuro46.scriptblockimproved.command.handler.ExecutionArguments;
 import com.github.kuro46.scriptblockimproved.script.BlockCoordinate;
 import com.github.kuro46.scriptblockimproved.script.Script;
-import com.github.kuro46.scriptblockimproved.script.ScriptSaver;
 import com.github.kuro46.scriptblockimproved.script.Scripts;
 import com.github.kuro46.scriptblockimproved.script.author.Author;
 import com.github.kuro46.scriptblockimproved.script.option.OptionHandlers;
 import com.github.kuro46.scriptblockimproved.script.option.OptionName;
 import com.github.kuro46.scriptblockimproved.script.option.Options;
+import com.github.kuro46.scriptblockimproved.script.serialize.ScriptSerializer;
 import com.github.kuro46.scriptblockimproved.script.trigger.Trigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.TriggerName;
 import com.github.kuro46.scriptblockimproved.script.trigger.Triggers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,19 +42,19 @@ public final class SBICommandExecutor {
     private final Scripts scripts;
     private final OptionHandlers handlers;
     private final Triggers triggers;
-    private final ScriptSaver scriptSaver;
+    private final Path dataFolder;
 
     public SBICommandExecutor(
-        final ScriptSaver scriptSaver,
         final Actions actions,
         final Scripts scripts,
         final OptionHandlers handlers,
-        final Triggers triggers) {
-        this.scriptSaver = Objects.requireNonNull(scriptSaver, "'scriptSaver' cannot be null");
+        final Triggers triggers,
+        final Path dataFolder) {
         this.actions = Objects.requireNonNull(actions, "'actions' cannot be null");
         this.scripts = Objects.requireNonNull(scripts, "'scripts' cannot be null");
         this.handlers = Objects.requireNonNull(handlers, "'handlers' cannot be null");
         this.triggers = Objects.requireNonNull(triggers, "'triggers' cannot be null");
+        this.dataFolder = Objects.requireNonNull(dataFolder, "'dataFolder' cannot be null");
 
         final StringConverters converters = new StringConverters();
         converters.registerDefaults();
@@ -365,13 +367,14 @@ public final class SBICommandExecutor {
 
         sender.sendMessage(String.format(
                     "Saving scripts into '/ScriptBlock-Improved/%s'", fileName));
-        scriptSaver.saveAsync(fileName, canOverwrite)
-            .whenComplete((result, error) -> {
-                if (error != null) {
-                    sender.sendMessage("Save failed!");
-                } else {
-                    sender.sendMessage("Successfully saved");
-                }
-            });
+        final Scripts copied = scripts.shallowCopy();
+        new Thread(() -> {
+            try {
+                ScriptSerializer.serialize(dataFolder.resolve(fileName), copied, canOverwrite);
+                sender.sendMessage("Successfully saved");
+            } catch (final IOException e) {
+                sender.sendMessage("Save failed!");
+            }
+        }, "sbi-command-sbi_save").start();
     }
 }
