@@ -32,6 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.ServicePriority;
 
 public final class ScriptBlockImproved {
 
@@ -67,6 +68,7 @@ public final class ScriptBlockImproved {
                     scripts,
                     plugin.getDataFolder().toPath().resolve("scripts.json"));
 
+            registerAsService();
             registerOptionHandlers();
             registerTriggers();
             registerCommandExecutor();
@@ -90,10 +92,6 @@ public final class ScriptBlockImproved {
             throw new IllegalStateException("The plugin is already initialized");
         }
         instance = new ScriptBlockImproved(Initializer);
-    }
-
-    public static ScriptBlockImproved getInstance() {
-        return instance;
     }
 
     public OptionHandlers getOptionHandlers() {
@@ -134,6 +132,14 @@ public final class ScriptBlockImproved {
         } catch (IOException | UnsupportedVersionException e) {
             throw new RuntimeException("Failed to load scripts", e);
         }
+    }
+
+    private void registerAsService() {
+        Bukkit.getServicesManager().register(
+            ScriptBlockImproved.class,
+            this,
+            plugin,
+            ServicePriority.Normal);
     }
 
     private void registerScriptsListeners() {
