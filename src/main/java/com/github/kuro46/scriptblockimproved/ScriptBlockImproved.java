@@ -84,14 +84,30 @@ public final class ScriptBlockImproved {
     }
 
     @SuppressFBWarnings("LI_LAZY_INIT_STATIC") // This method always called by primary thread
-    static void initialize(final Initializer Initializer) {
+    static void initialize(final Initializer initializer) {
         if (!Bukkit.isPrimaryThread()) {
             throw new IllegalStateException("This method must be called by primary thread");
         }
         if (instance != null) {
             throw new IllegalStateException("The plugin is already initialized");
         }
-        instance = new ScriptBlockImproved(Initializer);
+        instance = new ScriptBlockImproved(initializer);
+    }
+
+    static void dispose() {
+        if (!Bukkit.isPrimaryThread()) {
+            throw new IllegalStateException("This method must be called by primary thread");
+        }
+        if (instance == null) {
+            throw new IllegalStateException("The plugin is not initialized now");
+        }
+        instance.disposeInternal();
+
+        instance = null;
+    }
+
+    private void disposeInternal() {
+        scriptAutoSaver.shutdown();
     }
 
     public OptionHandlers getOptionHandlers() {
@@ -210,6 +226,10 @@ public final class ScriptBlockImproved {
                             e);
                 }
             }, 1, TimeUnit.SECONDS);
+        }
+
+        public void shutdown() {
+            executor.shutdown();
         }
     }
 }

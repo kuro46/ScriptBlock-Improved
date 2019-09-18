@@ -8,4 +8,9 @@ public final class Initializer extends JavaPlugin {
     public void onEnable() {
         ScriptBlockImproved.initialize(this);
     }
+
+    @Override
+    public void onDisable() {
+        ScriptBlockImproved.dispose();
+    }
 }
