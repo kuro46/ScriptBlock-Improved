@@ -1,33 +1,31 @@
 package com.github.kuro46.scriptblockimproved.script;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ListMultimap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiConsumer;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class Scripts {
 
     private final List<ScriptsListener> listeners = new ArrayList<>();
-    private final ListMultimap<BlockCoordinate, Script> scripts;
+    private final ConcurrentMap<BlockCoordinate, List<Script>> scripts;
 
     public Scripts() {
-        this(ArrayListMultimap.create());
+        this(Collections.emptyMap());
     }
 
-    public Scripts(final ListMultimap<BlockCoordinate, Script> scripts) {
+    public Scripts(final Map<BlockCoordinate, List<Script>> scripts) {
         Objects.requireNonNull(scripts, "'scripts' cannot be null");
 
-        this.scripts = ArrayListMultimap.create(scripts);
-    }
-
-    public Scripts shallowCopy() {
-        return new Scripts(scripts);
+        this.scripts = new ConcurrentHashMap<>(scripts);
     }
 
     public void addListener(final ScriptsListener listener) {
@@ -44,7 +42,9 @@ public final class Scripts {
 
     public JsonArray toJson() {
         final JsonArray json = new JsonArray();
-        scripts.forEach((coordinate, script) -> json.add(script.toJson()));
+        scripts.values().stream()
+            .flatMap(script -> script.stream())
+            .forEach(script -> json.add(script.toJson()));
         return json;
     }
 
@@ -52,14 +52,13 @@ public final class Scripts {
         return scripts.keySet();
     }
 
-    public void forEach(final BiConsumer<BlockCoordinate, Script> consumer) {
-        scripts.forEach(consumer);
-    }
-
     public void add(final Script script) {
         Objects.requireNonNull(script, "'script' cannot be null");
 
-        scripts.put(script.getCoordinate(), script);
+        final List<Script> scripts = this.scripts.computeIfAbsent(
+            script.getCoordinate(),
+            coordinate -> new CopyOnWriteArrayList<>());
+        scripts.add(script);
         listeners.forEach(listener -> listener.onModified(this));
     }
 
@@ -70,7 +69,7 @@ public final class Scripts {
             throw new IllegalArgumentException(
                     String.format("Script not exists at '%s'", coordinate));
         }
-        scripts.removeAll(coordinate);
+        scripts.remove(coordinate);
 
         listeners.forEach(listener -> listener.onModified(this));
     }

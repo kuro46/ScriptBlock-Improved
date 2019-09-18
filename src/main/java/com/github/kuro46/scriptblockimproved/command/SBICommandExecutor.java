@@ -367,10 +367,9 @@ public final class SBICommandExecutor {
 
         sender.sendMessage(String.format(
                     "Saving scripts into '/ScriptBlock-Improved/%s'", fileName));
-        final Scripts copied = scripts.shallowCopy();
         new Thread(() -> {
             try {
-                ScriptSerializer.serialize(dataFolder.resolve(fileName), copied, canOverwrite);
+                ScriptSerializer.serialize(dataFolder.resolve(fileName), scripts, canOverwrite);
                 sender.sendMessage("Successfully saved");
             } catch (final IOException e) {
                 sender.sendMessage("Save failed!");

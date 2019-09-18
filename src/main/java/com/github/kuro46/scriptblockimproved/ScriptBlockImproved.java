@@ -201,10 +201,9 @@ public final class ScriptBlockImproved {
         }
 
         private ScheduledFuture<?> schedule() {
-            final Scripts copied = scripts.shallowCopy();
             return executor.schedule(() -> {
                 try {
-                    ScriptSerializer.serialize(path, copied, true);
+                    ScriptSerializer.serialize(path, scripts, true);
                 } catch (IOException e) {
                     logger.log(Level.SEVERE,
                             "Failed to save scripts. Type '/sbi save' for save scripts manually.",
