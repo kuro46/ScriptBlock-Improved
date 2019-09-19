@@ -10,7 +10,6 @@ import com.github.kuro46.scriptblockimproved.script.trigger.Trigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.Triggers;
 import java.util.Objects;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 
 public final class ScriptExecutor {
@@ -33,16 +32,16 @@ public final class ScriptExecutor {
         this.handlers = Objects.requireNonNull(handlers, "'handlers' cannot be null");
         this.triggers = Objects.requireNonNull(triggers, "'triggers' cannot be null");
 
-        triggers.addListener(this::execute);
+        triggers.addListener((trigger, event, player, coordinate) -> {
+            execute(trigger, player, coordinate);
+        });
     }
 
     private void execute(
             final Trigger triggerBy,
-            final Event event,
             final Player player,
             final BlockCoordinate coordinate) {
         Objects.requireNonNull(triggerBy, "'triggerBy' cannot be null");
-        Objects.requireNonNull(event, "'event' cannot be null");
         Objects.requireNonNull(player, "'player' cannot be null");
         Objects.requireNonNull(coordinate, "'coordinate' cannot be null");
 
@@ -51,15 +50,13 @@ public final class ScriptExecutor {
         }
         scripts.get(coordinate).stream()
             .filter(script -> script.getTrigger().equals(triggerBy.getName()))
-            .forEach(script -> executeScript(event, player, coordinate, script));
+            .forEach(script -> executeScript(player, coordinate, script));
     }
 
     private void executeScript(
-            final Event event,
             final Player player,
             final BlockCoordinate coordinate,
             final Script script) {
-        Objects.requireNonNull(event, "'event' cannot be null");
         Objects.requireNonNull(player, "'player' cannot be null");
         Objects.requireNonNull(coordinate, "'coordinate' cannot be null");
         Objects.requireNonNull(script, "'script' cannot be null");
@@ -70,11 +67,9 @@ public final class ScriptExecutor {
             .anyMatch(option -> {
                 final OptionHandler handler = handlers.getOrFail(option.getName());
                 final CheckResult result = handler.check(
-                        event,
                         player,
                         script,
-                        option.getName(),
-                        option.getArguments());
+                        option);
                 return result == CheckResult.CANCEL;
             });
         if (needCancel) return;
@@ -82,7 +77,7 @@ public final class ScriptExecutor {
         replaced.forEach(option -> {
             final OptionName name = option.getName();
             final OptionHandler handler = handlers.getOrFail(name);
-            handler.execute(event, player, script, name, option.getArguments());
+            handler.execute(player, script, option);
         });
     }
 }

@@ -3,7 +3,6 @@ package com.github.kuro46.scriptblockimproved.script.option;
 import arrow.core.Either;
 import com.github.kuro46.commandutility.syntax.CommandSyntax;
 import com.github.kuro46.commandutility.syntax.ParseErrorReason;
-import com.github.kuro46.scriptblockimproved.common.tuple.Pair;
 import com.github.kuro46.scriptblockimproved.common.tuple.Triple;
 import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
@@ -44,15 +43,13 @@ public final class OptionParser {
                     if (wrappedArgs.isLeft()) {
                         throw new ParseException();
                     }
-                    @SuppressWarnings("unchecked") // TODO: remove
+                    @SuppressWarnings("unchecked")
                     final Map<String, String> args =
                         ((Either.Right<Map<String, String>>) wrappedArgs).getB();
 
                     return Triple.of(name, new Arguments(args), handler);
                 }) // Mapped to Triple<OptionName, Arguments, OptionHandler>
-                .filter(data -> ValidateResult.VALID == data.right().validate(data.middle())) // Validated
-                .map(data -> Pair.of(data.left(), data.right().normalize(data.middle()))) // Mapped to normalized Arguments
-                .map(data -> new Option(data.left(), data.right())) // Mapped to Option
+                .map(data -> new Option(data.left(), data.middle())) // Mapped to Option
                 .collect(Collectors.toList());
             return Optional.of(new Options(options));
         } catch (ParseException e) {

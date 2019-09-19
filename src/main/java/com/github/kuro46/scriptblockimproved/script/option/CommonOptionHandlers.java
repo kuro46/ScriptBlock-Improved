@@ -5,12 +5,9 @@ import com.github.kuro46.commandutility.syntax.CommandSyntaxBuilder;
 import com.github.kuro46.commandutility.syntax.LongArgument;
 import com.github.kuro46.commandutility.syntax.RequiredArgument;
 import com.github.kuro46.scriptblockimproved.script.Script;
-import java.util.Map;
 import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.Plugin;
 
@@ -25,47 +22,7 @@ public final class CommonOptionHandlers {
         handlers.add(OptionName.of("broadcast"), BROADCAST_HANDLER);
         handlers.add(OptionName.of("say"), SAY_HANDLER);
         handlers.add(OptionName.of("bypassCommand"), new BypassCommandHandler(plugin));
-        handlers.add(OptionName.of("cancelEvent"), EVENT_CANCEL_HANDLER);
     }
-
-    private static final OptionHandler EVENT_CANCEL_HANDLER = new OptionHandler() {
-        @Override
-        public CommandSyntax getSyntax() {
-            return new CommandSyntaxBuilder()
-                .addArgument(new LongArgument("", false))
-                .build();
-        }
-
-        @Override
-        public ValidateResult validate(final Arguments args) {
-            return ValidateResult.VALID;
-        }
-
-        @Override
-        public Arguments normalize(final Arguments rawArgs) {
-            return rawArgs;
-        }
-
-        @Override
-        public CheckResult check(
-            final Event event,
-            final Player player,
-            final Script script,
-            final OptionName name,
-            final Arguments args) {
-            return CheckResult.CONTINUE;
-        }
-
-        @Override
-        public void execute(
-            final Event event,
-            final Player player,
-            final Script script,
-            final OptionName name,
-            final Arguments args) {
-            ((Cancellable) event).setCancelled(true);
-        }
-    };
 
     private static final OptionHandler COMMAND_HANDLER = new OptionHandler() {
 
@@ -79,35 +36,20 @@ public final class CommonOptionHandlers {
         }
 
         @Override
-        public ValidateResult validate(final Arguments args) {
-            return ValidateResult.VALID;
-        }
-
-        @Override
-        public Arguments normalize(final Arguments args) {
-            final Map<String, String> mutable = args.toMutable();
-            mutable.compute("command", (key, value) -> removeSlashIfNeeded(value));
-            return new Arguments(mutable);
-        }
-
-        @Override
         public CheckResult check(
-                final Event event,
                 final Player player,
                 final Script script,
-                final OptionName name,
-                final Arguments args) {
+                final Option option) {
             return CheckResult.CONTINUE;
         }
 
         @Override
         public void execute(
-                final Event event,
                 final Player player,
                 final Script script,
-                final OptionName name,
-                final Arguments args) {
-            player.performCommand(args.getOrFail("command"));
+                final Option option) {
+            final Arguments args = option.getArguments();
+            player.performCommand(removeSlashIfNeeded(args.getOrFail("command")));
         }
     };
 
@@ -123,37 +65,22 @@ public final class CommonOptionHandlers {
         }
 
         @Override
-        public ValidateResult validate(final Arguments args) {
-            return ValidateResult.VALID;
-        }
-
-        @Override
-        public Arguments normalize(final Arguments args) {
-            final Map<String, String> mutable = args.toMutable();
-            mutable.compute("command", (key, value) -> removeSlashIfNeeded(value));
-            return new Arguments(mutable);
-        }
-
-        @Override
         public CheckResult check(
-                final Event event,
                 final Player player,
                 final Script script,
-                final OptionName name,
-                final Arguments args) {
+                final Option option) {
             return CheckResult.CONTINUE;
         }
 
         @Override
         public void execute(
-                final Event event,
                 final Player player,
                 final Script script,
-                final OptionName name,
-                final Arguments args) {
+                final Option option) {
+            final Arguments args = option.getArguments();
             Bukkit.dispatchCommand(
                     Bukkit.getConsoleSender(),
-                    args.getOrFail("command"));
+                    removeSlashIfNeeded(args.getOrFail("command")));
         }
     };
 
@@ -169,32 +96,19 @@ public final class CommonOptionHandlers {
         }
 
         @Override
-        public ValidateResult validate(final Arguments args) {
-            return ValidateResult.VALID;
-        }
-
-        @Override
-        public Arguments normalize(final Arguments args) {
-            return args;
-        }
-
-        @Override
         public CheckResult check(
-                final Event event,
                 final Player player,
                 final Script script,
-                final OptionName name,
-                final Arguments args) {
+                final Option option) {
             return CheckResult.CONTINUE;
         }
 
         @Override
         public void execute(
-                final Event event,
                 final Player player,
                 final Script script,
-                final OptionName name,
-                final Arguments args) {
+                final Option option) {
+            final Arguments args = option.getArguments();
             Bukkit.broadcastMessage(args.getOrFail("message"));
         }
     };
@@ -211,32 +125,19 @@ public final class CommonOptionHandlers {
         }
 
         @Override
-        public ValidateResult validate(final Arguments args) {
-            return ValidateResult.VALID;
-        }
-
-        @Override
-        public Arguments normalize(final Arguments args) {
-            return args;
-        }
-
-        @Override
         public CheckResult check(
-                final Event event,
                 final Player player,
                 final Script script,
-                final OptionName name,
-                final Arguments args) {
+                final Option option) {
             return CheckResult.CONTINUE;
         }
 
         @Override
         public void execute(
-                final Event event,
                 final Player player,
                 final Script script,
-                final OptionName name,
-                final Arguments args) {
+                final Option option) {
+            final Arguments args = option.getArguments();
             player.sendMessage(args.getOrFail("message"));
         }
     };
@@ -268,34 +169,19 @@ public final class CommonOptionHandlers {
         }
 
         @Override
-        public ValidateResult validate(final Arguments args) {
-            return ValidateResult.VALID;
-        }
-
-        @Override
-        public Arguments normalize(final Arguments args) {
-            final Map<String, String> mutable = args.toMutable();
-            mutable.compute("command", (key, value) -> removeSlashIfNeeded(value));
-            return new Arguments(mutable);
-        }
-
-        @Override
         public CheckResult check(
-                final Event event,
                 final Player player,
                 final Script script,
-                final OptionName name,
-                final Arguments args) {
+                final Option option) {
             return CheckResult.CONTINUE;
         }
 
         @Override
         public void execute(
-                final Event event,
                 final Player player,
                 final Script script,
-                final OptionName name,
-                final Arguments args) {
+                final Option option) {
+            final Arguments args = option.getArguments();
             final PermissionAttachment attachment = player.addAttachment(plugin);
             try {
                 attachment.setPermission(args.getOrFail("permission"), true);

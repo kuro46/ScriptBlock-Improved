@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,7 @@ public final class Scripts {
     public JsonArray toJson() {
         final JsonArray json = new JsonArray();
         scripts.values().stream()
-            .flatMap(script -> script.stream())
+            .flatMap(Collection::stream)
             .forEach(script -> json.add(script.toJson()));
         return json;
     }
