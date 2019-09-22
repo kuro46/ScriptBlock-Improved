@@ -1,12 +1,12 @@
 package com.github.kuro46.scriptblockimproved.script.option;
 
-import com.github.kuro46.commandutility.syntax.CommandSyntax;
+import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.script.Script;
 import org.bukkit.entity.Player;
 
 public interface OptionHandler {
 
-    CommandSyntax getSyntax();
+    Args getArgs();
 
     CheckResult check(
             final Player player,

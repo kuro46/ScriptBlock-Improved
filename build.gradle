@@ -14,7 +14,6 @@ version = '0.2.1'
 repositories {
     mavenCentral()
     maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots" }
-    maven { url "https://jitpack.io" }
 }
 
 dependencies {
@@ -22,8 +21,6 @@ dependencies {
     compileOnly "org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT"
     // SpotBugs Annotations
     compileOnly "com.github.spotbugs:spotbugs-annotations:${spotbugsVer}"
-    // CommandUtility
-    implementation "com.github.kuro46:CommandUtility:493af33"
     // Gson
     implementation 'com.google.code.gson:gson:2.8.5'
     // Guava
@@ -47,13 +44,8 @@ shadowJar {
     minimize()
     archiveFileName = "ScriptBlock-Improved-${version}.jar"
 
-    relocate 'arrow', 'com.github.kuro46.scriptblockimproved.libs.arrow'
     relocate 'com.google', 'com.github.kuro46.scriptblockimproved.libs.google'
-    relocate 'kotlin', 'com.github.kuro46.scriptblockimproved.libs.kotlin'
     relocate 'org.checkerframework', 'com.github.kuro46.scriptblockimproved.libs.checkerframework'
-    relocate 'org.codehaus', 'com.github.kuro46.scriptblockimproved.libs.codehaus'
-    relocate 'org.jetbrains', 'com.github.kuro46.scriptblockimproved.libs.jetbrains'
-    relocate 'com.github.kuro46.commandutility', 'com.github.kuro46.scriptblockimproved.libs.commandutility'
 }
 
 artifacts {

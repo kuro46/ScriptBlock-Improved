@@ -35,6 +35,10 @@ public final class ParsedArgs {
         });
     }
 
+    public ImmutableMap<ArgName, String> asMap() {
+        return args;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)

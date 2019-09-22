@@ -1,9 +1,7 @@
 package com.github.kuro46.scriptblockimproved.script.option;
 
-import com.github.kuro46.commandutility.syntax.CommandSyntax;
-import com.github.kuro46.commandutility.syntax.CommandSyntaxBuilder;
-import com.github.kuro46.commandutility.syntax.LongArgument;
-import com.github.kuro46.commandutility.syntax.RequiredArgument;
+import com.github.kuro46.scriptblockimproved.common.command.Args;
+import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import com.github.kuro46.scriptblockimproved.script.Script;
 import java.util.Objects;
 import org.bukkit.Bukkit;
@@ -26,13 +24,13 @@ public final class CommonOptionHandlers {
 
     private static final OptionHandler COMMAND_HANDLER = new OptionHandler() {
 
-        private final CommandSyntax syntax = new CommandSyntaxBuilder()
-            .addArgument(new LongArgument("command", true))
+        private final Args args = Args.builder()
+            .required("command")
             .build();
 
         @Override
-        public CommandSyntax getSyntax() {
-            return syntax;
+        public Args getArgs() {
+            return args;
         }
 
         @Override
@@ -48,20 +46,20 @@ public final class CommonOptionHandlers {
                 final Player player,
                 final Script script,
                 final Option option) {
-            final Arguments args = option.getArguments();
+            final ParsedArgs args = option.getArgs();
             player.performCommand(removeSlashIfNeeded(args.getOrFail("command")));
         }
     };
 
     private static final OptionHandler CONSOLE_HANDLER = new OptionHandler() {
 
-        private final CommandSyntax syntax = new CommandSyntaxBuilder()
-            .addArgument(new LongArgument("command", true))
+        private final Args args = Args.builder()
+            .required("command")
             .build();
 
         @Override
-        public CommandSyntax getSyntax() {
-            return syntax;
+        public Args getArgs() {
+            return args;
         }
 
         @Override
@@ -77,7 +75,7 @@ public final class CommonOptionHandlers {
                 final Player player,
                 final Script script,
                 final Option option) {
-            final Arguments args = option.getArguments();
+            final ParsedArgs args = option.getArgs();
             Bukkit.dispatchCommand(
                     Bukkit.getConsoleSender(),
                     removeSlashIfNeeded(args.getOrFail("command")));
@@ -86,13 +84,13 @@ public final class CommonOptionHandlers {
 
     private static final OptionHandler BROADCAST_HANDLER = new OptionHandler() {
 
-        private final CommandSyntax syntax = new CommandSyntaxBuilder()
-            .addArgument(new LongArgument("message", true))
+        private final Args args = Args.builder()
+            .required("message")
             .build();
 
         @Override
-        public CommandSyntax getSyntax() {
-            return syntax;
+        public Args getArgs() {
+            return args;
         }
 
         @Override
@@ -108,20 +106,20 @@ public final class CommonOptionHandlers {
                 final Player player,
                 final Script script,
                 final Option option) {
-            final Arguments args = option.getArguments();
+            final ParsedArgs args = option.getArgs();
             Bukkit.broadcastMessage(args.getOrFail("message"));
         }
     };
 
     private static final OptionHandler SAY_HANDLER = new OptionHandler() {
 
-        private final CommandSyntax syntax = new CommandSyntaxBuilder()
-            .addArgument(new LongArgument("message", true))
+        private final Args args = Args.builder()
+            .required("message")
             .build();
 
         @Override
-        public CommandSyntax getSyntax() {
-            return syntax;
+        public Args getArgs() {
+            return args;
         }
 
         @Override
@@ -137,7 +135,7 @@ public final class CommonOptionHandlers {
                 final Player player,
                 final Script script,
                 final Option option) {
-            final Arguments args = option.getArguments();
+            final ParsedArgs args = option.getArgs();
             player.sendMessage(args.getOrFail("message"));
         }
     };
@@ -158,14 +156,14 @@ public final class CommonOptionHandlers {
             this.plugin = plugin;
         }
 
-        private final CommandSyntax syntax = new CommandSyntaxBuilder()
-            .addArgument(new RequiredArgument("permission"))
-            .addArgument(new LongArgument("command", true))
+        private final Args args = Args.builder()
+            .required("permission")
+            .required("command")
             .build();
 
         @Override
-        public CommandSyntax getSyntax() {
-            return syntax;
+        public Args getArgs() {
+            return args;
         }
 
         @Override
@@ -181,7 +179,7 @@ public final class CommonOptionHandlers {
                 final Player player,
                 final Script script,
                 final Option option) {
-            final Arguments args = option.getArguments();
+            final ParsedArgs args = option.getArgs();
             final PermissionAttachment attachment = player.addAttachment(plugin);
             try {
                 attachment.setPermission(args.getOrFail("permission"), true);

@@ -1,13 +1,11 @@
 package com.github.kuro46.scriptblockimproved.script.option;
 
-import arrow.core.Either;
-import com.github.kuro46.commandutility.syntax.CommandSyntax;
-import com.github.kuro46.commandutility.syntax.ParseErrorReason;
+import com.github.kuro46.scriptblockimproved.common.command.Args;
+import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import com.github.kuro46.scriptblockimproved.common.tuple.Triple;
 import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -37,17 +35,13 @@ public final class OptionParser {
                 .map(rawOption -> {
                     final OptionName name = rawOption.getName();
                     final OptionHandler handler = handlers.getOrFail(name);
-                    final CommandSyntax syntax = handler.getSyntax();
-                    final Either<kotlin.Pair<ParseErrorReason, Map<String, String>>,
-                          Map<String, String>> wrappedArgs = syntax.parse(rawOption.getArgs());
-                    if (wrappedArgs.isLeft()) {
+                    final Args args = handler.getArgs();
+                    final ParsedArgs parsedArgs = args.parse(rawOption.getArgs()).orElse(null);
+                    if (parsedArgs == null) {
                         throw new ParseException();
                     }
-                    @SuppressWarnings("unchecked")
-                    final Map<String, String> args =
-                        ((Either.Right<Map<String, String>>) wrappedArgs).getB();
 
-                    return Triple.of(name, new Arguments(args), handler);
+                    return Triple.of(name, parsedArgs, handler);
                 }) // Mapped to Triple<OptionName, Arguments, OptionHandler>
                 .map(data -> new Option(data.left(), data.middle())) // Mapped to Option
                 .collect(Collectors.toList());

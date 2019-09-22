@@ -414,7 +414,7 @@ public final class SBICommandExecutor {
         sendMessage(sender, "options:");
         script.getOptions().forEach(option -> {
             sendMessage(sender, "  %s: ", option.getName().getName());
-            option.getArguments().getView().forEach((key, value) -> {
+            option.getArgs().asMap().forEach((key, value) -> {
                 sendMessage(sender, "    %s: %s", key, value);
             });
         });
