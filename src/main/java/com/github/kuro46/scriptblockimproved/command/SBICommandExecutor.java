@@ -1,15 +1,16 @@
 package com.github.kuro46.scriptblockimproved.command;
 
-import com.github.kuro46.commandutility.StringConverters;
 import com.github.kuro46.scriptblockimproved.command.clickaction.ActionAdd;
 import com.github.kuro46.scriptblockimproved.command.clickaction.ActionCreate;
 import com.github.kuro46.scriptblockimproved.command.clickaction.ActionDelete;
 import com.github.kuro46.scriptblockimproved.command.clickaction.ActionView;
 import com.github.kuro46.scriptblockimproved.command.clickaction.Actions;
-import com.github.kuro46.scriptblockimproved.command.handler.Command;
-import com.github.kuro46.scriptblockimproved.command.handler.Commands;
-import com.github.kuro46.scriptblockimproved.command.handler.CommandsListener;
-import com.github.kuro46.scriptblockimproved.command.handler.ExecutionArguments;
+import com.github.kuro46.scriptblockimproved.common.ListUtils;
+import com.github.kuro46.scriptblockimproved.common.command.Args;
+import com.github.kuro46.scriptblockimproved.common.command.Command;
+import com.github.kuro46.scriptblockimproved.common.command.CommandManager;
+import com.github.kuro46.scriptblockimproved.common.command.CommandSection;
+import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import com.github.kuro46.scriptblockimproved.script.BlockCoordinate;
 import com.github.kuro46.scriptblockimproved.script.Script;
 import com.github.kuro46.scriptblockimproved.script.Scripts;
@@ -23,20 +24,33 @@ import com.github.kuro46.scriptblockimproved.script.trigger.TriggerName;
 import com.github.kuro46.scriptblockimproved.script.trigger.Triggers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.primitives.Ints;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 public final class SBICommandExecutor {
+
+    private static final String PREFIX = ChatColor.GRAY
+        + "["
+        + ChatColor.DARK_AQUA
+        + "SB"
+        + ChatColor.AQUA
+        + "I"
+        + ChatColor.GRAY
+        + "] "
+        + ChatColor.RESET;
 
     private final Actions actions;
     private final Scripts scripts;
@@ -56,182 +70,252 @@ public final class SBICommandExecutor {
         this.triggers = Objects.requireNonNull(triggers, "'triggers' cannot be null");
         this.dataFolder = Objects.requireNonNull(dataFolder, "'dataFolder' cannot be null");
 
-        final StringConverters converters = new StringConverters();
-        converters.registerDefaults();
-        final Commands commands = new Commands(converters);
-        commands.addListener(new CommandsListener() {
+        final CommandManager manager = new CommandManager();
+        manager.addErrorHandler(new CommandManager.ErrorHandler() {
 
             @Override
-            public void onInvalidSyntax(final CommandSender sender) {
-                sender.sendMessage("Incorrect usage. Type '/sbi help' for help");
+            public void onUnknownCommand(final CommandSender sender, final List<String> sections) {
+                sendMessage(sender, "Unknown command. Probably a bug.");
             }
 
             @Override
-            public void onUnknownCommand(final CommandSender sender) {
-                sender.sendMessage("Unknown command. Type '/sbi help' for help");
+            public void onParseFailed(final CommandSender sender, final Command command) {
+                sendMessage(sender,
+                            "Usage: /%s %s",
+                            command.getName(),
+                            command.getArgs());
             }
         });
         Command.builder()
-            .sections("sbi help")
-            .executor((sender, args) -> help(sender))
-            .register(commands);
+            .name("sbi")
+            .description("Prints description")
+            .args(Args.builder()
+                .optional("")
+                .build())
+            .executor((sender, args) -> {
+                final String free = args.getOrNull("");
+                if (free == null) {
+                    //TODO: improve
+                    final String version = Bukkit.getPluginManager()
+                        .getPlugin("ScriptBlock-Improved").getDescription().getVersion();
+                    sendMessage(sender, "ScriptBlock-Improved v" + version);
+                    help(manager, sender);
+                } else {
+                    sendMessage(sender, "Unknown command. Available commands:");
+                    final String subCommands = manager.asMap().keySet().stream()
+                        .map(name -> ListUtils.get(name.asSections(), 1))
+                        .filter(section -> section.isPresent())
+                        .map(Optional::get)
+                        .map(CommandSection::getName)
+                        .collect(Collectors.joining(", "));
+                    sendMessage(sender, subCommands);
+                    sendMessage(sender, "'/sbi help' for more details");
+                }
+            })
+            .register(manager);
         Command.builder()
-            .sections("sbi create")
-            .syntax("<trigger> <script>")
+            .name("sbi help")
+            .description("Displays this message")
+            .executor((sender, args) -> help(manager, sender))
+            .register(manager);
+        Command.builder()
+            .name("sbi create")
+            .description("Creates script in clicked block")
+            .args(Args.builder()
+                .required("trigger")
+                .required("script")
+                .build())
             .executor(this::create)
-            .register(commands);
+            .register(manager);
         Command.builder()
-            .sections("sbi add")
-            .syntax("<trigger> <script>")
+            .name("sbi add")
+            .description("Adds script in clicked block")
+            .args(Args.builder()
+                .required("trigger")
+                .required("script")
+                .build())
             .executor(this::add)
-            .register(commands);
+            .register(manager);
         Command.builder()
-            .sections("sbi delete")
+            .name("sbi delete")
+            .description("Deletes script in clicked block")
             .executor(this::delete)
-            .register(commands);
+            .register(manager);
         Command.builder()
-            .sections("sbi view")
+            .name("sbi view")
+            .description("Displays information of scripts in the clicked block")
             .executor(this::view)
-            .register(commands);
+            .register(manager);
         Command.builder()
-            .sections("sbi createat")
-            .syntax("<world> <x> <y> <z> <trigger> <script>")
+            .name("sbi createat")
+            .description("Creates script into specified location")
+            .args(Args.builder()
+                .required("world")
+                .required("x")
+                .required("y")
+                .required("z")
+                .required("trigger")
+                .required("script")
+                .build())
             .executor(this::createAt)
-            .register(commands);
+            .register(manager);
         Command.builder()
-            .sections("sbi addat")
-            .syntax("<world> <x> <y> <z> <trigger> <script>")
+            .name("sbi addat")
+            .description("Adds script into specified location")
+            .args(Args.builder()
+                .required("world")
+                .required("x")
+                .required("y")
+                .required("z")
+                .required("trigger")
+                .required("script")
+                .build())
             .executor(this::addAt)
-            .register(commands);
+            .register(manager);
         Command.builder()
-            .sections("sbi deleteat")
-            .syntax("<world> <x> <y> <z>")
+            .name("sbi deleteat")
+            .description("Deletes script into specified location")
+            .args(Args.builder()
+                .required("world")
+                .required("x")
+                .required("y")
+                .required("z")
+                .build())
             .executor(this::deleteAt)
-            .register(commands);
+            .register(manager);
         Command.builder()
-            .sections("sbi viewat")
-            .syntax("<world> <x> <y> <z>")
+            .name("sbi viewat")
+            .description("Displays information of scripts in the clicked block")
+            .args(Args.builder()
+                .required("world")
+                .required("x")
+                .required("y")
+                .required("z")
+                .build())
             .executor(this::viewAt)
-            .register(commands);
+            .register(manager);
         Command.builder()
-            .sections("sbi list")
+            .name("sbi list")
+            .description("Displays list of scripts")
             .executor((sender, args) -> list(sender))
-            .register(commands);
+            .register(manager);
         Command.builder()
-            .sections("sbi availables")
+            .name("sbi availables")
+            .description("List available options/triggers")
             .executor((sender, args) -> {
                 triggers(sender);
                 options(sender);
             })
-            .register(commands);
+            .register(manager);
         Command.builder()
-            .sections("sbi save")
-            .syntax("[fileName]")
+            .name("sbi save")
+            .description("Save scripts into specified file (or scripts.json)")
+            .args(Args.builder()
+                .optional("fileName")
+                .build())
             .executor(this::save)
-            .register(commands);
-
-        Bukkit.getPluginCommand("sbi").setExecutor(commands);
+            .register(manager);
     }
 
-    private void help(final CommandSender sender) {
-        sender.sendMessage("/sbi help - Displays this message");
-        sender.sendMessage("/sbi list - Displays list of scripts");
-        sender.sendMessage("/sbi create <trigger> <script> - Creates script in clicked block");
-        sender.sendMessage("/sbi createat <world> <x> <y> <z> <trigger> <script> - Creates script into specified location");
-        sender.sendMessage("/sbi add <trigger> <script> - Adds script in clicked block");
-        sender.sendMessage("/sbi addat <world> <x> <y> <z> <trigger> <script> - Adds script into specified location");
-        sender.sendMessage("/sbi delete - Deletes script in clicked block");
-        sender.sendMessage("/sbi deleteat <world> <x> <y> <z> - Creates script in clicked block");
-        sender.sendMessage("/sbi view - Displays information of scripts in the clicked block");
-        sender.sendMessage("/sbi viewat <world> <x> <y> <z> - Displays information of scripts in the clicked block");
-        sender.sendMessage("/sbi availables - Lists available options/triggers");
+    private void sendMessage(final CommandSender sender, final String message) {
+        sender.sendMessage(PREFIX + message);
     }
 
-    private void create(final CommandSender sender, final ExecutionArguments args) {
+    private void sendMessage(
+            final CommandSender sender,
+            final String message,
+            final Object... args) {
+        sendMessage(sender, String.format(message, args));
+    }
+
+    private void help(final CommandManager manager, final CommandSender sender) {
+        sendMessage(sender, "Usage:");
+        manager.asMap().values().forEach(command -> {
+            String args = String.format("%s", command.getArgs());
+            args = (args.isEmpty() ? "" : " ") + args;
+
+            final String message = String.format(
+                    "/%s%s - %s",
+                    command.getName(),
+                    args,
+                    command.getDescription());
+            sendMessage(sender, message);
+        });
+    }
+
+    private void create(final CommandSender sender, final ParsedArgs args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Cannot perform this command from the console");
+            sendMessage(sender, "%sCannot perform this command from the console", ChatColor.RED);
             return;
         }
         final Player player = (Player) sender;
-        player.sendMessage("Click any block to create script to the block");
+        sendMessage(sender, "Click any block to create script to the block");
         actions.add(player, new ActionCreate(args));
     }
 
-    private void add(final CommandSender sender, final ExecutionArguments args) {
+    private void add(final CommandSender sender, final ParsedArgs args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Cannot perform this command from the console");
+            sendMessage(sender, "%sCannot perform this command from the console", ChatColor.RED);
             return;
         }
         final Player player = (Player) sender;
-        player.sendMessage("Click any block to add script to the block");
+        sendMessage(sender, "Click any block to add script to the block");
         actions.add(player, new ActionAdd(args));
     }
 
-    private void delete(final CommandSender sender, final ExecutionArguments args) {
+    private void delete(final CommandSender sender, final ParsedArgs args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Cannot perform this command from the console");
+            sendMessage(sender, "%sCannot perform this command from the console", ChatColor.RED);
             return;
         }
         final Player player = (Player) sender;
-        player.sendMessage("Click any block to delete scripts from the block");
+        sendMessage(sender, "Click any block to delete scripts from the block");
         actions.add(player, new ActionDelete());
     }
 
-    private void view(final CommandSender sender, final ExecutionArguments args) {
+    private void view(final CommandSender sender, final ParsedArgs args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Cannot perform this command from the console");
+            sendMessage(sender, "%sCannot perform this command from the console", ChatColor.RED);
             return;
         }
         final Player player = (Player) sender;
-        player.sendMessage("Click any block to view information about scripts in the block");
+        sendMessage(sender, "Click any block to view information about scripts in the block");
         actions.add(player, new ActionView());
     }
 
     private void deleteAt(
             final CommandSender sender,
-            final ExecutionArguments args) {
-        final World world = args.get(World.class, sender, 0).orElse(null);
-        if (world == null) return;
-        final Integer x = args.get(Integer.class, sender, 1).orElse(null);
-        if (x == null) return;
-        final Integer y = args.get(Integer.class, sender, 2).orElse(null);
-        if (y == null) return;
-        final Integer z = args.get(Integer.class, sender, 3).orElse(null);
-        if (z == null) return;
-
-        final BlockCoordinate coordinate = new BlockCoordinate(world.getName(), x, y, z);
+            final ParsedArgs args) {
+        final BlockCoordinate coordinate = createCoordinate(args).orElse(null);
+        if (coordinate == null) {
+            return;
+        }
 
         if (scripts.contains(coordinate)) {
             scripts.removeAll(coordinate);
-            sender.sendMessage("Script(s) has been deleted");
+            sendMessage(sender, "%sScript(s) has been deleted", ChatColor.GREEN);
         } else {
-            sender.sendMessage("Script not exists");
+            sendMessage(sender, "%sScript not exists", ChatColor.RED);
         }
     }
 
     private void addAt(
             final CommandSender sender,
-            final ExecutionArguments args) {
-        final World world = args.get(World.class, sender, 0).orElse(null);
-        if (world == null) return;
-        final Integer x = args.get(Integer.class, sender, 1).orElse(null);
-        if (x == null) return;
-        final Integer y = args.get(Integer.class, sender, 2).orElse(null);
-        if (y == null) return;
-        final Integer z = args.get(Integer.class, sender, 3).orElse(null);
-        if (z == null) return;
-        final String trigger = args.get(4);
-
-        final String rawOptions = args.subArgs(5).stream()
-            .collect(Collectors.joining(" "));
-
+            final ParsedArgs args) {
+        final String trigger = args.getOrFail("trigger");
+        final String rawOptions = args.getOrFail("script");
         final Options options = Options.parse(handlers, rawOptions)
             .orElseThrow(IllegalArgumentException::new);
-        final BlockCoordinate coordinate = new BlockCoordinate(world.getName(), x, y, z);
+        final BlockCoordinate coordinate = createCoordinate(args).orElse(null);
+        if (coordinate == null) {
+            return;
+        }
         final Author author = createAuthor(sender);
 
         if (!scripts.contains(coordinate)) {
-            sender.sendMessage("Script not exists at that place. Instead use '/sbi create[at]'");
+            sendMessage(sender,
+                    "%sScript not exists at that place. Instead use '/sbi create[at]'",
+                    ChatColor.RED);
             return;
         }
 
@@ -241,32 +325,29 @@ public final class SBICommandExecutor {
                     author,
                     coordinate,
                     options));
-        sender.sendMessage("The script has been added");
+        sendMessage(
+                sender,
+                "%sThe script has been added",
+                ChatColor.RED);
     }
 
     private void createAt(
             final CommandSender sender,
-            final ExecutionArguments args) {
-        final World world = args.get(World.class, sender, 0).orElse(null);
-        if (world == null) return;
-        final Integer x = args.get(Integer.class, sender, 1).orElse(null);
-        if (x == null) return;
-        final Integer y = args.get(Integer.class, sender, 2).orElse(null);
-        if (y == null) return;
-        final Integer z = args.get(Integer.class, sender, 3).orElse(null);
-        if (z == null) return;
-        final String trigger = args.get(4);
-
-        final String rawOptions = args.subArgs(5).stream()
-            .collect(Collectors.joining(" "));
-
+            final ParsedArgs args) {
+        final String trigger = args.getOrFail("trigger");
+        final String rawOptions = args.getOrFail("script");
         final Options options = Options.parse(handlers, rawOptions)
             .orElseThrow(IllegalArgumentException::new);
-        final BlockCoordinate coordinate = new BlockCoordinate(world.getName(), x, y, z);
+        final BlockCoordinate coordinate = createCoordinate(args).orElse(null);
+        if (coordinate == null) {
+            return;
+        }
         final Author author = createAuthor(sender);
 
         if (scripts.contains(coordinate)) {
-            sender.sendMessage("Script already exists at that place. Instead use '/sbi add[at]'");
+            sendMessage(sender,
+                    "%sScript already exists at that place. Instead use '/sbi add[at]'",
+                    ChatColor.RED);
             return;
         }
 
@@ -276,7 +357,7 @@ public final class SBICommandExecutor {
                     author,
                     coordinate,
                     options));
-        sender.sendMessage("The script has been created");
+        sendMessage(sender, "%sThe script has been created", ChatColor.GREEN);
     }
 
     private Author createAuthor(final CommandSender sender) {
@@ -291,37 +372,50 @@ public final class SBICommandExecutor {
         }
     }
 
-    private void viewAt(final CommandSender sender, final ExecutionArguments args) {
-        final World world = args.get(World.class, sender, 0).orElse(null);
-        if (world == null) return;
-        final Integer x = args.get(Integer.class, sender, 1).orElse(null);
-        if (x == null) return;
-        final Integer y = args.get(Integer.class, sender, 2).orElse(null);
-        if (y == null) return;
-        final Integer z = args.get(Integer.class, sender, 3).orElse(null);
-        if (z == null) return;
-
-        final BlockCoordinate coordinate = new BlockCoordinate(world.getName(), x, y, z);
+    private void viewAt(final CommandSender sender, final ParsedArgs args) {
+        final BlockCoordinate coordinate = createCoordinate(args).orElse(null);
+        if (coordinate == null) {
+            return;
+        }
 
         if (!scripts.contains(coordinate)) {
-            sender.sendMessage("Script not exists");
+            sendMessage(sender, "%sScript not exists", ChatColor.RED);
         } else {
             scripts.get(coordinate).forEach(script -> {
-                sender.sendMessage("-----");
+                sendMessage(sender, "-----");
                 showScript(sender, script);
             });
-            sender.sendMessage("-----");
+            sendMessage(sender, "-----");
         }
     }
 
+    private Optional<BlockCoordinate> createCoordinate(final ParsedArgs args) {
+        final World world = Bukkit.getWorld(args.getOrFail("world"));
+        if (world == null) return Optional.empty();
+        final Integer x = Ints.tryParse(args.getOrFail("x"));
+        if (x == null) return Optional.empty();
+        final Integer y = Ints.tryParse(args.getOrFail("y"));
+        if (y == null) return Optional.empty();
+        final Integer z = Ints.tryParse(args.getOrFail("z"));
+        if (z == null) return Optional.empty();
+
+        return Optional.of(new BlockCoordinate(world.getName(), x, y, z));
+    }
+
     private void showScript(final CommandSender sender, final Script script) {
-        sender.sendMessage(String.format("author: %s", script.getAuthor().getName()));
-        sender.sendMessage(String.format("trigger: %s", script.getTrigger().getName()));
-        sender.sendMessage("options:");
+        sendMessage(sender,
+                "author: %s%s",
+                ChatColor.RESET,
+                script.getAuthor().getName());
+        sendMessage(sender,
+                "trigger: %s%s",
+                ChatColor.RESET,
+                script.getTrigger().getName());
+        sendMessage(sender, "options:");
         script.getOptions().forEach(option -> {
-            sender.sendMessage(String.format("  %s: ", option.getName().getName()));
+            sendMessage(sender, "  %s: ", option.getName().getName());
             option.getArguments().getView().forEach((key, value) -> {
-                sender.sendMessage(String.format("    %s: %s", key, value));
+                sendMessage(sender, "    %s: %s", key, value);
             });
         });
     }
@@ -331,48 +425,49 @@ public final class SBICommandExecutor {
         Collections.sort(coordinates);
         int count = 0;
         for (final BlockCoordinate coordinate : coordinates) {
-            sender.sendMessage(String.format(
+            sendMessage(sender,
                         "[%s] %s/%s/%s/%s",
                         ++count,
                         coordinate.getWorld(),
                         coordinate.getX(),
                         coordinate.getY(),
-                        coordinate.getZ()));
+                        coordinate.getZ());
         }
     }
 
     private void options(final CommandSender sender) {
         final ImmutableSet<OptionName> names = handlers.names();
         if (names.isEmpty()) {
-            sender.sendMessage("No available options exist");
+            sendMessage(sender, "No available options exist");
         } else {
-            sender.sendMessage("Available options:");
-            names.forEach(optionName -> sender.sendMessage("  " + optionName.getName()));
+            sendMessage(sender, "Available options:");
+            names.forEach(optionName -> sendMessage(sender, "  " + optionName.getName()));
         }
     }
 
     private void triggers(final CommandSender sender) {
         final ImmutableList<Trigger> triggers = this.triggers.getTriggers();
         if (triggers.isEmpty()) {
-            sender.sendMessage("No available triggers exist");
+            sendMessage(sender, "No available triggers exist");
         } else {
-            sender.sendMessage("Available triggers:");
-            triggers.forEach(trigger -> sender.sendMessage("  " + trigger.getName()));
+            sendMessage(sender, "Available triggers:");
+            triggers.forEach(trigger -> sendMessage(sender, "  " + trigger.getName()));
         }
     }
 
-    private void save(final CommandSender sender, final ExecutionArguments args) {
-        final String fileName = args.getOrDefault(0, "scripts.json");
+    private void save(final CommandSender sender, final ParsedArgs args) {
+        final String fileName = args.get("fileName").orElse("scripts.json");
         final boolean canOverwrite = fileName.equals("scripts.json");
 
-        sender.sendMessage(String.format(
-                    "Saving scripts into '/ScriptBlock-Improved/%s'", fileName));
+        sendMessage(sender,
+                "Saving scripts into '/ScriptBlock-Improved/%s'",
+                fileName);
         new Thread(() -> {
             try {
                 ScriptSerializer.serialize(dataFolder.resolve(fileName), scripts, canOverwrite);
-                sender.sendMessage("Successfully saved");
+                sendMessage(sender, "%sSuccessfully saved", ChatColor.GREEN);
             } catch (final IOException e) {
-                sender.sendMessage("Save failed!");
+                sendMessage(sender, "%sSave failed!", ChatColor.RED);
             }
         }, "sbi-command-sbi_save").start();
     }

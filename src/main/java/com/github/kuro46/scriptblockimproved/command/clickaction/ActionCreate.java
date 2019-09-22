@@ -1,16 +1,15 @@
 package com.github.kuro46.scriptblockimproved.command.clickaction;
 
-import com.github.kuro46.scriptblockimproved.command.handler.ExecutionArguments;
+import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import com.github.kuro46.scriptblockimproved.script.BlockCoordinate;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import org.bukkit.entity.Player;
 
 public final class ActionCreate implements Action {
 
-    private final ExecutionArguments args;
+    private final ParsedArgs args;
 
-    public ActionCreate(final ExecutionArguments args) {
+    public ActionCreate(final ParsedArgs args) {
         this.args = Objects.requireNonNull(args, "'args' cannot be null");
     }
 
@@ -21,6 +20,7 @@ public final class ActionCreate implements Action {
                     coordinate.getX(),
                     coordinate.getY(),
                     coordinate.getZ(),
-                    args.stream().collect(Collectors.joining(" "))));
+                    args.getOrFail("trigger"),
+                    args.getOrFail("script")));
     }
 }
