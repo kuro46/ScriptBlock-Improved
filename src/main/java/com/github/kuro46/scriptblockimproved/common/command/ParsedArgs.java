@@ -6,6 +6,25 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * A representation of parsed args
+ * <p>
+ * <pre>{@code
+ * Args args = Args.builder()
+ *     .required("first")
+ *     .optional("second")
+ *     .build();
+ * ParsedArgs parsed = args.parse(Arrays.asList("foo"));
+ *
+ * parsed.getOrFail("second"); // => throws IllegalArgumentException
+ * parsed.getOrNull("second"); // => null
+ * parsed.get("second"); // => Optional.empty()
+ *
+ * parsed.getOrNull("first"); // => "first"
+ * parsed.getOrFail("first"); // => "first"
+ * parsed.get("first").get(); // => "first"
+ * }</pre>
+ */
 public final class ParsedArgs {
 
     private final ImmutableMap<ArgName, String> args;

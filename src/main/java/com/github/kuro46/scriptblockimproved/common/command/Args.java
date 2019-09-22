@@ -16,6 +16,27 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * List of arguments.
+ * <p>
+ * <pre>{@code
+ * Args args = Args.builder()
+ *     .required("reqArg1")
+ *     .required("reqArg2")
+ *     .optional("optArg1")
+ *     .build();
+ * assertEquals(String.format("%s", args), "<reqArg1> <reqArg2> [optArg1]");
+ *
+ * Optional<ParsedArgs> parsed = args.parse(Arrays.asList("foo", "bar", "2000"));
+ * assertTrue(parsed.isPresent());
+ *
+ * Optional<ParsedArgs> parsed = args.parse(Arrays.asList("foo", "bar"));
+ * assertTrue(parsed.isPresent());
+ *
+ * Optional<ParsedArgs> parsed = args.parse(Arrays.asList("foo"));
+ * assertFalse(parsed.isPresent());
+ * }</pre>
+ */
 public final class Args implements Formattable {
 
     private static final Args EMPTY = new Args(ImmutableList.of());

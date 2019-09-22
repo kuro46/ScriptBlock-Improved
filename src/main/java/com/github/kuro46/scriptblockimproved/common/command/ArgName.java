@@ -5,6 +5,15 @@ import java.util.Formattable;
 import java.util.Formatter;
 import java.util.Objects;
 
+/**
+ * Name of an argument.
+ * <p>
+ * <pre>{@code
+ * ArgName name1 = ArgName.of("Argument Name");
+ * ArgName name2 = ArgName.of("argument name");
+ * assertEquals(name1, name2);
+ * }</pre>
+ */
 public final class ArgName implements Formattable {
 
     private final String name;
@@ -24,6 +33,15 @@ public final class ArgName implements Formattable {
     }
 
     @Override
+    public void formatTo(
+            final Formatter formatter,
+            final int flags,
+            final int width,
+            final int precision) {
+        formatter.format("%s", name);
+    }
+
+    @Override
     public boolean equals(final Object other) {
         if (!(other instanceof ArgName)) {
             return false;
@@ -31,15 +49,6 @@ public final class ArgName implements Formattable {
         final ArgName castedOther = (ArgName) other;
 
         return name.equals(castedOther.name);
-    }
-
-    @Override
-    public void formatTo(
-            final Formatter formatter,
-            final int flags,
-            final int width,
-            final int precision) {
-        formatter.format("%s", name);
     }
 
     @Override
