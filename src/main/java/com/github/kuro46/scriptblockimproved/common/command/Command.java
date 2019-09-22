@@ -4,6 +4,21 @@ import com.google.common.base.MoreObjects;
 import java.util.Objects;
 import org.bukkit.command.CommandSender;
 
+/**
+ * <pre>{@code
+ * Command.builder()
+ *     .name("foo bar")
+ *     .description("Description of '/foo bar'")
+ *     .args(Args.builder()
+ *         .required("arg1")
+ *         .optional("arg2")
+ *         .build())
+ *     .executor((sender, args) -> {
+ *         sender.sendMessage(String.format("arg1: %s arg2: %s", arg1, arg2));
+ *     })
+ *     .register(manager);
+ * }</pre>
+ */
 public final class Command {
 
     private final CommandName name;
@@ -17,6 +32,7 @@ public final class Command {
             final Executor executor) {
         this(name, args, executor, null);
     }
+
     public Command(
             final CommandName name,
             final Args args,
