@@ -42,7 +42,6 @@ public final class ScriptBlockImproved {
     private final Placeholders placeholders = new Placeholders();
     private final Actions actions = new Actions();
 
-    private final ScriptExecutor scriptExecutor;
     private final ScriptAutoSaver scriptAutoSaver;
     private final Path scriptsPath;
     private final Triggers triggers;
@@ -57,9 +56,8 @@ public final class ScriptBlockImproved {
             this.scriptsPath = initScriptsPath();
             this.scripts = loadScripts();
             this.triggers = new Triggers(plugin);
-            this.scriptExecutor = new ScriptExecutor(
+            new ScriptExecutor(
                     placeholders,
-                    plugin,
                     scripts,
                     optionHandlers,
                     triggers);

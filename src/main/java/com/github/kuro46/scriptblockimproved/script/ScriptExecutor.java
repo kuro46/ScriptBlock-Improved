@@ -10,27 +10,22 @@ import com.github.kuro46.scriptblockimproved.script.trigger.Trigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.Triggers;
 import java.util.Objects;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 public final class ScriptExecutor {
 
     private final Placeholders placeholders;
     private final OptionHandlers handlers;
     private final Scripts scripts;
-    private final Triggers triggers;
-    private final Plugin plugin;
 
     public ScriptExecutor(
             final Placeholders placeholders,
-            final Plugin plugin,
             final Scripts scripts,
             final OptionHandlers handlers,
             final Triggers triggers) {
         this.placeholders = Objects.requireNonNull(placeholders, "'placeholders' cannot be null");
-        this.plugin = Objects.requireNonNull(plugin, "'plugin' cannot be null");
         this.scripts = Objects.requireNonNull(scripts, "'scripts' cannot be null");
         this.handlers = Objects.requireNonNull(handlers, "'handlers' cannot be null");
-        this.triggers = Objects.requireNonNull(triggers, "'triggers' cannot be null");
+        Objects.requireNonNull(triggers, "'triggers' cannot be null");
 
         triggers.addListener((trigger, event, player, coordinate) -> {
             execute(trigger, player, coordinate);

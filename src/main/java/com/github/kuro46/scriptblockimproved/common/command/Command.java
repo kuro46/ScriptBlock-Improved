@@ -110,7 +110,7 @@ public final class Command {
 
         public Command build() {
             final Command command = new Command(section, handler, description);
-            children.forEach(child -> command.addChild(child));
+            children.forEach(command::addChild);
             return command;
         }
 

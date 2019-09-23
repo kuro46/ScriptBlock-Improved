@@ -21,7 +21,6 @@ import com.github.kuro46.scriptblockimproved.script.option.OptionHandlers;
 import com.github.kuro46.scriptblockimproved.script.trigger.Triggers;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
