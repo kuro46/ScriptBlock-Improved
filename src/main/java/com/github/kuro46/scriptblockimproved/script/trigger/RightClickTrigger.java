@@ -35,7 +35,7 @@ public final class RightClickTrigger implements Trigger {
         updateExecutionTime(player, executionTime);
 
         final Action action = interactEvent.getAction();
-        if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+        if (action == Action.RIGHT_CLICK_BLOCK) {
             return EventValidateResult.valid(new EventData(
                 BlockCoordinate.fromLocation(interactEvent.getClickedBlock().getLocation()),
                 player));
