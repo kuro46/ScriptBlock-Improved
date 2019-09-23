@@ -1,6 +1,6 @@
 package com.github.kuro46.scriptblockimproved;
 
-import com.github.kuro46.scriptblockimproved.command.SBICommandExecutor;
+import com.github.kuro46.scriptblockimproved.command.SBICommand;
 import com.github.kuro46.scriptblockimproved.command.clickaction.ActionExecutor;
 import com.github.kuro46.scriptblockimproved.command.clickaction.Actions;
 import com.github.kuro46.scriptblockimproved.script.ScriptExecutor;
@@ -71,7 +71,7 @@ public final class ScriptBlockImproved {
             registerAsService();
             registerOptionHandlers();
             registerTriggers();
-            registerCommandExecutor();
+            registerCommands();
             registerListeners();
             registerScriptsListeners();
             registerPlaceholders();
@@ -177,8 +177,8 @@ public final class ScriptBlockImproved {
         triggers.register(new PressTrigger());
     }
 
-    private void registerCommandExecutor() {
-        new SBICommandExecutor(
+    private void registerCommands() {
+        SBICommand.register(
                 actions,
                 scripts,
                 optionHandlers,

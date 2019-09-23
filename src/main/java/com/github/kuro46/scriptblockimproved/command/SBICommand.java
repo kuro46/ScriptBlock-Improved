@@ -25,26 +25,17 @@ import java.util.Objects;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class SBICommandExecutor {
+public final class SBICommand {
 
-    private final Actions actions;
-    private final Scripts scripts;
-    private final OptionHandlers handlers;
-    private final Triggers triggers;
-    private final Path dataFolder;
+    private SBICommand() {
+    }
 
-    public SBICommandExecutor(
+    public static void register(
         final Actions actions,
         final Scripts scripts,
         final OptionHandlers handlers,
         final Triggers triggers,
         final Path dataFolder) {
-
-        this.actions = Objects.requireNonNull(actions, "'actions' cannot be null");
-        this.scripts = Objects.requireNonNull(scripts, "'scripts' cannot be null");
-        this.handlers = Objects.requireNonNull(handlers, "'handlers' cannot be null");
-        this.triggers = Objects.requireNonNull(triggers, "'triggers' cannot be null");
-        this.dataFolder = Objects.requireNonNull(dataFolder, "'dataFolder' cannot be null");
 
         final Command root = Command.builder()
             .section("sbi")
