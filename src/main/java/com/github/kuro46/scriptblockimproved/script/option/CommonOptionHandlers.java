@@ -183,7 +183,7 @@ public final class CommonOptionHandlers {
             final PermissionAttachment attachment = player.addAttachment(plugin);
             try {
                 attachment.setPermission(args.getOrFail("permission"), true);
-                player.performCommand(args.getOrFail("command"));
+                player.performCommand(removeSlashIfNeeded(args.getOrFail("command")));
             } finally {
                 attachment.remove();
             }
