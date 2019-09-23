@@ -15,7 +15,7 @@ public final class ActionCreate implements Action {
 
     @Override
     public void action(final Player player, final BlockCoordinate coordinate) {
-        player.performCommand(String.format("sbi createat %s %s %s %s %s",
+        player.performCommand(String.format("sbi createat %s %s %s %s %s %s",
                     coordinate.getWorld(),
                     coordinate.getX(),
                     coordinate.getY(),
