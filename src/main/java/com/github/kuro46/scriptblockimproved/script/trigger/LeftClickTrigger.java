@@ -35,7 +35,7 @@ public final class LeftClickTrigger implements Trigger {
         updateExecutionTime(player, executionTime);
 
         final Action action = interactEvent.getAction();
-        if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
+        if (action == Action.LEFT_CLICK_BLOCK) {
             return EventValidateResult.valid(new EventData(
                 BlockCoordinate.fromLocation(interactEvent.getClickedBlock().getLocation()),
                 player));
