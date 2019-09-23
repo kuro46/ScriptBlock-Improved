@@ -1,12 +1,11 @@
 package com.github.kuro46.scriptblockimproved.command.handlers;
 
-import com.github.kuro46.scriptblockimproved.common.ListUtils;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
+import com.github.kuro46.scriptblockimproved.common.command.Command;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
 import com.github.kuro46.scriptblockimproved.common.command.CommandManager;
 import com.github.kuro46.scriptblockimproved.common.command.CommandSection;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -34,10 +33,9 @@ public final class SBIHandler extends CommandHandler {
             Bukkit.dispatchCommand(sender, "sbi help");
         } else {
             sendMessage(sender, "Unknown command. Available commands:");
-            final String subCommands = manager.asMap().keySet().stream()
-                .map(name -> ListUtils.get(name.asSections(), 1))
-                .filter(section -> section.isPresent())
-                .map(Optional::get)
+            final String subCommands = manager.asMap().values().stream()
+                .flatMap(root -> root.getChildren().values().stream())
+                .map(Command::getSection)
                 .map(CommandSection::getName)
                 .collect(Collectors.joining(", "));
             sendMessage(sender, subCommands);

@@ -1,5 +1,6 @@
 package com.github.kuro46.scriptblockimproved.common.command;
 
+import com.github.kuro46.scriptblockimproved.common.tuple.Pair;
 import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,20 +15,19 @@ import org.bukkit.command.CommandSender;
 
 public final class CommandManager {
 
-    private final Map<CommandName, Command> commands = new LinkedHashMap<>();
+    private final Map<CommandSection, Command> commands = new LinkedHashMap<>();
     private final List<ErrorHandler> errorHandlers = new ArrayList<>();
     private final ExecutorImpl executor = new ExecutorImpl();
 
     public void registerCommand(final Command command) {
-        final Command prev = commands.put(command.getName(), command);
+        final Command prev = commands.put(command.getSection(), command);
 
         if (prev == null) {
-            final String firstSecName = command.getName().asSections().get(0).getName();
-            Bukkit.getPluginCommand(firstSecName).setExecutor(executor);
+            Bukkit.getPluginCommand(command.getSection().getName()).setExecutor(executor);
         }
     }
 
-    public ImmutableMap<CommandName, Command> asMap() {
+    public ImmutableMap<CommandSection, Command> asMap() {
         return ImmutableMap.copyOf(commands);
     }
 
@@ -35,20 +35,25 @@ public final class CommandManager {
         errorHandlers.add(handler);
     }
 
-    private Optional<Command> findCommand(final List<CommandSection> sections) {
-        final List<CommandSection> building = new ArrayList<>();
-
+    private Optional<Pair<Command, Integer>> findCommand(final List<CommandSection> sections) {
+        int nest = 0;
         Command command = null;
         for (final CommandSection section : sections) {
-            building.add(section);
+            final Command retrieved = command == null
+                ? commands.get(section)
+                : command.getChild(section).orElse(null);
 
-            final Command retrieved = commands.get(CommandName.fromSections(building));
-            if (retrieved != null) {
-                command = retrieved;
+            if (retrieved == null) {
+                break;
             }
+
+            nest++;
+            command = retrieved;
         }
 
-        return Optional.ofNullable(command);
+        return command == null
+            ? Optional.empty()
+            : Optional.of(Pair.of(command, nest));
     }
 
     private void onCommand(
@@ -62,16 +67,19 @@ public final class CommandManager {
             }
         };
 
-        final Command command = findCommand(stringSections.stream()
+        final Pair<Command, Integer> result = findCommand(stringSections.stream()
                 .map(CommandSection::new)
                 .collect(Collectors.toList())).orElse(null);
-        if (command == null) {
+        if (result == null) {
             errorHandlers.forEach(handler -> handler.onUnknownCommand(sender, stringSections));
             return;
         }
 
+        final Command command = result.left();
+        final int nest = result.right();
+
         final List<String> trimmedArgs = stringSections.subList(
-                command.getName().asSections().size(),
+                nest,
                 stringSections.size());
 
         final ParsedArgs parsedArgs =

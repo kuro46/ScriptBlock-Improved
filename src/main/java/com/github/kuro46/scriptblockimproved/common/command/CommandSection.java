@@ -1,37 +1,20 @@
 package com.github.kuro46.scriptblockimproved.common.command;
 
-import com.google.common.base.MoreObjects;
 import java.util.Objects;
 
-/**
- * Section of command<br>
- *
- * <pre>
- * /section1 sections2 sections3...
- * </pre>
- */
 public final class CommandSection {
 
-    /**
-     * Name of this section
-     */
     private final String name;
 
-    /**
-     * Constructs a section
-     *
-     * @param name Name of this section
-     */
     public CommandSection(final String name) {
         this.name = Objects.requireNonNull(name, "'name' cannot be null")
             .toLowerCase();
     }
 
-    /**
-     * Returns name of this section
-     *
-     * @return Name of this section
-     */
+    public static CommandSection of(final String name) {
+        return new CommandSection(name);
+    }
+
     public String getName() {
         return name;
     }
@@ -53,8 +36,6 @@ public final class CommandSection {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("name", name)
-            .toString();
+        return name;
     }
 }

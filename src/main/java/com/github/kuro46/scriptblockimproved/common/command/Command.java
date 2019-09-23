@@ -1,42 +1,33 @@
 package com.github.kuro46.scriptblockimproved.common.command;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
-/**
- * <pre>{@code
- * Command.builder()
- *     .name("foo bar")
- *     .description("Description of '/foo bar'")
- *     .handler(CommandHandler.builder()
- *         .args(Args.builder()
- *             .required("arg1")
- *             .optional("arg2")
- *             .build())
- *         .executor((sender, args) -> {
- *             sender.sendMessage(String.format("arg1: %s arg2: %s", arg1, arg2));
- *         })
- *         .build();
- *     .register(manager);
- * }</pre>
- */
 public final class Command {
 
-    private final CommandName name;
+    private final Map<CommandSection, Command> children = new LinkedHashMap<>();
+
+    private final CommandSection section;
     private final String description;
     private final CommandHandler handler;
 
     public Command(
-            final CommandName name,
+            final CommandSection section,
             final CommandHandler handler) {
-        this(name, handler, null);
+        this(section, handler, null);
     }
 
     public Command(
-            final CommandName name,
+            final CommandSection section,
             final CommandHandler handler,
             final String description) {
-        this.name = Objects.requireNonNull(name, "'name' cannot be null");
+        this.section = Objects.requireNonNull(section, "'section' cannot be null");
         this.handler = Objects.requireNonNull(handler, "'handler' cannot be null");
         this.description = description;
     }
@@ -45,8 +36,8 @@ public final class Command {
         return new Builder();
     }
 
-    public CommandName getName() {
-        return name;
+    public CommandSection getSection() {
+        return section;
     }
 
     public String getDescription() {
@@ -57,10 +48,23 @@ public final class Command {
         return handler;
     }
 
+    public void addChild(final Command command) {
+        children.put(command.getSection(), command);
+    }
+
+    public Optional<Command> getChild(final CommandSection section) {
+        return Optional.ofNullable(children.get(section));
+    }
+
+    public ImmutableMap<CommandSection, Command> getChildren() {
+        return ImmutableMap.copyOf(children);
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("name", name)
+            .add("children", children)
+            .add("section", section)
             .add("handler", handler)
             .add("description", description)
             .toString();
@@ -68,18 +72,20 @@ public final class Command {
 
     public static class Builder {
 
-        private CommandName name;
+        private final List<Command> children = new ArrayList<>();
+
+        private CommandSection section;
         private String description;
         private CommandHandler handler;
 
-        public Builder name(final CommandName name) {
-            this.name = name;
+        public Builder section(final CommandSection section) {
+            this.section = section;
 
             return this;
         }
 
-        public Builder name(final String name) {
-            this.name = CommandName.of(name);
+        public Builder section(final String section) {
+            this.section = CommandSection.of(section);
 
             return this;
         }
@@ -96,12 +102,26 @@ public final class Command {
             return this;
         }
 
+        public Builder child(final Command command) {
+            children.add(command);
+
+            return this;
+        }
+
         public Command build() {
-            return new Command(name, handler, description);
+            final Command command = new Command(section, handler, description);
+            children.forEach(child -> command.addChild(child));
+            return command;
         }
 
         public void register(final CommandManager manager) {
             manager.registerCommand(build());
+        }
+
+        public void childOf(final Command command) {
+            Objects.requireNonNull(command, "'command' cannot be null");
+
+            command.addChild(build());
         }
     }
 }
