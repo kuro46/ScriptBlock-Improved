@@ -3,6 +3,9 @@ package com.github.kuro46.scriptblockimproved.script.author;
 import com.google.gson.JsonObject;
 import java.util.Objects;
 import java.util.UUID;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 
 public final class Author {
 
@@ -22,6 +25,18 @@ public final class Author {
 
     public static Author console() {
         return new Author(ConsoleAuthorData.getInstance());
+    }
+
+    public static Author fromCommandSender(final CommandSender sender) {
+        if (sender instanceof Player) {
+            final Player player = (Player) sender;
+            return Author.player(player.getName(), player.getUniqueId());
+        } else if (sender instanceof ConsoleCommandSender) {
+            return Author.console();
+        } else {
+            throw new IllegalArgumentException(
+                    String.format("Unknown CommandSender: %s", sender.getClass()));
+        }
     }
 
     public static Author fromJson(final JsonObject json) {

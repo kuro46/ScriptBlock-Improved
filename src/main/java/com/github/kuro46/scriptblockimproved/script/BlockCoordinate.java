@@ -1,8 +1,11 @@
 package com.github.kuro46.scriptblockimproved.script;
 
+import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import com.google.common.base.MoreObjects;
+import com.google.common.primitives.Ints;
 import com.google.gson.JsonObject;
 import java.util.Objects;
+import java.util.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -22,6 +25,19 @@ public final class BlockCoordinate implements Comparable<BlockCoordinate> {
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    public static Optional<BlockCoordinate> fromArgs(final ParsedArgs args) {
+        final World world = Bukkit.getWorld(args.getOrFail("world"));
+        if (world == null) return Optional.empty();
+        final Integer x = Ints.tryParse(args.getOrFail("x"));
+        if (x == null) return Optional.empty();
+        final Integer y = Ints.tryParse(args.getOrFail("y"));
+        if (y == null) return Optional.empty();
+        final Integer z = Ints.tryParse(args.getOrFail("z"));
+        if (z == null) return Optional.empty();
+
+        return Optional.of(new BlockCoordinate(world.getName(), x, y, z));
     }
 
     public static BlockCoordinate fromLocation(final Location location) {

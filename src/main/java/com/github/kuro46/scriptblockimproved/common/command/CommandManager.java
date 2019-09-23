@@ -74,13 +74,14 @@ public final class CommandManager {
                 command.getName().asSections().size(),
                 stringSections.size());
 
-        final ParsedArgs parsedArgs = command.getArgs().parse(trimmedArgs).orElse(null);
+        final ParsedArgs parsedArgs =
+            command.getHandler().getArgs().parse(trimmedArgs).orElse(null);
         if (parsedArgs == null) {
             errorHandlers.forEach(handler -> handler.onParseFailed(sender, command));
             return;
         }
 
-        command.getExecutor().execute(sender, parsedArgs);
+        command.getHandler().execute(this, sender, parsedArgs);
     }
 
     public interface ErrorHandler {
