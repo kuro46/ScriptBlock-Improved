@@ -9,7 +9,7 @@ plugins {
 def spotbugsVer = '3.1.12'
 
 group = 'com.github.kuro46'
-version = '0.2.1'
+version = '0.3.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
