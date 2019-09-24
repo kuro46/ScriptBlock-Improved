@@ -1,5 +1,6 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '5.1.0'
+    id "net.ltgt.errorprone" version "0.8.1"
     id "com.github.spotbugs" version "2.0.0"
     id 'checkstyle'
     id 'maven'
@@ -25,11 +26,18 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     // Guava
     implementation 'com.google.guava:guava:28.1-jre'
+    // ErrorProne
+    errorprone("com.google.errorprone:error_prone_core:2.+")
+    errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << "-Xlint:all" << "-Werror"
 }
 
 processResources {
