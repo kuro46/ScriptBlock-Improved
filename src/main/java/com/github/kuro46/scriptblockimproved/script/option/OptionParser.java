@@ -99,6 +99,7 @@ public final class OptionParser {
         }
     }
 
+    @SuppressWarnings("serial")
     private static final class ParseException extends RuntimeException {
     }
 }

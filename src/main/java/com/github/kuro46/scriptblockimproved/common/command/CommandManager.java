@@ -1,6 +1,7 @@
 package com.github.kuro46.scriptblockimproved.common.command;
 
 import com.github.kuro46.scriptblockimproved.common.tuple.Pair;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,12 +61,10 @@ public final class CommandManager {
             final CommandSender sender,
             final String rootName,
             final List<String> args) {
-        final List<String> stringSections = new ArrayList<String>() {
-            {
-                add(rootName);
-                addAll(args);
-            }
-        };
+        final List<String> stringSections = new ImmutableList.Builder<String>()
+            .add(rootName)
+            .addAll(args)
+            .build();
 
         final Pair<Command, Integer> result = findCommand(stringSections.stream()
                 .map(CommandSection::new)
