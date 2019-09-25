@@ -18,7 +18,6 @@ import com.github.kuro46.scriptblockimproved.script.trigger.PressTrigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.RightClickTrigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.Triggers;
 import com.google.common.base.Stopwatch;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -81,7 +80,6 @@ public final class ScriptBlockImproved {
         }
     }
 
-    @SuppressFBWarnings("LI_LAZY_INIT_STATIC") // This method always called by primary thread
     static void initialize(final Initializer initializer) {
         if (!Bukkit.isPrimaryThread()) {
             throw new IllegalStateException("This method must be called by primary thread");
