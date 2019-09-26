@@ -9,6 +9,7 @@ import com.github.kuro46.scriptblockimproved.script.option.placeholder.Placehold
 import com.github.kuro46.scriptblockimproved.script.trigger.Trigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.Triggers;
 import java.util.Objects;
+import lombok.NonNull;
 import org.bukkit.entity.Player;
 
 public final class ScriptExecutor {
@@ -17,7 +18,7 @@ public final class ScriptExecutor {
     private final OptionHandlers handlers;
     private final Scripts scripts;
 
-    public ScriptExecutor(
+    private ScriptExecutor(
             final Placeholders placeholders,
             final Scripts scripts,
             final OptionHandlers handlers,
@@ -30,6 +31,14 @@ public final class ScriptExecutor {
         triggers.addListener((trigger, event, player, coordinate) -> {
             execute(trigger, player, coordinate);
         });
+    }
+
+    public static ScriptExecutor init(
+            @NonNull final Placeholders placeholders,
+            @NonNull final Scripts scripts,
+            @NonNull final OptionHandlers handlers,
+            @NonNull final Triggers triggers) {
+        return new ScriptExecutor(placeholders, scripts, handlers, triggers);
     }
 
     private void execute(

@@ -76,8 +76,7 @@ public final class ScriptSerializer {
         final JsonObject root = gson().fromJson(reader, JsonObject.class);
         final Meta meta = Meta.fromJson(root.getAsJsonObject("meta"));
         if (!meta.getVersion().equals(FORMAT_VERSION)) {
-            throw new UnsupportedVersionException(
-                    String.format("Unsupported format version: %s", meta.getVersion()));
+            throw new UnsupportedVersionException(meta.getVersion());
         }
 
         return Scripts.fromJson(root.getAsJsonArray("scripts"));

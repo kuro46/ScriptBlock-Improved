@@ -17,18 +17,18 @@ import com.github.kuro46.scriptblockimproved.script.trigger.MoveTrigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.PressTrigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.RightClickTrigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.Triggers;
-import com.google.common.base.Stopwatch;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.Getter;
+import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
@@ -41,46 +41,46 @@ public final class ScriptBlockImproved {
     private final Placeholders placeholders = new Placeholders();
     private final Actions actions = new Actions();
 
+    @NonNull
     private final ScriptAutoSaver scriptAutoSaver;
+    @NonNull
+    @Getter
     private final Path scriptsPath;
+    @Getter
+    @NonNull
     private final Triggers triggers;
+    @Getter
+    @NonNull
     private final Plugin plugin;
+    @Getter
+    @NonNull
     private final Scripts scripts;
+    @Getter
+    @NonNull
+    private final Path dataFolder;
+    @Getter
+    @NonNull
+    private final Logger logger;
 
-    private ScriptBlockImproved(final Initializer plugin) {
-        try {
-            final Stopwatch stopwatch = Stopwatch.createStarted();
-
-            this.plugin = plugin;
-            this.scriptsPath = initScriptsPath();
-            this.scripts = loadScripts();
-            this.triggers = new Triggers(plugin);
-            new ScriptExecutor(
-                    placeholders,
-                    scripts,
-                    optionHandlers,
-                    triggers);
-            this.scriptAutoSaver = new ScriptAutoSaver(
-                    plugin.getLogger(),
-                    scripts,
-                    plugin.getDataFolder().toPath().resolve("scripts.json"));
-
-            registerAsService();
-            registerOptionHandlers();
-            registerTriggers();
-            registerCommands();
-            registerListeners();
-            registerScriptsListeners();
-            registerPlaceholders();
-
-            stopwatch.stop();
-            plugin.getLogger().info(String.format("Enabled (took %s)", stopwatch));
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to initialize the plugin", e);
-        }
+    private ScriptBlockImproved(@NonNull final Initializer plugin) throws IOException {
+        this.plugin = plugin;
+        this.dataFolder = plugin.getDataFolder().toPath();
+        this.logger = plugin.getLogger();
+        this.scriptsPath = initScriptsPath();
+        this.scripts = loadScripts();
+        this.triggers = new Triggers(plugin);
+        this.scriptAutoSaver = new ScriptAutoSaver();
+        initExecutor();
+        registerAsService();
+        registerOptionHandlers();
+        registerTriggers();
+        registerCommands();
+        registerListeners();
+        registerScriptsListeners();
+        registerPlaceholders();
     }
 
-    static void initialize(final Initializer initializer) {
+    static void initialize(@NonNull final Initializer initializer) throws IOException {
         if (!Bukkit.isPrimaryThread()) {
             throw new IllegalStateException("This method must be called by primary thread");
         }
@@ -88,6 +88,10 @@ public final class ScriptBlockImproved {
             throw new IllegalStateException("The plugin is already initialized");
         }
         instance = new ScriptBlockImproved(initializer);
+    }
+
+    static boolean isInitialized() {
+        return instance != null;
     }
 
     static void dispose() {
@@ -98,7 +102,6 @@ public final class ScriptBlockImproved {
             throw new IllegalStateException("The plugin is not initialized now");
         }
         instance.disposeInternal();
-
         instance = null;
     }
 
@@ -106,24 +109,16 @@ public final class ScriptBlockImproved {
         scriptAutoSaver.shutdown();
     }
 
-    public OptionHandlers getOptionHandlers() {
-        return optionHandlers;
-    }
-
-    public Triggers getTriggers() {
-        return triggers;
-    }
-
-    public Scripts getScripts() {
-        return scripts;
-    }
-
-    public Placeholders getPlaceholders() {
-        return placeholders;
+    private void initExecutor() {
+        ScriptExecutor.init(
+                placeholders,
+                scripts,
+                optionHandlers,
+                triggers);
     }
 
     private Path initScriptsPath() throws IOException {
-        final Path path = plugin.getDataFolder().toPath().resolve("scripts.json");
+        final Path path = dataFolder.resolve("scripts.json");
         if (Files.notExists(path)) {
             final Path parent = path.getParent();
             if (parent == null) {
@@ -136,12 +131,10 @@ public final class ScriptBlockImproved {
     }
 
     private Scripts loadScripts() throws IOException {
-        if (Files.size(scriptsPath) == 0) {
-            return new Scripts();
-        }
-        try (BufferedReader reader = Files.newBufferedReader(scriptsPath)) {
+        if (Files.size(scriptsPath) == 0) return new Scripts();
+        try (final BufferedReader reader = Files.newBufferedReader(scriptsPath)) {
             return ScriptSerializer.deserialize(reader);
-        } catch (IOException | UnsupportedVersionException e) {
+        } catch (final IOException | UnsupportedVersionException e) {
             throw new RuntimeException("Failed to load scripts", e);
         }
     }
@@ -179,7 +172,7 @@ public final class ScriptBlockImproved {
                 scripts,
                 optionHandlers,
                 triggers,
-                plugin.getDataFolder().toPath());
+                dataFolder);
     }
 
     private void registerPlaceholders() {
@@ -187,35 +180,24 @@ public final class ScriptBlockImproved {
         placeholders.add(new WorldPlaceholder());
     }
 
-    private static class ScriptAutoSaver {
+    private class ScriptAutoSaver {
 
         private final ScheduledExecutorService executor =
             Executors.newSingleThreadScheduledExecutor(r -> {
                 return new Thread(r, "script-auto-save-thread");
             });
-        private final Logger logger;
-        private final Scripts scripts;
-        private final Path path;
 
         private ScheduledFuture<?> scheduled;
 
-        public ScriptAutoSaver(final Logger logger, final Scripts scripts, final Path path) {
-            this.scripts = Objects.requireNonNull(scripts, "'scripts' cannot be null");
-            this.logger = Objects.requireNonNull(logger, "'logger' cannot be null");
-            this.path = Objects.requireNonNull(path, "'path' cannot be null");
-        }
-
         public void saveLater() {
-            if (scheduled != null) {
-                scheduled.cancel(false);
-            }
+            if (scheduled != null) scheduled.cancel(false);
             scheduled = schedule();
         }
 
         private ScheduledFuture<?> schedule() {
             return executor.schedule(() -> {
                 try {
-                    ScriptSerializer.serialize(path, scripts, true);
+                    ScriptSerializer.serialize(dataFolder.resolve("scripts.json"), scripts, true);
                 } catch (IOException e) {
                     logger.log(Level.SEVERE,
                             "Failed to save scripts. Type '/sbi save' for save scripts manually.",
