@@ -1,25 +1,33 @@
 package com.github.kuro46.scriptblockimproved.script;
 
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
-import com.google.common.base.MoreObjects;
 import com.google.common.primitives.Ints;
 import com.google.gson.JsonObject;
 import java.util.Objects;
 import java.util.Optional;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.ToString;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+@EqualsAndHashCode
+@ToString
 public final class BlockPosition implements Comparable<BlockPosition> {
 
+    @Getter
+    @NonNull
     private final String world;
+    @Getter
     private final int x;
+    @Getter
     private final int y;
+    @Getter
     private final int z;
 
-    public BlockPosition(final String world, final int x, final int y, final int z) {
-        Objects.requireNonNull(world, "'world' cannot be null");
-
+    public BlockPosition(@NonNull final String world, final int x, final int y, final int z) {
         // Should I call 'toLowerCase' here?
         this.world = world;
         this.x = x;
@@ -27,7 +35,7 @@ public final class BlockPosition implements Comparable<BlockPosition> {
         this.z = z;
     }
 
-    public static Optional<BlockPosition> fromArgs(final ParsedArgs args) {
+    public static Optional<BlockPosition> fromArgs(@NonNull final ParsedArgs args) {
         final World world = Bukkit.getWorld(args.getOrFail("world"));
         if (world == null) return Optional.empty();
         final Integer x = Ints.tryParse(args.getOrFail("x"));
@@ -36,13 +44,10 @@ public final class BlockPosition implements Comparable<BlockPosition> {
         if (y == null) return Optional.empty();
         final Integer z = Ints.tryParse(args.getOrFail("z"));
         if (z == null) return Optional.empty();
-
         return Optional.of(new BlockPosition(world.getName(), x, y, z));
     }
 
-    public static BlockPosition fromLocation(final Location location) {
-        Objects.requireNonNull(location, "'location' cannot be null");
-
+    public static BlockPosition fromLocation(@NonNull final Location location) {
         return new BlockPosition(
                 location.getWorld().getName(),
                 location.getBlockX(),
@@ -50,14 +55,11 @@ public final class BlockPosition implements Comparable<BlockPosition> {
                 location.getBlockZ());
     }
 
-    public static BlockPosition fromJson(final JsonObject json) {
-        Objects.requireNonNull(json, "'json' cannot be null");
-
+    public static BlockPosition fromJson(@NonNull final JsonObject json) {
         final String world = json.get("world").getAsString();
         final int x = json.get("x").getAsInt();
         final int y = json.get("y").getAsInt();
         final int z = json.get("z").getAsInt();
-
         return new BlockPosition(world, x, y, z);
     }
 
@@ -70,22 +72,6 @@ public final class BlockPosition implements Comparable<BlockPosition> {
         return json;
     }
 
-    public String getWorld() {
-        return world;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public int getZ() {
-        return z;
-    }
-
     public Location toLocation() {
         final World world = Bukkit.getWorld(this.world);
         Objects.requireNonNull(world, "World '" + this.world + "' not found!");
@@ -94,8 +80,6 @@ public final class BlockPosition implements Comparable<BlockPosition> {
 
     @Override
     public int compareTo(final BlockPosition other) {
-        Objects.requireNonNull(other, "'other' cannot be null");
-
         final int worldCompareTo = this.world.compareTo(other.world);
         if (worldCompareTo != 0) return worldCompareTo;
         final int xComplareTo = Integer.compare(this.x, other.x);
@@ -103,30 +87,5 @@ public final class BlockPosition implements Comparable<BlockPosition> {
         final int zCompareTo = Integer.compare(this.z, other.z);
         if (zCompareTo != 0) return zCompareTo;
         return Integer.compare(this.y, other.y);
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof BlockPosition)) return false;
-        BlockPosition castedOther = (BlockPosition) other;
-        return this.x == castedOther.x
-                && this.y == castedOther.y
-                && this.z == castedOther.z
-                && this.world.equals(castedOther.world);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(x, y, z, world);
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("world", world)
-            .add("x", x)
-            .add("y", y)
-            .add("z", z)
-            .toString();
     }
 }
