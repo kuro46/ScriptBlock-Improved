@@ -1,6 +1,6 @@
 package com.github.kuro46.scriptblockimproved.script.trigger;
 
-import com.github.kuro46.scriptblockimproved.script.BlockCoordinate;
+import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import java.util.Map;
 import java.util.Objects;
 import java.util.WeakHashMap;
@@ -37,7 +37,7 @@ public final class LeftClickTrigger implements Trigger {
         final Action action = interactEvent.getAction();
         if (action == Action.LEFT_CLICK_BLOCK) {
             return EventValidateResult.valid(new EventData(
-                BlockCoordinate.fromLocation(interactEvent.getClickedBlock().getLocation()),
+                BlockPosition.fromLocation(interactEvent.getClickedBlock().getLocation()),
                 player));
         } else {
             return EventValidateResult.invalid();

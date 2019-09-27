@@ -1,16 +1,16 @@
 package com.github.kuro46.scriptblockimproved.command.clickaction;
 
-import com.github.kuro46.scriptblockimproved.script.BlockCoordinate;
+import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import org.bukkit.entity.Player;
 
 public final class ActionDelete implements Action {
 
     @Override
-    public void action(final Player player, final BlockCoordinate coordinate) {
+    public void action(final Player player, final BlockPosition position) {
         player.performCommand(String.format("sbi deleteat %s %s %s %s",
-                    coordinate.getWorld(),
-                    coordinate.getX(),
-                    coordinate.getY(),
-                    coordinate.getZ()));
+                    position.getWorld(),
+                    position.getX(),
+                    position.getY(),
+                    position.getZ()));
     }
 }

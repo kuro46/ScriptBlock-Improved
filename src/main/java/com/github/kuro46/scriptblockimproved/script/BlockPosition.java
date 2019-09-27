@@ -10,14 +10,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-public final class BlockCoordinate implements Comparable<BlockCoordinate> {
+public final class BlockPosition implements Comparable<BlockPosition> {
 
     private final String world;
     private final int x;
     private final int y;
     private final int z;
 
-    public BlockCoordinate(final String world, final int x, final int y, final int z) {
+    public BlockPosition(final String world, final int x, final int y, final int z) {
         Objects.requireNonNull(world, "'world' cannot be null");
 
         // Should I call 'toLowerCase' here?
@@ -27,7 +27,7 @@ public final class BlockCoordinate implements Comparable<BlockCoordinate> {
         this.z = z;
     }
 
-    public static Optional<BlockCoordinate> fromArgs(final ParsedArgs args) {
+    public static Optional<BlockPosition> fromArgs(final ParsedArgs args) {
         final World world = Bukkit.getWorld(args.getOrFail("world"));
         if (world == null) return Optional.empty();
         final Integer x = Ints.tryParse(args.getOrFail("x"));
@@ -37,20 +37,20 @@ public final class BlockCoordinate implements Comparable<BlockCoordinate> {
         final Integer z = Ints.tryParse(args.getOrFail("z"));
         if (z == null) return Optional.empty();
 
-        return Optional.of(new BlockCoordinate(world.getName(), x, y, z));
+        return Optional.of(new BlockPosition(world.getName(), x, y, z));
     }
 
-    public static BlockCoordinate fromLocation(final Location location) {
+    public static BlockPosition fromLocation(final Location location) {
         Objects.requireNonNull(location, "'location' cannot be null");
 
-        return new BlockCoordinate(
+        return new BlockPosition(
                 location.getWorld().getName(),
                 location.getBlockX(),
                 location.getBlockY(),
                 location.getBlockZ());
     }
 
-    public static BlockCoordinate fromJson(final JsonObject json) {
+    public static BlockPosition fromJson(final JsonObject json) {
         Objects.requireNonNull(json, "'json' cannot be null");
 
         final String world = json.get("world").getAsString();
@@ -58,7 +58,7 @@ public final class BlockCoordinate implements Comparable<BlockCoordinate> {
         final int y = json.get("y").getAsInt();
         final int z = json.get("z").getAsInt();
 
-        return new BlockCoordinate(world, x, y, z);
+        return new BlockPosition(world, x, y, z);
     }
 
     public JsonObject toJson() {
@@ -93,7 +93,7 @@ public final class BlockCoordinate implements Comparable<BlockCoordinate> {
     }
 
     @Override
-    public int compareTo(final BlockCoordinate other) {
+    public int compareTo(final BlockPosition other) {
         Objects.requireNonNull(other, "'other' cannot be null");
 
         final int worldCompareTo = this.world.compareTo(other.world);
@@ -107,8 +107,8 @@ public final class BlockCoordinate implements Comparable<BlockCoordinate> {
 
     @Override
     public boolean equals(final Object other) {
-        if (!(other instanceof BlockCoordinate)) return false;
-        BlockCoordinate castedOther = (BlockCoordinate) other;
+        if (!(other instanceof BlockPosition)) return false;
+        BlockPosition castedOther = (BlockPosition) other;
         return this.x == castedOther.x
                 && this.y == castedOther.y
                 && this.z == castedOther.z

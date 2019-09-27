@@ -28,8 +28,8 @@ public final class ScriptExecutor {
         this.handlers = Objects.requireNonNull(handlers, "'handlers' cannot be null");
         Objects.requireNonNull(triggers, "'triggers' cannot be null");
 
-        triggers.addListener((trigger, event, player, coordinate) -> {
-            execute(trigger, player, coordinate);
+        triggers.addListener((trigger, event, player, position) -> {
+            execute(trigger, player, position);
         });
     }
 
@@ -44,28 +44,28 @@ public final class ScriptExecutor {
     private void execute(
             final Trigger triggerBy,
             final Player player,
-            final BlockCoordinate coordinate) {
+            final BlockPosition position) {
         Objects.requireNonNull(triggerBy, "'triggerBy' cannot be null");
         Objects.requireNonNull(player, "'player' cannot be null");
-        Objects.requireNonNull(coordinate, "'coordinate' cannot be null");
+        Objects.requireNonNull(position, "'position' cannot be null");
 
-        if (!scripts.contains(coordinate)) {
+        if (!scripts.contains(position)) {
             return;
         }
-        scripts.get(coordinate).stream()
+        scripts.get(position).stream()
             .filter(script -> script.getTrigger().equals(triggerBy.getName()))
-            .forEach(script -> executeScript(player, coordinate, script));
+            .forEach(script -> executeScript(player, position, script));
     }
 
     private void executeScript(
             final Player player,
-            final BlockCoordinate coordinate,
+            final BlockPosition position,
             final Script script) {
         Objects.requireNonNull(player, "'player' cannot be null");
-        Objects.requireNonNull(coordinate, "'coordinate' cannot be null");
+        Objects.requireNonNull(position, "'position' cannot be null");
         Objects.requireNonNull(script, "'script' cannot be null");
 
-        final Options replaced = script.getOptions().replaced(placeholders, player, coordinate);
+        final Options replaced = script.getOptions().replaced(placeholders, player, position);
 
         final boolean needCancel = replaced.stream()
             .anyMatch(option -> {

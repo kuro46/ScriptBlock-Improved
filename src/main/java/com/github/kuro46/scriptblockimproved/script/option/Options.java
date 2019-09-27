@@ -1,6 +1,6 @@
 package com.github.kuro46.scriptblockimproved.script.option;
 
-import com.github.kuro46.scriptblockimproved.script.BlockCoordinate;
+import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import com.github.kuro46.scriptblockimproved.script.option.placeholder.Placeholders;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
@@ -47,9 +47,9 @@ public final class Options {
     public Options replaced(
             final Placeholders placeholders,
             final Player player,
-            final BlockCoordinate coordinate) {
+            final BlockPosition position) {
         final List<Option> replaced = options.stream()
-            .map(option -> option.replaced(placeholders, player, coordinate))
+            .map(option -> option.replaced(placeholders, player, position))
             .collect(Collectors.toList());
         return new Options(replaced);
     }

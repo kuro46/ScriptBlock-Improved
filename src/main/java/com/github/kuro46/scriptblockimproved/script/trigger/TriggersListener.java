@@ -1,6 +1,6 @@
 package com.github.kuro46.scriptblockimproved.script.trigger;
 
-import com.github.kuro46.scriptblockimproved.script.BlockCoordinate;
+import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -10,5 +10,5 @@ public interface TriggersListener {
             Trigger trigger,
             Event event,
             Player player,
-            BlockCoordinate preferCoordinate);
+            BlockPosition preferPosition);
 }

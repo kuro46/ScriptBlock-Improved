@@ -1,6 +1,6 @@
 package com.github.kuro46.scriptblockimproved.script.trigger;
 
-import com.github.kuro46.scriptblockimproved.script.BlockCoordinate;
+import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
@@ -25,7 +25,7 @@ public final class PressTrigger implements Trigger {
 
         if (interactEvent.getAction() == Action.PHYSICAL) {
             return EventValidateResult.valid(new EventData(
-                BlockCoordinate.fromLocation(interactEvent.getClickedBlock().getLocation()),
+                BlockPosition.fromLocation(interactEvent.getClickedBlock().getLocation()),
                 player));
         } else {
             return EventValidateResult.invalid();

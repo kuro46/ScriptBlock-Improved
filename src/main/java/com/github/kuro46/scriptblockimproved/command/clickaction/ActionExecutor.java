@@ -1,6 +1,6 @@
 package com.github.kuro46.scriptblockimproved.command.clickaction;
 
-import com.github.kuro46.scriptblockimproved.script.BlockCoordinate;
+import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import java.util.Objects;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,6 +25,6 @@ public final class ActionExecutor implements Listener {
         if (action == null) return;
         event.setCancelled(true);
 
-        action.action(player, BlockCoordinate.fromLocation(event.getClickedBlock().getLocation()));
+        action.action(player, BlockPosition.fromLocation(event.getClickedBlock().getLocation()));
     }
 }

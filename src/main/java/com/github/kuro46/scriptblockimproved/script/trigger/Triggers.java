@@ -65,7 +65,7 @@ public final class Triggers {
                             trigger,
                             event,
                             data.getPlayer(),
-                            data.getCoordinate());
+                            data.getPosition());
                 });
             }
         };

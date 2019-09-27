@@ -12,24 +12,24 @@ public final class Script {
     private final long createdAt;
     private final TriggerName trigger;
     private final Author author;
-    private final BlockCoordinate coordinate;
+    private final BlockPosition position;
     private final Options options;
 
     public Script(
             final long createdAt,
             final TriggerName trigger,
             final Author author,
-            final BlockCoordinate coordinate,
+            final BlockPosition position,
             final Options options) {
         Objects.requireNonNull(trigger, "'trigger' cannot be null");
         Objects.requireNonNull(author, "'author' cannot be null");
-        Objects.requireNonNull(coordinate, "'coordinate' cannot be null");
+        Objects.requireNonNull(position, "'position' cannot be null");
         Objects.requireNonNull(options, "'options' cannot be null");
 
         this.createdAt = createdAt;
         this.trigger = trigger;
         this.author = author;
-        this.coordinate = coordinate;
+        this.position = position;
         this.options = options;
     }
 
@@ -39,10 +39,10 @@ public final class Script {
         final long createdAt = json.get("createdAt").getAsLong();
         final TriggerName trigger = TriggerName.fromJson(json.getAsJsonPrimitive("trigger"));
         final Author author = Author.fromJson(json.getAsJsonObject("author"));
-        final BlockCoordinate coordinate =
-            BlockCoordinate.fromJson(json.getAsJsonObject("coordinate"));
+        final BlockPosition position =
+            BlockPosition.fromJson(json.getAsJsonObject("position"));
         final Options options = Options.fromJson(json.getAsJsonArray("options"));
-        return new Script(createdAt, trigger, author, coordinate, options);
+        return new Script(createdAt, trigger, author, position, options);
     }
 
     public JsonObject toJson() {
@@ -50,7 +50,7 @@ public final class Script {
         json.addProperty("createdAt", createdAt);
         json.add("trigger", trigger.toJson());
         json.add("author", author.toJson());
-        json.add("coordinate", coordinate.toJson());
+        json.add("position", position.toJson());
         json.add("options", options.toJson());
         return json;
     }
@@ -63,8 +63,8 @@ public final class Script {
         return author;
     }
 
-    public BlockCoordinate getCoordinate() {
-        return coordinate;
+    public BlockPosition getPosition() {
+        return position;
     }
 
     public Options getOptions() {
@@ -77,20 +77,20 @@ public final class Script {
         Script castedOther = (Script) other;
 
         return this.author.equals(castedOther.author)
-                && this.coordinate.equals(castedOther.coordinate)
+                && this.position.equals(castedOther.position)
                 && this.options.equals(castedOther.options);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(author, coordinate, options);
+        return Objects.hash(author, position, options);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
             .add("author", author)
-            .add("coordinate", coordinate)
+            .add("position", position)
             .add("options", options)
             .toString();
     }

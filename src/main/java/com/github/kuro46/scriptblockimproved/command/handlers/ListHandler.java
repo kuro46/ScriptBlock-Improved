@@ -4,7 +4,7 @@ import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
 import com.github.kuro46.scriptblockimproved.common.command.CommandManager;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
-import com.github.kuro46.scriptblockimproved.script.BlockCoordinate;
+import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import com.github.kuro46.scriptblockimproved.script.Scripts;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,17 +28,17 @@ public final class ListHandler extends CommandHandler {
             final CommandManager manager,
             final CommandSender sender,
             final ParsedArgs empty) {
-        final List<BlockCoordinate> coordinates = new ArrayList<>(scripts.getCoordinates());
-        Collections.sort(coordinates);
+        final List<BlockPosition> positions = new ArrayList<>(scripts.getPositions());
+        Collections.sort(positions);
         int count = 0;
-        for (final BlockCoordinate coordinate : coordinates) {
+        for (final BlockPosition position : positions) {
             sendMessage(sender,
                     "[%s] %s/%s/%s/%s",
                     ++count,
-                    coordinate.getWorld(),
-                    coordinate.getX(),
-                    coordinate.getY(),
-                    coordinate.getZ());
+                    position.getWorld(),
+                    position.getX(),
+                    position.getY(),
+                    position.getZ());
         }
     }
 }

@@ -2,7 +2,7 @@ package com.github.kuro46.scriptblockimproved.script.option;
 
 import com.github.kuro46.scriptblockimproved.common.command.ArgName;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
-import com.github.kuro46.scriptblockimproved.script.BlockCoordinate;
+import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import com.github.kuro46.scriptblockimproved.script.option.placeholder.Placeholders;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
@@ -53,10 +53,10 @@ public final class Option {
     public Option replaced(
             final Placeholders placeholders,
             final Player player,
-            final BlockCoordinate coordinate) {
+            final BlockPosition position) {
         final ImmutableMap.Builder<ArgName, String> builder = ImmutableMap.builder();
         args.asMap().forEach((key, value) -> {
-            builder.put(key, placeholders.replace(value, player, coordinate));
+            builder.put(key, placeholders.replace(value, player, position));
         });
         return new Option(name, new ParsedArgs(builder.build()));
     }

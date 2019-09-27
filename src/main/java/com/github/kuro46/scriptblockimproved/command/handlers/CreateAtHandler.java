@@ -5,7 +5,7 @@ import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
 import com.github.kuro46.scriptblockimproved.common.command.CommandManager;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
-import com.github.kuro46.scriptblockimproved.script.BlockCoordinate;
+import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import com.github.kuro46.scriptblockimproved.script.Script;
 import com.github.kuro46.scriptblockimproved.script.Scripts;
 import com.github.kuro46.scriptblockimproved.script.author.Author;
@@ -44,13 +44,13 @@ public final class CreateAtHandler extends CommandHandler {
         final String rawOptions = args.getOrFail("script");
         final Options options = Options.parse(handlers, rawOptions)
             .orElseThrow(IllegalArgumentException::new);
-        final BlockCoordinate coordinate = BlockCoordinate.fromArgs(args).orElse(null);
-        if (coordinate == null) {
+        final BlockPosition position = BlockPosition.fromArgs(args).orElse(null);
+        if (position == null) {
             return;
         }
         final Author author = Author.fromCommandSender(sender);
 
-        if (scripts.contains(coordinate)) {
+        if (scripts.contains(position)) {
             sendMessage(sender,
                     MessageKind.ERROR,
                     "Script already exists at that place. Instead use '/sbi add[at]'");
@@ -61,7 +61,7 @@ public final class CreateAtHandler extends CommandHandler {
                     System.currentTimeMillis(),
                     TriggerName.of(trigger),
                     author,
-                    coordinate,
+                    position,
                     options));
         sendMessage(sender, MessageKind.SUCCESS, "The script has been created");
     }

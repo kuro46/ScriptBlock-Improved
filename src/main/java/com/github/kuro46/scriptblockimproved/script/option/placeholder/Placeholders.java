@@ -1,6 +1,6 @@
 package com.github.kuro46.scriptblockimproved.script.option.placeholder;
 
-import com.github.kuro46.scriptblockimproved.script.BlockCoordinate;
+import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.entity.Player;
@@ -17,11 +17,11 @@ public final class Placeholders {
     public String replace(
             String source,
             final Player player,
-            final BlockCoordinate coordinate) {
+            final BlockPosition position) {
         for (final Placeholder placeholder : placeholders.values()) {
             source = source.replace(
                     "<" + placeholder.getName() + ">",
-                    placeholder.getReplaceTo(player, coordinate));
+                    placeholder.getReplaceTo(player, position));
         }
         return source;
     }

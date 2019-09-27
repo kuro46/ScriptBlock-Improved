@@ -1,6 +1,6 @@
 package com.github.kuro46.scriptblockimproved.script.trigger;
 
-import com.github.kuro46.scriptblockimproved.script.BlockCoordinate;
+import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import java.util.Map;
 import java.util.Objects;
 import java.util.WeakHashMap;
@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 public final class MoveTrigger implements Trigger {
 
-    private final Map<Player, BlockCoordinate> lastCoordinates = new WeakHashMap<>();
+    private final Map<Player, BlockPosition> lastPositions = new WeakHashMap<>();
 
     @Override
     public TriggerName getName() {
@@ -26,25 +26,25 @@ public final class MoveTrigger implements Trigger {
     public EventValidateResult validate(final Event event) {
         final PlayerMoveEvent moveEvent = (PlayerMoveEvent) event;
         final Player player = moveEvent.getPlayer();
-        final BlockCoordinate coordinate = BlockCoordinate.fromLocation(player.getLocation());
-        if (shouldCancelExecution(player, coordinate)) return EventValidateResult.invalid();
-        updateCoordinate(player, coordinate);
-        return EventValidateResult.valid(new EventData(coordinate, player));
+        final BlockPosition position = BlockPosition.fromLocation(player.getLocation());
+        if (shouldCancelExecution(player, position)) return EventValidateResult.invalid();
+        updatePosition(player, position);
+        return EventValidateResult.valid(new EventData(position, player));
     }
 
-    private boolean shouldCancelExecution(final Player player, final BlockCoordinate coordinate) {
+    private boolean shouldCancelExecution(final Player player, final BlockPosition position) {
         Objects.requireNonNull(player, "'player' cannot be null");
-        Objects.requireNonNull(coordinate, "'coordinate' cannot be null");
+        Objects.requireNonNull(position, "'position' cannot be null");
 
-        final BlockCoordinate lastCoordinate = lastCoordinates.get(player);
-        if (lastCoordinate == null) return false;
-        return lastCoordinate.equals(coordinate);
+        final BlockPosition lastPosition = lastPositions.get(player);
+        if (lastPosition == null) return false;
+        return lastPosition.equals(position);
     }
 
-    private void updateCoordinate(final Player player, final BlockCoordinate coordinate) {
+    private void updatePosition(final Player player, final BlockPosition position) {
         Objects.requireNonNull(player, "'player' cannot be null");
-        Objects.requireNonNull(coordinate, "'coordinate' cannot be null");
+        Objects.requireNonNull(position, "'position' cannot be null");
 
-        lastCoordinates.put(player, coordinate);
+        lastPositions.put(player, position);
     }
 }

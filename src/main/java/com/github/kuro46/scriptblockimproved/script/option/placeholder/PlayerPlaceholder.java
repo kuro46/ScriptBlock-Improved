@@ -1,6 +1,6 @@
 package com.github.kuro46.scriptblockimproved.script.option.placeholder;
 
-import com.github.kuro46.scriptblockimproved.script.BlockCoordinate;
+import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import org.bukkit.entity.Player;
 
 public final class PlayerPlaceholder implements Placeholder {
@@ -11,7 +11,7 @@ public final class PlayerPlaceholder implements Placeholder {
     }
 
     @Override
-    public String getReplaceTo(final Player player, final BlockCoordinate coordinate) {
+    public String getReplaceTo(final Player player, final BlockPosition position) {
         return player.getName();
     }
 }
