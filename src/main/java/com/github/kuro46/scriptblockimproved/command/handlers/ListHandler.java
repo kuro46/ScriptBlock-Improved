@@ -1,5 +1,6 @@
 package com.github.kuro46.scriptblockimproved.command.handlers;
 
+import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
@@ -27,6 +28,10 @@ public final class ListHandler extends CommandHandler {
         final CommandSender sender = data.getDispatcher();
 
         final List<BlockPosition> positions = new ArrayList<>(scripts.getPositions());
+        if (positions.isEmpty()) {
+            sendMessage(sender, MessageKind.ERROR, "Empty");
+            return;
+        }
         Collections.sort(positions);
         int count = 0;
         for (final BlockPosition position : positions) {
