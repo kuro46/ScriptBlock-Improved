@@ -2,8 +2,7 @@ package com.github.kuro46.scriptblockimproved.command.handlers;
 
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
-import com.github.kuro46.scriptblockimproved.common.command.CommandManager;
-import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
+import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.script.option.OptionHandlers;
 import com.github.kuro46.scriptblockimproved.script.option.OptionName;
 import com.github.kuro46.scriptblockimproved.script.trigger.Trigger;
@@ -27,10 +26,8 @@ public final class AvailablesHandler extends CommandHandler {
     }
 
     @Override
-    public void execute(
-            final CommandManager manager,
-            final CommandSender sender,
-            final ParsedArgs empty) {
+    public void execute(final ExecutionData data) {
+        final CommandSender sender = data.getDispatcher();
         options(sender);
         triggers(sender);
     }

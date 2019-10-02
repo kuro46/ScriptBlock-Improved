@@ -2,12 +2,16 @@ package com.github.kuro46.scriptblockimproved.command.handlers;
 
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
+import com.github.kuro46.scriptblockimproved.common.command.CandidateBuilder;
+import com.github.kuro46.scriptblockimproved.common.command.CandidateFactories;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
-import com.github.kuro46.scriptblockimproved.common.command.CommandManager;
+import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
+import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import com.github.kuro46.scriptblockimproved.script.Script;
 import com.github.kuro46.scriptblockimproved.script.Scripts;
+import java.util.List;
 import java.util.Objects;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -29,10 +33,10 @@ public final class ViewAtHandler extends CommandHandler {
     }
 
     @Override
-    public void execute(
-            final CommandManager manager,
-            final CommandSender sender,
-            final ParsedArgs args) {
+    public void execute(final ExecutionData data) {
+        final CommandSender sender = data.getDispatcher();
+        final ParsedArgs args = data.getArgs();
+
         final BlockPosition position = BlockPosition.fromArgs(args).orElse(null);
         if (position == null) {
             return;
@@ -65,5 +69,12 @@ public final class ViewAtHandler extends CommandHandler {
                 sendMessage(sender, "    %s: %s", key, value);
             });
         });
+    }
+
+    @Override
+    public List<String> complete(final CompletionData data) {
+        return new CandidateBuilder()
+            .when("world", CandidateFactories.worlds())
+            .build(data.getArgName(), data.getCurrentValue());
     }
 }

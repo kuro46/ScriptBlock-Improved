@@ -3,10 +3,10 @@ package com.github.kuro46.scriptblockimproved.command.handlers;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.Command;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
-import com.github.kuro46.scriptblockimproved.common.command.CommandManager;
 import com.github.kuro46.scriptblockimproved.common.command.CommandSection;
-import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
+import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.bukkit.command.CommandSender;
@@ -19,13 +19,13 @@ public final class HelpHandler extends CommandHandler {
     }
 
     @Override
-    public void execute(
-            final CommandManager manager,
-            final CommandSender sender,
-            final ParsedArgs empty) {
+    public void execute(final ExecutionData data) {
+        final CommandSender sender = data.getDispatcher();
         sendMessage(sender, "Usage:");
-        manager.asMap().values()
-            .forEach(command -> describeCommand(sender, new ArrayList<>(), command));
+        final List<CommandSection> rootSec =
+            Collections.singletonList(data.getRoot().getRootCommand().getSection());
+        data.getRoot().getRootCommand().getChildren().values()
+            .forEach(command -> describeCommand(sender, new ArrayList<>(rootSec), command));
     }
 
     private void describeCommand(

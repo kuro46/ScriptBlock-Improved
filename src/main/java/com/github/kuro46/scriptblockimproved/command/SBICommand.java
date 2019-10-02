@@ -14,14 +14,15 @@ import com.github.kuro46.scriptblockimproved.command.handlers.SBIHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.SaveHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.ViewAtHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.ViewHandler;
+import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Command;
-import com.github.kuro46.scriptblockimproved.common.command.CommandManager;
+import com.github.kuro46.scriptblockimproved.common.command.CommandRoot;
+import com.github.kuro46.scriptblockimproved.common.command.CommandSection;
 import com.github.kuro46.scriptblockimproved.script.Scripts;
 import com.github.kuro46.scriptblockimproved.script.option.OptionHandlers;
 import com.github.kuro46.scriptblockimproved.script.trigger.Triggers;
 import java.nio.file.Path;
-import java.util.List;
-import org.bukkit.command.CommandSender;
+import java.util.stream.Collectors;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
 public final class SBICommand {
@@ -103,22 +104,16 @@ public final class SBICommand {
             .handler(new ViewAtHandler(scripts))
             .childOf(root);
 
-        final CommandManager manager = new CommandManager();
-        manager.registerCommand(root);
-        manager.addErrorHandler(new CommandManager.ErrorHandler() {
-
-            @Override
-            public void onUnknownCommand(final CommandSender sender, final List<String> sections) {
-                sendMessage(sender, "Unknown command. Probably a bug.");
-            }
-
-            @Override
-            public void onParseFailed(final CommandSender sender, final Command command) {
-                sendMessage(sender,
-                            "Usage: /%s %s",
-                            command.getSection(),
-                            command.getHandler().getArgs());
-            }
+        final CommandRoot commandRoot = CommandRoot.register(root);
+        commandRoot.addListener((sender, path, command) -> {
+            final String pathStr = path.stream()
+                .map(CommandSection::getName)
+                .collect(Collectors.joining(" "));
+            sendMessage(sender,
+                    MessageKind.ERROR,
+                    "Usage: /%s %s",
+                    pathStr,
+                    command.getHandler().getArgs());
         });
     }
 }

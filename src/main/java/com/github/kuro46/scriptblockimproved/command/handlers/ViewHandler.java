@@ -5,8 +5,7 @@ import com.github.kuro46.scriptblockimproved.command.clickaction.Actions;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
-import com.github.kuro46.scriptblockimproved.common.command.CommandManager;
-import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
+import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import java.util.Objects;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,10 +22,9 @@ public final class ViewHandler extends CommandHandler {
     }
 
     @Override
-    public void execute(
-            final CommandManager manager,
-            final CommandSender sender,
-            final ParsedArgs args) {
+    public void execute(final ExecutionData data) {
+        final CommandSender sender = data.getDispatcher();
+
         if (!(sender instanceof Player)) {
             sendMessage(sender, MessageKind.ERROR, "Cannot perform this command from the console");
             return;

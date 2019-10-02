@@ -3,7 +3,7 @@ package com.github.kuro46.scriptblockimproved.command.handlers;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
-import com.github.kuro46.scriptblockimproved.common.command.CommandManager;
+import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import com.github.kuro46.scriptblockimproved.script.Scripts;
 import com.github.kuro46.scriptblockimproved.script.serialize.ScriptSerializer;
@@ -28,10 +28,10 @@ public final class SaveHandler extends CommandHandler {
     }
 
     @Override
-    public void execute(
-            final CommandManager manager,
-            final CommandSender sender,
-            final ParsedArgs args) {
+    public void execute(final ExecutionData data) {
+        final ParsedArgs args = data.getArgs();
+        final CommandSender sender = data.getDispatcher();
+
         final String fileName = args.get("fileName").orElse("scripts.json");
         final boolean canOverwrite = fileName.equals("scripts.json");
 

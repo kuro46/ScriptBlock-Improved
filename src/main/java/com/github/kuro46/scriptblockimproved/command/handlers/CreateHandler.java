@@ -5,8 +5,7 @@ import com.github.kuro46.scriptblockimproved.command.clickaction.Actions;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
-import com.github.kuro46.scriptblockimproved.common.command.CommandManager;
-import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
+import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import java.util.Objects;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,10 +25,8 @@ public final class CreateHandler extends CommandHandler {
     }
 
     @Override
-    public void execute(
-            final CommandManager manager,
-            final CommandSender sender,
-            final ParsedArgs args) {
+    public void execute(final ExecutionData data) {
+        final CommandSender sender = data.getDispatcher();
         if (!(sender instanceof Player)) {
             sendMessage(sender,
                     MessageKind.ERROR,
@@ -38,6 +35,6 @@ public final class CreateHandler extends CommandHandler {
         }
         final Player player = (Player) sender;
         sendMessage(sender, "Click any block to create script to the block");
-        actions.add(player, new ActionCreate(args));
+        actions.add(player, new ActionCreate(data.getArgs()));
     }
 }

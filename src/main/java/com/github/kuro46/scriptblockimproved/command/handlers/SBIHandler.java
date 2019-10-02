@@ -3,8 +3,8 @@ package com.github.kuro46.scriptblockimproved.command.handlers;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.Command;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
-import com.github.kuro46.scriptblockimproved.common.command.CommandManager;
 import com.github.kuro46.scriptblockimproved.common.command.CommandSection;
+import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
@@ -20,10 +20,10 @@ public final class SBIHandler extends CommandHandler {
     }
 
     @Override
-    public void execute(
-            final CommandManager manager,
-            final CommandSender sender,
-            final ParsedArgs args) {
+    public void execute(final ExecutionData data) {
+        final ParsedArgs args = data.getArgs();
+        final CommandSender sender = data.getDispatcher();
+
         final String free = args.getOrNull("");
         if (free == null) {
             //TODO: improve
@@ -33,11 +33,11 @@ public final class SBIHandler extends CommandHandler {
             Bukkit.dispatchCommand(sender, "sbi help");
         } else {
             sendMessage(sender, "Unknown command. Available commands:");
-            final String subCommands = manager.asMap().values().stream()
-                .flatMap(root -> root.getChildren().values().stream())
-                .map(Command::getSection)
-                .map(CommandSection::getName)
-                .collect(Collectors.joining(", "));
+            final String subCommands =
+                data.getRoot().getRootCommand().getChildren().values().stream()
+                    .map(Command::getSection)
+                    .map(CommandSection::getName)
+                    .collect(Collectors.joining(", "));
             sendMessage(sender, subCommands);
             sendMessage(sender, "'/sbi help' for more details");
         }

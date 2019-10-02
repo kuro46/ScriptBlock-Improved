@@ -1,6 +1,5 @@
 package com.github.kuro46.scriptblockimproved.common.command;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -8,44 +7,42 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.ToString;
 
+@ToString
 public final class Command {
 
     private final Map<CommandSection, Command> children = new LinkedHashMap<>();
 
+    @Getter
+    @NonNull
     private final CommandSection section;
+    @Getter
+    @NonNull
     private final String description;
+    @Getter
+    @NonNull
     private final CommandHandler handler;
 
     public Command(
-            final CommandSection section,
-            final CommandHandler handler) {
+            @NonNull final CommandSection section,
+            @NonNull final CommandHandler handler) {
         this(section, handler, null);
     }
 
     public Command(
-            final CommandSection section,
-            final CommandHandler handler,
-            final String description) {
-        this.section = Objects.requireNonNull(section, "'section' cannot be null");
-        this.handler = Objects.requireNonNull(handler, "'handler' cannot be null");
+            @NonNull final CommandSection section,
+            @NonNull final CommandHandler handler,
+            @NonNull final String description) {
+        this.section = section;
+        this.handler = handler;
         this.description = description;
     }
 
     public static Builder builder() {
         return new Builder();
-    }
-
-    public CommandSection getSection() {
-        return section;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public CommandHandler getHandler() {
-        return handler;
     }
 
     public void addChild(final Command command) {
@@ -58,16 +55,6 @@ public final class Command {
 
     public ImmutableMap<CommandSection, Command> getChildren() {
         return ImmutableMap.copyOf(children);
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("children", children)
-            .add("section", section)
-            .add("handler", handler)
-            .add("description", description)
-            .toString();
     }
 
     public static class Builder {
@@ -112,10 +99,6 @@ public final class Command {
             final Command command = new Command(section, handler, description);
             children.forEach(command::addChild);
             return command;
-        }
-
-        public void register(final CommandManager manager) {
-            manager.registerCommand(build());
         }
 
         public void childOf(final Command command) {

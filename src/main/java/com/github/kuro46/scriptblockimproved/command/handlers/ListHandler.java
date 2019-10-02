@@ -2,8 +2,7 @@ package com.github.kuro46.scriptblockimproved.command.handlers;
 
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
-import com.github.kuro46.scriptblockimproved.common.command.CommandManager;
-import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
+import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import com.github.kuro46.scriptblockimproved.script.Scripts;
 import java.util.ArrayList;
@@ -24,10 +23,9 @@ public final class ListHandler extends CommandHandler {
     }
 
     @Override
-    public void execute(
-            final CommandManager manager,
-            final CommandSender sender,
-            final ParsedArgs empty) {
+    public void execute(final ExecutionData data) {
+        final CommandSender sender = data.getDispatcher();
+
         final List<BlockPosition> positions = new ArrayList<>(scripts.getPositions());
         Collections.sort(positions);
         int count = 0;

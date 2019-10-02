@@ -5,6 +5,7 @@ import com.github.kuro46.scriptblockimproved.common.tuple.Pair;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Formattable;
 import java.util.Formatter;
 import java.util.HashMap;
@@ -117,6 +118,7 @@ public final class Args implements Formattable {
     private class Parser {
 
         public Optional<ParsedArgs> parse(final List<String> raw) {
+            if (args.isEmpty()) return Optional.of(new ParsedArgs(Collections.emptyMap()));
             final List<Pair<ArgName, String>> preparsed = preparse(raw).orElse(null);
             if (preparsed == null) {
                 return Optional.empty();

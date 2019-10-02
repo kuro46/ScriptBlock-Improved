@@ -1,36 +1,51 @@
 package com.github.kuro46.scriptblockimproved.common.command;
 
-import java.util.Objects;
-import org.bukkit.command.CommandSender;
+import java.util.List;
+import java.util.stream.Collectors;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.ToString;
 
+@ToString
 public abstract class CommandHandler {
 
+    @Getter
+    @NonNull
     private final Args args;
 
-    public CommandHandler(final Args args) {
-        this.args = Objects.requireNonNull(args, "'args' cannot be null");
+    public CommandHandler(@NonNull final Args args) {
+        this.args = args;
     }
 
     public static Builder builder() {
         return new Builder();
     }
 
-    public Args getArgs() {
-        return args;
-    }
+    public abstract void execute(ExecutionData data);
 
-    public abstract void execute(CommandManager manager, CommandSender sender, ParsedArgs args);
+    public List<String> complete(final CompletionData data) {
+        return data.getCommand().getChildren().keySet().stream()
+            .map(CommandSection::getName)
+            .collect(Collectors.toList());
+    }
 
     @FunctionalInterface
     public interface Executor {
 
-        void execute(CommandManager manager, CommandSender sender, ParsedArgs args);
+        void execute(ExecutionData data);
+    }
+
+    @FunctionalInterface
+    public interface Completer {
+
+        List<String> complete(CompletionData data);
     }
 
     public static class Builder {
 
         private Args args;
         private Executor executor;
+        private Completer completer;
 
         public Builder args(final Args args) {
             this.args = args;
@@ -44,15 +59,23 @@ public abstract class CommandHandler {
             return this;
         }
 
+        public Builder completer(final Completer completer) {
+            this.completer = completer;
+
+            return this;
+        }
+
         public CommandHandler build() {
             return new CommandHandler(args) {
 
                 @Override
-                public void execute(
-                        final CommandManager manager,
-                        final CommandSender sender,
-                        final ParsedArgs args) {
-                    executor.execute(manager, sender, args);
+                public void execute(final ExecutionData data) {
+                    executor.execute(data);
+                }
+
+                @Override
+                public List<String> complete(final CompletionData data) {
+                    return completer.complete(data);
                 }
             };
         }
