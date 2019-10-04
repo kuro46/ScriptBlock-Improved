@@ -73,6 +73,9 @@ public final class ScriptBlockImproved {
         this.scripts = loadScripts();
         this.triggers = new Triggers(plugin);
         this.scriptAutoSaver = new ScriptAutoSaver();
+    }
+
+    private void initInternal() {
         initExecutor();
         registerAsService();
         registerOptionHandlers();
@@ -91,6 +94,7 @@ public final class ScriptBlockImproved {
             throw new IllegalStateException("The plugin is already initialized");
         }
         instance = new ScriptBlockImproved(initializer);
+        instance.initInternal();
     }
 
     static boolean isInitialized() {
