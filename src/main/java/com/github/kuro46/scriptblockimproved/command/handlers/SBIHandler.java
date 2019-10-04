@@ -1,5 +1,6 @@
 package com.github.kuro46.scriptblockimproved.command.handlers;
 
+import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.Command;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
@@ -26,10 +27,10 @@ public final class SBIHandler extends CommandHandler {
 
         final String free = args.getOrNull("");
         if (free == null) {
-            //TODO: improve
-            final String version = Bukkit.getPluginManager()
-                .getPlugin("ScriptBlock-Improved").getDescription().getVersion();
+            final String version = ScriptBlockImproved.getInstance()
+                .getPlugin().getDescription().getVersion();
             sendMessage(sender, "ScriptBlock-Improved v" + version);
+            // TODO: improve
             Bukkit.dispatchCommand(sender, "sbi help");
         } else {
             sendMessage(sender, "Unknown command. Available commands:");
