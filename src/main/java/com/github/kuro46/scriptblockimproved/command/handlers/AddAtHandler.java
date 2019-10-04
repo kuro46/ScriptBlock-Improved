@@ -1,5 +1,6 @@
 package com.github.kuro46.scriptblockimproved.command.handlers;
 
+import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CandidateBuilder;
@@ -16,16 +17,18 @@ import com.github.kuro46.scriptblockimproved.script.option.OptionHandlers;
 import com.github.kuro46.scriptblockimproved.script.option.Options;
 import com.github.kuro46.scriptblockimproved.script.trigger.TriggerName;
 import java.util.List;
-import java.util.Objects;
+import lombok.NonNull;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
 public final class AddAtHandler extends CommandHandler {
 
+    @NonNull
     private final OptionHandlers handlers;
+    @NonNull
     private final Scripts scripts;
 
-    public AddAtHandler(final OptionHandlers handlers, final Scripts scripts) {
+    public AddAtHandler() {
         super(Args.builder()
                 .required("world")
                 .required("x")
@@ -34,9 +37,9 @@ public final class AddAtHandler extends CommandHandler {
                 .required("trigger")
                 .required("script")
                 .build());
-
-        this.handlers = Objects.requireNonNull(handlers, "'handlers' cannot be null");
-        this.scripts = Objects.requireNonNull(scripts, "'scripts' cannot be null");
+        final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
+        this.handlers = sbi.getOptionHandlers();
+        this.scripts = sbi.getScripts();
     }
 
     @Override

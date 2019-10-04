@@ -1,5 +1,6 @@
 package com.github.kuro46.scriptblockimproved.command.handlers;
 
+import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
@@ -9,22 +10,24 @@ import com.github.kuro46.scriptblockimproved.script.Scripts;
 import com.github.kuro46.scriptblockimproved.script.serialize.ScriptSerializer;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Objects;
+import lombok.NonNull;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
 public final class SaveHandler extends CommandHandler {
 
+    @NonNull
     private final Path dataFolder;
+    @NonNull
     private final Scripts scripts;
 
-    public SaveHandler(final Path dataFolder, final Scripts scripts) {
+    public SaveHandler() {
         super(Args.builder()
                 .optional("fileName")
                 .build());
-
-        this.dataFolder = Objects.requireNonNull(dataFolder, "'dataFolder' cannot be null");
-        this.scripts = Objects.requireNonNull(scripts, "'scripts' cannot be null");
+        final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
+        this.dataFolder = sbi.getDataFolder();
+        this.scripts = sbi.getScripts();
     }
 
     @Override

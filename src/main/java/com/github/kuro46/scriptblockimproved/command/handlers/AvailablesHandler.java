@@ -1,5 +1,6 @@
 package com.github.kuro46.scriptblockimproved.command.handlers;
 
+import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
@@ -9,20 +10,22 @@ import com.github.kuro46.scriptblockimproved.script.trigger.Trigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.Triggers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import java.util.Objects;
+import lombok.NonNull;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
 public final class AvailablesHandler extends CommandHandler {
 
+    @NonNull
     private final OptionHandlers handlers;
+    @NonNull
     private final Triggers triggers;
 
-    public AvailablesHandler(final OptionHandlers handlers, final Triggers triggers) {
+    public AvailablesHandler() {
         super(Args.empty());
-
-        this.handlers = Objects.requireNonNull(handlers, "'handlers' cannot be null");
-        this.triggers = Objects.requireNonNull(triggers, "'triggers' cannot be null");
+        final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
+        this.handlers = sbi.getOptionHandlers();
+        this.triggers = sbi.getTriggers();
     }
 
     @Override

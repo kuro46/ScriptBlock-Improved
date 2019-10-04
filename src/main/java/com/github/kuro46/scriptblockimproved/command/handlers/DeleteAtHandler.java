@@ -1,5 +1,6 @@
 package com.github.kuro46.scriptblockimproved.command.handlers;
 
+import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CandidateBuilder;
@@ -11,23 +12,23 @@ import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import com.github.kuro46.scriptblockimproved.script.Scripts;
 import java.util.List;
-import java.util.Objects;
+import lombok.NonNull;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
 public final class DeleteAtHandler extends CommandHandler {
 
+    @NonNull
     private final Scripts scripts;
 
-    public DeleteAtHandler(final Scripts scripts) {
+    public DeleteAtHandler() {
         super(Args.builder()
                 .required("world")
                 .required("x")
                 .required("y")
                 .required("z")
                 .build());
-
-        this.scripts = Objects.requireNonNull(scripts, "'scripts' cannot be null");
+        this.scripts = ScriptBlockImproved.getInstance().getScripts();
     }
 
     @Override
