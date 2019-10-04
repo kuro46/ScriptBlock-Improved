@@ -28,7 +28,6 @@ public final class BlockPosition implements Comparable<BlockPosition> {
     private final int z;
 
     public BlockPosition(@NonNull final String world, final int x, final int y, final int z) {
-        // Should I call 'toLowerCase' here?
         this.world = world;
         this.x = x;
         this.y = y;
