@@ -35,10 +35,13 @@ import org.bukkit.plugin.ServicePriority;
 
 public final class ScriptBlockImproved {
 
-    private static ScriptBlockImproved instance;
+    private volatile static ScriptBlockImproved instance;
 
+    @Getter
     private final OptionHandlers optionHandlers = new OptionHandlers();
+    @Getter
     private final Placeholders placeholders = new Placeholders();
+    @Getter
     private final Actions actions = new Actions();
 
     @NonNull
@@ -92,6 +95,13 @@ public final class ScriptBlockImproved {
 
     static boolean isInitialized() {
         return instance != null;
+    }
+
+    public static ScriptBlockImproved getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("Not initialized yet");
+        }
+        return instance;
     }
 
     static void dispose() {
@@ -167,12 +177,7 @@ public final class ScriptBlockImproved {
     }
 
     private void registerCommands() {
-        SBICommand.register(
-                actions,
-                scripts,
-                optionHandlers,
-                triggers,
-                dataFolder);
+        SBICommand.register();
     }
 
     private void registerPlaceholders() {
