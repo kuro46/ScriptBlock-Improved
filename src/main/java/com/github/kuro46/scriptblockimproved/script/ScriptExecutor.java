@@ -1,10 +1,10 @@
 package com.github.kuro46.scriptblockimproved.script;
 
-import com.github.kuro46.scriptblockimproved.script.option.CheckResult;
 import com.github.kuro46.scriptblockimproved.script.option.OptionHandler;
 import com.github.kuro46.scriptblockimproved.script.option.OptionHandlers;
 import com.github.kuro46.scriptblockimproved.script.option.OptionName;
 import com.github.kuro46.scriptblockimproved.script.option.Options;
+import com.github.kuro46.scriptblockimproved.script.option.PreExecuteResult;
 import com.github.kuro46.scriptblockimproved.script.option.placeholder.Placeholders;
 import com.github.kuro46.scriptblockimproved.script.trigger.Trigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.Triggers;
@@ -70,11 +70,11 @@ public final class ScriptExecutor {
         final boolean needCancel = replaced.stream()
             .anyMatch(option -> {
                 final OptionHandler handler = handlers.getOrFail(option.getName());
-                final CheckResult result = handler.check(
+                final PreExecuteResult result = handler.preExecute(
                         player,
                         script,
                         option);
-                return result == CheckResult.CANCEL;
+                return result == PreExecuteResult.CANCEL;
             });
         if (needCancel) return;
 

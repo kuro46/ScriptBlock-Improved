@@ -8,7 +8,7 @@ public interface OptionHandler {
 
     Args getArgs();
 
-    CheckResult check(
+    PreExecuteResult preExecute(
             final Player player,
             final Script script,
             final Option option);

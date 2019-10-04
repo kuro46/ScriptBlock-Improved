@@ -34,11 +34,11 @@ public final class CommonOptionHandlers {
         }
 
         @Override
-        public CheckResult check(
+        public PreExecuteResult preExecute(
                 final Player player,
                 final Script script,
                 final Option option) {
-            return CheckResult.CONTINUE;
+            return PreExecuteResult.CONTINUE;
         }
 
         @Override
@@ -63,11 +63,11 @@ public final class CommonOptionHandlers {
         }
 
         @Override
-        public CheckResult check(
+        public PreExecuteResult preExecute(
                 final Player player,
                 final Script script,
                 final Option option) {
-            return CheckResult.CONTINUE;
+            return PreExecuteResult.CONTINUE;
         }
 
         @Override
@@ -94,11 +94,11 @@ public final class CommonOptionHandlers {
         }
 
         @Override
-        public CheckResult check(
+        public PreExecuteResult preExecute(
                 final Player player,
                 final Script script,
                 final Option option) {
-            return CheckResult.CONTINUE;
+            return PreExecuteResult.CONTINUE;
         }
 
         @Override
@@ -123,11 +123,11 @@ public final class CommonOptionHandlers {
         }
 
         @Override
-        public CheckResult check(
+        public PreExecuteResult preExecute(
                 final Player player,
                 final Script script,
                 final Option option) {
-            return CheckResult.CONTINUE;
+            return PreExecuteResult.CONTINUE;
         }
 
         @Override
@@ -167,11 +167,11 @@ public final class CommonOptionHandlers {
         }
 
         @Override
-        public CheckResult check(
+        public PreExecuteResult preExecute(
                 final Player player,
                 final Script script,
                 final Option option) {
-            return CheckResult.CONTINUE;
+            return PreExecuteResult.CONTINUE;
         }
 
         @Override
