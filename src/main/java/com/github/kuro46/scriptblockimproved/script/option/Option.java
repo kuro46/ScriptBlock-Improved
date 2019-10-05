@@ -2,15 +2,14 @@ package com.github.kuro46.scriptblockimproved.script.option;
 
 import com.github.kuro46.scriptblockimproved.common.command.ArgName;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
-import com.github.kuro46.scriptblockimproved.script.BlockPosition;
-import com.github.kuro46.scriptblockimproved.script.option.placeholder.Placeholders;
+import com.github.kuro46.scriptblockimproved.script.option.placeholder.PlaceholderGroup;
+import com.github.kuro46.scriptblockimproved.script.option.placeholder.SourceData;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.Map;
 import java.util.Objects;
-import org.bukkit.entity.Player;
 
 public final class Option {
 
@@ -51,12 +50,11 @@ public final class Option {
     }
 
     public Option replaced(
-            final Placeholders placeholders,
-            final Player player,
-            final BlockPosition position) {
+            final PlaceholderGroup placeholderGroup,
+            final SourceData data) {
         final ImmutableMap.Builder<ArgName, String> builder = ImmutableMap.builder();
         args.asMap().forEach((key, value) -> {
-            builder.put(key, placeholders.replace(value, player, position));
+            builder.put(key, placeholderGroup.replace(value, data));
         });
         return new Option(name, new ParsedArgs(builder.build()));
     }

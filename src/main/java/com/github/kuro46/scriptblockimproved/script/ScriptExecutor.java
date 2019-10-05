@@ -5,7 +5,8 @@ import com.github.kuro46.scriptblockimproved.script.option.OptionHandlers;
 import com.github.kuro46.scriptblockimproved.script.option.OptionName;
 import com.github.kuro46.scriptblockimproved.script.option.Options;
 import com.github.kuro46.scriptblockimproved.script.option.PreExecuteResult;
-import com.github.kuro46.scriptblockimproved.script.option.placeholder.Placeholders;
+import com.github.kuro46.scriptblockimproved.script.option.placeholder.PlaceholderGroup;
+import com.github.kuro46.scriptblockimproved.script.option.placeholder.SourceData;
 import com.github.kuro46.scriptblockimproved.script.trigger.Trigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.Triggers;
 import java.util.Objects;
@@ -14,31 +15,29 @@ import org.bukkit.entity.Player;
 
 public final class ScriptExecutor {
 
-    private final Placeholders placeholders;
+    private final PlaceholderGroup placeholderGroup;
     private final OptionHandlers handlers;
     private final Scripts scripts;
 
     private ScriptExecutor(
-            final Placeholders placeholders,
-            final Scripts scripts,
-            final OptionHandlers handlers,
-            final Triggers triggers) {
-        this.placeholders = Objects.requireNonNull(placeholders, "'placeholders' cannot be null");
-        this.scripts = Objects.requireNonNull(scripts, "'scripts' cannot be null");
-        this.handlers = Objects.requireNonNull(handlers, "'handlers' cannot be null");
-        Objects.requireNonNull(triggers, "'triggers' cannot be null");
-
+            @NonNull final PlaceholderGroup placeholderGroup,
+            @NonNull final Scripts scripts,
+            @NonNull final OptionHandlers handlers,
+            @NonNull final Triggers triggers) {
+        this.placeholderGroup = placeholderGroup;
+        this.scripts = scripts;
+        this.handlers = handlers;
         triggers.addListener((trigger, event, player, position) -> {
             execute(trigger, player, position);
         });
     }
 
     public static ScriptExecutor init(
-            @NonNull final Placeholders placeholders,
+            @NonNull final PlaceholderGroup placeholderGroup,
             @NonNull final Scripts scripts,
             @NonNull final OptionHandlers handlers,
             @NonNull final Triggers triggers) {
-        return new ScriptExecutor(placeholders, scripts, handlers, triggers);
+        return new ScriptExecutor(placeholderGroup, scripts, handlers, triggers);
     }
 
     private void execute(
@@ -65,7 +64,11 @@ public final class ScriptExecutor {
         Objects.requireNonNull(position, "'position' cannot be null");
         Objects.requireNonNull(script, "'script' cannot be null");
 
-        final Options replaced = script.getOptions().replaced(placeholders, player, position);
+        final SourceData sourceData = SourceData.builder()
+            .position(position)
+            .player(player)
+            .build();
+        final Options replaced = script.getOptions().replaced(placeholderGroup, sourceData);
 
         final boolean needCancel = replaced.stream()
             .anyMatch(option -> {

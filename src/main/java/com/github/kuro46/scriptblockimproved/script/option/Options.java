@@ -1,7 +1,7 @@
 package com.github.kuro46.scriptblockimproved.script.option;
 
-import com.github.kuro46.scriptblockimproved.script.BlockPosition;
-import com.github.kuro46.scriptblockimproved.script.option.placeholder.Placeholders;
+import com.github.kuro46.scriptblockimproved.script.option.placeholder.PlaceholderGroup;
+import com.github.kuro46.scriptblockimproved.script.option.placeholder.SourceData;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.bukkit.entity.Player;
 
 public final class Options {
 
@@ -45,11 +44,10 @@ public final class Options {
     }
 
     public Options replaced(
-            final Placeholders placeholders,
-            final Player player,
-            final BlockPosition position) {
+            final PlaceholderGroup placeholderGroup,
+            final SourceData data) {
         final List<Option> replaced = options.stream()
-            .map(option -> option.replaced(placeholders, player, position))
+            .map(option -> option.replaced(placeholderGroup, data))
             .collect(Collectors.toList());
         return new Options(replaced);
     }
