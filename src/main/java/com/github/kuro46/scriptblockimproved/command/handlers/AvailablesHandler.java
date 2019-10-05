@@ -6,9 +6,8 @@ import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.script.option.OptionHandlers;
 import com.github.kuro46.scriptblockimproved.script.option.OptionName;
-import com.github.kuro46.scriptblockimproved.script.trigger.Trigger;
-import com.github.kuro46.scriptblockimproved.script.trigger.Triggers;
-import com.google.common.collect.ImmutableList;
+import com.github.kuro46.scriptblockimproved.script.trigger.TriggerName;
+import com.github.kuro46.scriptblockimproved.script.trigger.TriggerRegistry;
 import com.google.common.collect.ImmutableSet;
 import lombok.NonNull;
 import org.bukkit.command.CommandSender;
@@ -19,13 +18,13 @@ public final class AvailablesHandler extends CommandHandler {
     @NonNull
     private final OptionHandlers handlers;
     @NonNull
-    private final Triggers triggers;
+    private final TriggerRegistry triggerRegistry;
 
     public AvailablesHandler() {
         super(Args.empty());
         final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
         this.handlers = sbi.getOptionHandlers();
-        this.triggers = sbi.getTriggers();
+        this.triggerRegistry = sbi.getTriggerRegistry();
     }
 
     @Override
@@ -46,12 +45,12 @@ public final class AvailablesHandler extends CommandHandler {
     }
 
     private void triggers(final CommandSender sender) {
-        final ImmutableList<Trigger> triggers = this.triggers.getTriggers();
+        final ImmutableSet<TriggerName> triggers = triggerRegistry.getView();
         if (triggers.isEmpty()) {
             sendMessage(sender, "No available triggers exist");
         } else {
             sendMessage(sender, "Available triggers:");
-            triggers.forEach(trigger -> sendMessage(sender, "  " + trigger.getName()));
+            triggers.forEach(trigger -> sendMessage(sender, "  " + trigger));
         }
     }
 }

@@ -11,11 +11,9 @@ import com.github.kuro46.scriptblockimproved.script.option.placeholder.Placehold
 import com.github.kuro46.scriptblockimproved.script.option.placeholder.PlaceholderGroup;
 import com.github.kuro46.scriptblockimproved.script.serialize.ScriptSerializer;
 import com.github.kuro46.scriptblockimproved.script.serialize.UnsupportedVersionException;
-import com.github.kuro46.scriptblockimproved.script.trigger.LeftClickTrigger;
-import com.github.kuro46.scriptblockimproved.script.trigger.MoveTrigger;
-import com.github.kuro46.scriptblockimproved.script.trigger.PressTrigger;
-import com.github.kuro46.scriptblockimproved.script.trigger.RightClickTrigger;
-import com.github.kuro46.scriptblockimproved.script.trigger.Triggers;
+import com.github.kuro46.scriptblockimproved.script.trigger.InteractScriptTrigger;
+import com.github.kuro46.scriptblockimproved.script.trigger.MoveScriptTrigger;
+import com.github.kuro46.scriptblockimproved.script.trigger.TriggerRegistry;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,15 +40,14 @@ public final class ScriptBlockImproved {
     private final PlaceholderGroup placeholderGroup = new PlaceholderGroup();
     @Getter
     private final Actions actions = new Actions();
+    @Getter
+    private final TriggerRegistry triggerRegistry = new TriggerRegistry();
 
     @NonNull
     private final ScriptAutoSaver scriptAutoSaver;
     @NonNull
     @Getter
     private final Path scriptsPath;
-    @Getter
-    @NonNull
-    private final Triggers triggers;
     @Getter
     @NonNull
     private final Plugin plugin;
@@ -70,7 +67,6 @@ public final class ScriptBlockImproved {
         this.logger = plugin.getLogger();
         this.scriptsPath = initScriptsPath();
         this.scripts = loadScripts();
-        this.triggers = new Triggers(plugin);
         this.scriptAutoSaver = new ScriptAutoSaver();
     }
 
@@ -78,7 +74,7 @@ public final class ScriptBlockImproved {
         initExecutor();
         registerAsService();
         registerOptionHandlers();
-        registerTriggers();
+        initTriggers();
         registerCommands();
         registerListeners();
         registerScriptsListeners();
@@ -123,11 +119,7 @@ public final class ScriptBlockImproved {
     }
 
     private void initExecutor() {
-        ScriptExecutor.init(
-                placeholderGroup,
-                scripts,
-                optionHandlers,
-                triggers);
+        ScriptExecutor.init();
     }
 
     private Path initScriptsPath() throws IOException {
@@ -172,11 +164,9 @@ public final class ScriptBlockImproved {
         CommonOptionHandlers.registerAll(plugin, optionHandlers);
     }
 
-    private void registerTriggers() {
-        triggers.register(new MoveTrigger());
-        triggers.register(new RightClickTrigger());
-        triggers.register(new LeftClickTrigger());
-        triggers.register(new PressTrigger());
+    private void initTriggers() {
+        InteractScriptTrigger.listen();
+        MoveScriptTrigger.listen();
     }
 
     private void registerCommands() {
