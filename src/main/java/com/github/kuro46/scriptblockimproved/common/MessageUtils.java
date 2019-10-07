@@ -46,4 +46,12 @@ public final class MessageUtils {
             final Object... args) {
         sendMessage(sender, kind, String.format(message, args));
     }
+
+    public static void sendMessage(
+            final CommandSender sender,
+            final String[] messages) {
+        for (final String message : messages) {
+            sendMessage(sender, message);
+        }
+    }
 }
