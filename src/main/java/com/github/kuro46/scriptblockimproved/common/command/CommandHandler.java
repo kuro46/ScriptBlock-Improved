@@ -24,9 +24,11 @@ public abstract class CommandHandler {
     public abstract void execute(ExecutionData data);
 
     public List<String> complete(final CompletionData data) {
-        return data.getCommand().getChildren().keySet().stream()
+        final List<String> children = data.getCommand().getChildren().keySet().stream()
             .map(CommandSection::getName)
             .collect(Collectors.toList());
+        return CandidateFactories.filter(CandidateFactories.created(children))
+            .create(data.getCurrentValue());
     }
 
     @FunctionalInterface

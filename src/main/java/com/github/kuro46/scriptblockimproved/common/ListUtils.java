@@ -9,7 +9,7 @@ public final class ListUtils {
     }
 
     public static boolean isPresent(final List<?> list, final int index) {
-        return index < list.size();
+        return index > -1 && index < list.size();
     }
 
     public static <T> Optional<T> get(final List<T> list, final int index) {

@@ -109,7 +109,8 @@ public final class CommandRoot {
             .dispatcher(sender)
             .command(command)
             .argName(argInfo.getName())
-            .currentValue(free.get(free.size() - 1))
+            // TODO: Fix 'orElse'
+            .currentValue(ListUtils.get(free, free.size() - 1).orElse(""))
             .build();
         return command.getHandler().complete(data);
     }
