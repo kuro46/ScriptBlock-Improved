@@ -1,17 +1,24 @@
 package com.github.kuro46.scriptblockimproved.script.option;
 
+import com.github.kuro46.scriptblockimproved.PermissionDetector;
+import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import com.github.kuro46.scriptblockimproved.script.Script;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.Plugin;
+import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
 public final class CommonOptionHandlers {
 
-    public static void registerAll(final Plugin plugin, final OptionHandlers handlers) {
+    public static void registerAll(
+            final Plugin plugin,
+            final OptionHandlers handlers) {
         Objects.requireNonNull(handlers, "'handlers' cannot be null");
         Objects.requireNonNull(plugin, "'plugin' cannot be null");
 
@@ -19,7 +26,9 @@ public final class CommonOptionHandlers {
         handlers.add(OptionName.of("console"), CONSOLE_HANDLER);
         handlers.add(OptionName.of("broadcast"), BROADCAST_HANDLER);
         handlers.add(OptionName.of("say"), SAY_HANDLER);
-        handlers.add(OptionName.of("bypassCommand"), new BypassCommandHandler(plugin));
+        handlers.add(
+                OptionName.of("bypassCommand"),
+                new BypassCommandHandler(plugin));
     }
 
     private static final OptionHandler COMMAND_HANDLER = new OptionHandler() {
@@ -153,7 +162,7 @@ public final class CommonOptionHandlers {
         private final Plugin plugin;
 
         public BypassCommandHandler(final Plugin plugin) {
-            this.plugin = plugin;
+            this.plugin = Objects.requireNonNull(plugin, "'plugin' cannot be null");;
         }
 
         private final Args args = Args.builder()
@@ -182,8 +191,30 @@ public final class CommonOptionHandlers {
             final ParsedArgs args = option.getArgs();
             final PermissionAttachment attachment = player.addAttachment(plugin);
             try {
-                attachment.setPermission(args.getOrFail("permission"), true);
-                player.performCommand(removeSlashIfNeeded(args.getOrFail("command")));
+                final String command = removeSlashIfNeeded(args.getOrFail("command"));
+                final String argPerm = args.getOrFail("permission");
+
+                final List<String> permissions;
+                if (argPerm.equals("auto")) {
+                    final List<String> detected = PermissionDetector.getInstance()
+                        .getPermissionsByCommand(command).orElse(null);
+                    if (detected == null) {
+                        sendMessage(
+                                player,
+                                MessageKind.ERROR,
+                                "No permissions found for '%s'",
+                                command);
+                        return;
+                    }
+                    permissions = detected;
+                } else {
+                    permissions = Collections.singletonList(argPerm);
+                }
+
+                permissions.forEach(permission -> {
+                    attachment.setPermission(permission, true);
+                });
+                player.performCommand(command);
             } finally {
                 attachment.remove();
             }

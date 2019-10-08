@@ -9,6 +9,7 @@ import com.github.kuro46.scriptblockimproved.command.handlers.DeleteAtHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.DeleteHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.HelpHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.ListHandler;
+import com.github.kuro46.scriptblockimproved.command.handlers.PermMapHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.SBIHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.SaveHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.ViewAtHandler;
@@ -51,6 +52,11 @@ public final class SBICommand {
             .section("save")
             .description("Save scripts into specified file (or scripts.json)")
             .handler(new SaveHandler())
+            .childOf(root);
+        Command.builder()
+            .section("map-perm")
+            .description("Assosiate permission and command")
+            .handler(new PermMapHandler())
             .childOf(root);
         Command.builder()
             .section("create")

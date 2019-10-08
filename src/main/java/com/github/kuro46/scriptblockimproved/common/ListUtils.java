@@ -17,4 +17,8 @@ public final class ListUtils {
             ? Optional.of(list.get(index))
             : Optional.empty();
     }
+
+    public static <T> List<T> removeLastElement(final List<T> list) {
+        return list.subList(0, list.size() - 1);
+    }
 }

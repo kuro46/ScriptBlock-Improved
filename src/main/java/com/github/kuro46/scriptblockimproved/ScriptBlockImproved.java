@@ -70,7 +70,8 @@ public final class ScriptBlockImproved {
         this.scriptAutoSaver = new ScriptAutoSaver();
     }
 
-    private void initInternal() {
+    private void initInternal() throws IOException {
+        PermissionDetector.init(dataFolder);
         initExecutor();
         registerAsService();
         registerOptionHandlers();

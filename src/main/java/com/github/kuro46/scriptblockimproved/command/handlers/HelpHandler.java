@@ -31,7 +31,7 @@ public final class HelpHandler extends CommandHandler {
             ChatColor.BOLD + "[view] view scripts",
             "  view, viewat",
             ChatColor.BOLD + "[other] other",
-            "  availables, save",
+            "  availables, save, map-perm",
             "",
             "'/sbi help <topic>' to show details about topic",
             "Examples:",
@@ -72,7 +72,9 @@ public final class HelpHandler extends CommandHandler {
                     ChatColor.BOLD + "list available options and triggers",
                     "  availables",
                     ChatColor.BOLD + "save scripts into specified file or scripts.json",
-                    "  save"
+                    "  save",
+                    ChatColor.BOLD + "associate permission for command",
+                    "  map-perm <permission> <command>"
                 };
                 sendMessage(sender, messages);
                 break;
