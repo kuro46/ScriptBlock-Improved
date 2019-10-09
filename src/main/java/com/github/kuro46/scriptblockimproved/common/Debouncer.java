@@ -27,12 +27,11 @@ public final class Debouncer {
             @NonNull final Runnable task,
             final long delay,
             @NonNull final TimeUnit delayUnit) {
-        THREAD_COUNT.incrementAndGet();
         this.task = task;
         this.delay = delay;
         this.delayUnit = delayUnit;
         this.executor = Executors.newSingleThreadScheduledExecutor(r -> {
-            return new Thread(r, "sbi-debouncer-" + THREAD_COUNT.get());
+            return new Thread(r, "sbi-debouncer-" + THREAD_COUNT.incrementAndGet());
         });
     }
 

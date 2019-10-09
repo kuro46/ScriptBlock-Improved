@@ -3,6 +3,7 @@ package com.github.kuro46.scriptblockimproved;
 import com.github.kuro46.scriptblockimproved.command.SBICommand;
 import com.github.kuro46.scriptblockimproved.command.clickaction.ActionExecutor;
 import com.github.kuro46.scriptblockimproved.command.clickaction.Actions;
+import com.github.kuro46.scriptblockimproved.common.Debouncer;
 import com.github.kuro46.scriptblockimproved.script.ScriptExecutor;
 import com.github.kuro46.scriptblockimproved.script.Scripts;
 import com.github.kuro46.scriptblockimproved.script.option.CommonOptionHandlers;
@@ -18,9 +19,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -111,12 +109,7 @@ public final class ScriptBlockImproved {
         if (instance == null) {
             throw new IllegalStateException("The plugin is not initialized now");
         }
-        instance.disposeInternal();
         instance = null;
-    }
-
-    private void disposeInternal() {
-        scriptAutoSaver.shutdown();
     }
 
     private void initExecutor() {
@@ -187,32 +180,20 @@ public final class ScriptBlockImproved {
 
     private class ScriptAutoSaver {
 
-        private final ScheduledExecutorService executor =
-            Executors.newSingleThreadScheduledExecutor(r -> {
-                return new Thread(r, "script-auto-save-thread");
-            });
-
-        private ScheduledFuture<?> scheduled;
+        private final Debouncer debouncer = new Debouncer(this::save, 1, TimeUnit.SECONDS);
 
         public void saveLater() {
-            if (scheduled != null) scheduled.cancel(false);
-            scheduled = schedule();
+            debouncer.runLater();
         }
 
-        private ScheduledFuture<?> schedule() {
-            return executor.schedule(() -> {
-                try {
-                    ScriptSerializer.serialize(dataFolder.resolve("scripts.json"), scripts, true);
-                } catch (IOException e) {
-                    logger.log(Level.SEVERE,
-                            "Failed to save scripts. Type '/sbi save' for save scripts manually.",
-                            e);
-                }
-            }, 1, TimeUnit.SECONDS);
-        }
-
-        public void shutdown() {
-            executor.shutdown();
+        private void save() {
+            try {
+                ScriptSerializer.serialize(dataFolder.resolve("scripts.json"), scripts, true);
+            } catch (IOException e) {
+                logger.log(Level.SEVERE,
+                        "Failed to save scripts. Type '/sbi save' for save scripts manually.",
+                        e);
+            }
         }
     }
 }
