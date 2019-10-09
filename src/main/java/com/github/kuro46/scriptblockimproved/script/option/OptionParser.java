@@ -2,7 +2,6 @@ package com.github.kuro46.scriptblockimproved.script.option;
 
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
-import com.github.kuro46.scriptblockimproved.common.tuple.Triple;
 import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +10,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 public final class OptionParser {
 
@@ -41,9 +41,9 @@ public final class OptionParser {
                         throw new ParseException();
                     }
 
-                    return Triple.of(name, parsedArgs, handler);
-                }) // Mapped to Triple<OptionName, Arguments, OptionHandler>
-                .map(data -> new Option(data.left(), data.middle())) // Mapped to Option
+                    return ImmutableTriple.of(name, parsedArgs, handler);
+                }) // Mapped to ImmutableTriple<OptionName, Arguments, OptionHandler>
+                .map(data -> new Option(data.getLeft(), data.getMiddle())) // Mapped to Option
                 .collect(Collectors.toList());
             return Optional.of(new Options(options));
         } catch (ParseException e) {

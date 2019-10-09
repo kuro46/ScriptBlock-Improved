@@ -1,7 +1,6 @@
 package com.github.kuro46.scriptblockimproved.common.command;
 
 import com.github.kuro46.scriptblockimproved.common.ListUtils;
-import com.github.kuro46.scriptblockimproved.common.tuple.Pair;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
 /**
  * List of arguments.
@@ -119,7 +119,7 @@ public final class Args implements Formattable {
 
         public Optional<ParsedArgs> parse(final List<String> raw) {
             if (args.isEmpty()) return Optional.of(new ParsedArgs(Collections.emptyMap()));
-            final List<Pair<ArgName, String>> preparsed = preparse(raw).orElse(null);
+            final List<ImmutablePair<ArgName, String>> preparsed = preparse(raw).orElse(null);
             if (preparsed == null) {
                 return Optional.empty();
             }
@@ -128,8 +128,8 @@ public final class Args implements Formattable {
             return Optional.of(new ParsedArgs(squashed));
         }
 
-        private Optional<List<Pair<ArgName, String>>> preparse(final List<String> parts) {
-            final List<Pair<ArgName, String>> preparsed = new ArrayList<>();
+        private Optional<List<ImmutablePair<ArgName, String>>> preparse(final List<String> parts) {
+            final List<ImmutablePair<ArgName, String>> preparsed = new ArrayList<>();
             int index = 0;
             Arg prevArg = null;
             while (true) {
@@ -146,7 +146,7 @@ public final class Args implements Formattable {
                 }
 
                 if (value != null) {
-                    preparsed.add(Pair.of(currentArg.getName(), value));
+                    preparsed.add(ImmutablePair.of(currentArg.getName(), value));
                 }
 
                 // finalize
@@ -157,12 +157,12 @@ public final class Args implements Formattable {
             return Optional.of(preparsed);
         }
 
-        private Map<ArgName, String> squash(final List<Pair<ArgName, String>> preparsed) {
+        private Map<ArgName, String> squash(final List<ImmutablePair<ArgName, String>> preparsed) {
             final Map<ArgName, String> squashed = new HashMap<>();
 
-            for (final Pair<ArgName, String> pair : preparsed) {
-                final ArgName name = pair.left();
-                final String value = pair.right();
+            for (final ImmutablePair<ArgName, String> pair : preparsed) {
+                final ArgName name = pair.getLeft();
+                final String value = pair.getRight();
                 if (!squashed.containsKey(name)) {
                     squashed.put(name, value);
                 } else {
