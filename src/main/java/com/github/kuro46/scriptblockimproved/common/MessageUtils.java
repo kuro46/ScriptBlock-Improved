@@ -1,5 +1,6 @@
 package com.github.kuro46.scriptblockimproved.common;
 
+import java.util.List;
 import java.util.Objects;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -49,9 +50,7 @@ public final class MessageUtils {
 
     public static void sendMessage(
             final CommandSender sender,
-            final String[] messages) {
-        for (final String message : messages) {
-            sendMessage(sender, message);
-        }
+            final List<String> messages) {
+        messages.forEach(message -> sendMessage(sender, message));
     }
 }
