@@ -22,6 +22,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     // Guava
     implementation 'com.google.guava:guava:28.1-jre'
+    // Apache Commons Lang
+    implementation 'org.apache.commons:commons-lang3:3.9'
     // ErrorProne
     errorprone("com.google.errorprone:error_prone_core:2.+")
     errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
@@ -49,6 +51,7 @@ shadowJar {
     archiveFileName = "ScriptBlock-Improved-${version}.jar"
 
     relocate 'com.google', 'com.github.kuro46.scriptblockimproved.libs.google'
+    relocate 'org.apache.commons.lang3', 'com.github.kuro46.scriptblockimproved.libs.apache.commons'
     relocate 'org.checkerframework', 'com.github.kuro46.scriptblockimproved.libs.checkerframework'
 }
 

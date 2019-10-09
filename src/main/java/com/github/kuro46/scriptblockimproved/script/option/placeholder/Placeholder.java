@@ -3,6 +3,7 @@ package com.github.kuro46.scriptblockimproved.script.option.placeholder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 
 @ToString
 public final class Placeholder {
@@ -43,10 +44,8 @@ public final class Placeholder {
         return new Builder();
     }
 
-    // TODO: Improve performance
-    // In Java8, String.replace uses Regex
     public String replace(@NonNull final String source, @NonNull final SourceData data) {
-        return source.replace(target, replacementFactory.create(data));
+        return StringUtils.replace(source, target, replacementFactory.create(data));
     }
 
     public static final class Builder {
