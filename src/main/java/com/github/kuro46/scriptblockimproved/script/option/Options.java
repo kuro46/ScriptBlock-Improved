@@ -9,10 +9,10 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.NonNull;
 
 public final class Options {
 
@@ -22,10 +22,9 @@ public final class Options {
         this.options = ImmutableList.copyOf(options);
     }
 
-    public static Optional<Options> parse(final OptionHandlers handlers, final String str) {
-        Objects.requireNonNull(handlers, "'handlers' cannot be null");
-        Objects.requireNonNull(str, "'str' cannot be null");
-
+    public static Options parse(
+            @NonNull final OptionHandlers handlers,
+            @NonNull final String str) throws ParseException {
         return OptionParser.parse(handlers, str);
     }
 

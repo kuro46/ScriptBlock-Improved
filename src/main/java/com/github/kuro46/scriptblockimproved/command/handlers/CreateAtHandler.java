@@ -15,6 +15,7 @@ import com.github.kuro46.scriptblockimproved.script.Scripts;
 import com.github.kuro46.scriptblockimproved.script.author.Author;
 import com.github.kuro46.scriptblockimproved.script.option.OptionHandlers;
 import com.github.kuro46.scriptblockimproved.script.option.Options;
+import com.github.kuro46.scriptblockimproved.script.option.ParseException;
 import com.github.kuro46.scriptblockimproved.script.trigger.TriggerName;
 import java.util.List;
 import lombok.NonNull;
@@ -49,8 +50,13 @@ public final class CreateAtHandler extends CommandHandler {
 
         final String trigger = args.getOrFail("trigger");
         final String rawOptions = args.getOrFail("script");
-        final Options options = Options.parse(handlers, rawOptions)
-            .orElseThrow(IllegalArgumentException::new);
+        final Options options;
+        try {
+            options = Options.parse(handlers, rawOptions);
+        } catch (final ParseException e) {
+            sendMessage(sender, MessageKind.ERROR, e.getMessage());
+            return;
+        }
         final BlockPosition position = BlockPosition.fromArgs(args).orElse(null);
         if (position == null) {
             return;

@@ -1,6 +1,5 @@
 package com.github.kuro46.scriptblockimproved.script.option;
 
-import com.google.common.base.MoreObjects;
 import com.google.gson.JsonPrimitive;
 import java.util.Objects;
 
@@ -49,8 +48,6 @@ public final class OptionName implements Comparable<OptionName> {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("name", name)
-            .toString();
+        return name;
     }
 }
