@@ -37,7 +37,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.kuro46:ScriptBlock-Improved:v0.3.0'
+    implementation 'com.github.kuro46:ScriptBlock-Improved:v0.4.0'
 }
 ```
 
