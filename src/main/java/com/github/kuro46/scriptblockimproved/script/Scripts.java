@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import lombok.NonNull;
+import lombok.ToString;
 
+@ToString
 public final class Scripts {
 
     private final List<ScriptsListener> listeners = new ArrayList<>();
