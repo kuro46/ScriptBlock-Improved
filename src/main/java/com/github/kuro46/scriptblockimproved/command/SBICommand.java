@@ -14,6 +14,7 @@ import com.github.kuro46.scriptblockimproved.command.handlers.SBIHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.SaveHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.ViewAtHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.ViewHandler;
+import com.github.kuro46.scriptblockimproved.command.handlers.migration.MigrateHandler;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Command;
 import com.github.kuro46.scriptblockimproved.common.command.CommandRoot;
@@ -37,6 +38,11 @@ public final class SBICommand {
             .section("help")
             .description("Displays this message")
             .handler(new HelpHandler())
+            .childOf(root);
+        Command.builder()
+            .section("migrate")
+            .description("")
+            .handler(new MigrateHandler())
             .childOf(root);
         Command.builder()
             .section("list")

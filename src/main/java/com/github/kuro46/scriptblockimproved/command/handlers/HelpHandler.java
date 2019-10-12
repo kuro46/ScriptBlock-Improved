@@ -28,7 +28,7 @@ public final class HelpHandler extends CommandHandler {
         ChatColor.BOLD + "[view] view scripts",
         "  view, viewat",
         ChatColor.BOLD + "[other] other",
-        "  availables, save, map-perm",
+        "  availables, save, map-perm, migrate",
         "",
         "'/sbi help <topic>' to show details about topic",
         "Examples:",
@@ -57,7 +57,9 @@ public final class HelpHandler extends CommandHandler {
         ChatColor.BOLD + "save scripts into specified file or scripts.json",
         "  save",
         ChatColor.BOLD + "associate permission for command",
-        "  map-perm <permission> <command>"
+        "  map-perm <permission> <command>",
+        ChatColor.BOLD + "migrate scripts from ScriptBlock",
+        "  migrate"
     );
 
     public HelpHandler() {
