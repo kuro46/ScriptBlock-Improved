@@ -59,7 +59,7 @@ public final class InteractScriptTrigger implements Listener {
                 executor.execute(TRIGGER_PRESS, player, clickedPosition);
                 break;
             default:
-                throw new RuntimeException("Reached illegal code");
+                return;
         }
     }
 
