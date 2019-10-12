@@ -15,4 +15,9 @@ public final class SystemAuthorData implements AuthorData {
     public String getName() {
         return "SYSTEM";
     }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

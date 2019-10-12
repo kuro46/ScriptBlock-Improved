@@ -116,4 +116,9 @@ public final class Author {
     public AuthorData getData() {
         return data;
     }
+
+    @Override
+    public String toString() {
+        return data.toString();
+    }
 }

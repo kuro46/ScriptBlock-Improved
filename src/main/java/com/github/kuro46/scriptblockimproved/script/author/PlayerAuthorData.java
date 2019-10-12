@@ -3,7 +3,9 @@ package com.github.kuro46.scriptblockimproved.script.author;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.NonNull;
+import lombok.ToString;
 
+@ToString
 public final class PlayerAuthorData implements AuthorData {
 
     @NonNull

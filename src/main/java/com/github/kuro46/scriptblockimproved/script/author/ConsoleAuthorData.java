@@ -15,4 +15,9 @@ public final class ConsoleAuthorData implements AuthorData {
     public String getName() {
         return "CONSOLE";
     }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

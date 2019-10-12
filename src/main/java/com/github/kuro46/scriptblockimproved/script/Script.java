@@ -7,7 +7,9 @@ import com.google.gson.JsonObject;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.ToString;
 
+@ToString
 @EqualsAndHashCode
 public final class Script {
 
