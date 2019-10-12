@@ -1,8 +1,10 @@
 package com.github.kuro46.scriptblockimproved.script.trigger;
 
+import com.google.errorprone.annotations.Immutable;
 import com.google.gson.JsonPrimitive;
 import java.util.Objects;
 
+@Immutable
 public final class TriggerName {
 
     private final String name;
