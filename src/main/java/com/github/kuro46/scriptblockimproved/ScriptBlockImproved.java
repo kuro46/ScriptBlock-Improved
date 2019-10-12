@@ -14,6 +14,7 @@ import com.github.kuro46.scriptblockimproved.script.serialize.ScriptSerializer;
 import com.github.kuro46.scriptblockimproved.script.serialize.UnsupportedVersionException;
 import com.github.kuro46.scriptblockimproved.script.trigger.InteractScriptTrigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.MoveScriptTrigger;
+import com.github.kuro46.scriptblockimproved.script.trigger.SBScriptTrigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.TriggerRegistry;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -161,6 +162,7 @@ public final class ScriptBlockImproved {
     private void initTriggers() {
         InteractScriptTrigger.listen();
         MoveScriptTrigger.listen();
+        SBScriptTrigger.listen();
     }
 
     private void registerCommands() {
