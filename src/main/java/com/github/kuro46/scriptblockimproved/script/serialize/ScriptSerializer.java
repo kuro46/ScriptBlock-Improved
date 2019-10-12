@@ -23,7 +23,9 @@ public final class ScriptSerializer {
     }
 
     private static Gson gson() {
-        return new GsonBuilder().setPrettyPrinting().create();
+        return new GsonBuilder()
+            .serializeNulls()
+            .create();
     }
 
     public static void serialize(
