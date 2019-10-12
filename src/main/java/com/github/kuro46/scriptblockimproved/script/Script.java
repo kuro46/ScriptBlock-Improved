@@ -3,29 +3,35 @@ package com.github.kuro46.scriptblockimproved.script;
 import com.github.kuro46.scriptblockimproved.script.author.Author;
 import com.github.kuro46.scriptblockimproved.script.option.Options;
 import com.github.kuro46.scriptblockimproved.script.trigger.TriggerName;
-import com.google.common.base.MoreObjects;
 import com.google.gson.JsonObject;
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
 
+@EqualsAndHashCode
 public final class Script {
 
+    @Getter
     private final long createdAt;
+    @Getter
+    @NonNull
     private final TriggerName trigger;
+    @Getter
+    @NonNull
     private final Author author;
+    @Getter
+    @NonNull
     private final BlockPosition position;
+    @Getter
+    @NonNull
     private final Options options;
 
     public Script(
             final long createdAt,
-            final TriggerName trigger,
-            final Author author,
-            final BlockPosition position,
-            final Options options) {
-        Objects.requireNonNull(trigger, "'trigger' cannot be null");
-        Objects.requireNonNull(author, "'author' cannot be null");
-        Objects.requireNonNull(position, "'position' cannot be null");
-        Objects.requireNonNull(options, "'options' cannot be null");
-
+            @NonNull final TriggerName trigger,
+            @NonNull final Author author,
+            @NonNull final BlockPosition position,
+            @NonNull final Options options) {
         this.createdAt = createdAt;
         this.trigger = trigger;
         this.author = author;
@@ -33,9 +39,7 @@ public final class Script {
         this.options = options;
     }
 
-    public static Script fromJson(final JsonObject json) {
-        Objects.requireNonNull(json, "'json' cannot be null");
-
+    public static Script fromJson(@NonNull final JsonObject json) {
         final long createdAt = json.get("createdAt").getAsLong();
         final TriggerName trigger = TriggerName.fromJson(json.getAsJsonPrimitive("trigger"));
         final Author author = Author.fromJson(json.getAsJsonObject("author"));
@@ -53,45 +57,5 @@ public final class Script {
         json.add("position", position.toJson());
         json.add("options", options.toJson());
         return json;
-    }
-
-    public TriggerName getTrigger() {
-        return trigger;
-    }
-
-    public Author getAuthor() {
-        return author;
-    }
-
-    public BlockPosition getPosition() {
-        return position;
-    }
-
-    public Options getOptions() {
-        return options;
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof Script)) return false;
-        Script castedOther = (Script) other;
-
-        return this.author.equals(castedOther.author)
-                && this.position.equals(castedOther.position)
-                && this.options.equals(castedOther.options);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(author, position, options);
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("author", author)
-            .add("position", position)
-            .add("options", options)
-            .toString();
     }
 }
