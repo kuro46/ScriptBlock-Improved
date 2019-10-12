@@ -12,6 +12,7 @@ import lombok.ToString;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 
 @EqualsAndHashCode
 @ToString
@@ -52,6 +53,14 @@ public final class BlockPosition implements Comparable<BlockPosition> {
                 location.getBlockX(),
                 location.getBlockY(),
                 location.getBlockZ());
+    }
+
+    public static BlockPosition fromBlock(@NonNull final Block block) {
+        return new BlockPosition(
+                block.getWorld().getName(),
+                block.getX(),
+                block.getY(),
+                block.getZ());
     }
 
     public static BlockPosition fromJson(@NonNull final JsonObject json) {
