@@ -1,5 +1,6 @@
 package com.github.kuro46.scriptblockimproved.script.author;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.Objects;
 import java.util.UUID;
@@ -17,6 +18,10 @@ public final class Author {
 
     public static Author player(final String name, final UUID uniqueId) {
         return new Author(new PlayerAuthorData(name, uniqueId));
+    }
+
+    public static Author player(final String name) {
+        return new Author(new PlayerAuthorData(name));
     }
 
     public static Author system() {
@@ -54,7 +59,13 @@ public final class Author {
             case "player":
                 final JsonObject jsonData = json.getAsJsonObject("data");
                 final String name = jsonData.get("name").getAsString();
-                final UUID uniqueId = UUID.fromString(jsonData.get("uniqueId").getAsString());
+                final UUID uniqueId;
+                final JsonElement jsonUniqueId = jsonData.get("uniqueId");
+                if (jsonUniqueId.isJsonNull()) {
+                    uniqueId = null;
+                } else {
+                    uniqueId = UUID.fromString(jsonUniqueId.getAsString());
+                }
                 data = new PlayerAuthorData(name, uniqueId);
                 break;
             default:
@@ -76,7 +87,7 @@ public final class Author {
             final JsonObject data = new JsonObject();
             final PlayerAuthorData playerData = (PlayerAuthorData) this.data;
             data.addProperty("name", playerData.getName());
-            data.addProperty("uniqueId", playerData.getUniqueId().toString());
+            data.addProperty("uniqueId", playerData.getUniqueId().map(UUID::toString).orElse(null));
             json.add("data", data);
         } else {
             throw new IllegalArgumentException("Unknown data class: " + data.getClass());
