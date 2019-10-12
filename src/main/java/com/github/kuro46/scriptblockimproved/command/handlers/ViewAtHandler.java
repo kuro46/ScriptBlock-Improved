@@ -62,7 +62,7 @@ public final class ViewAtHandler extends CommandHandler {
         sendMessage(sender,
                 "trigger: %s%s",
                 ChatColor.RESET,
-                script.getTrigger().getName());
+                script.getTriggerName().getName());
         sendMessage(sender, "options:");
         script.getOptions().forEach(option -> {
             sendMessage(sender, "  %s: ", option.getName().getName());

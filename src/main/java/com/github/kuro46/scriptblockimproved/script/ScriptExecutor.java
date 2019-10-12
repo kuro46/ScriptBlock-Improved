@@ -63,7 +63,7 @@ public final class ScriptExecutor {
         }
         if (!scripts.contains(position)) return;
         scripts.get(position).stream()
-            .filter(script -> script.getTrigger().equals(triggerName))
+            .filter(script -> script.getTriggerName().equals(triggerName))
             .forEach(script -> execute(script, player));
     }
 

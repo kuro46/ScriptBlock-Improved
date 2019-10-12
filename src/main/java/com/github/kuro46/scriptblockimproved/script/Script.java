@@ -17,7 +17,7 @@ public final class Script {
     private final long createdAt;
     @Getter
     @NonNull
-    private final TriggerName trigger;
+    private final TriggerName triggerName;
     @Getter
     @NonNull
     private final Author author;
@@ -30,12 +30,12 @@ public final class Script {
 
     public Script(
             final long createdAt,
-            @NonNull final TriggerName trigger,
+            @NonNull final TriggerName triggerName,
             @NonNull final Author author,
             @NonNull final BlockPosition position,
             @NonNull final Options options) {
         this.createdAt = createdAt;
-        this.trigger = trigger;
+        this.triggerName = triggerName;
         this.author = author;
         this.position = position;
         this.options = options;
@@ -43,18 +43,19 @@ public final class Script {
 
     public static Script fromJson(@NonNull final JsonObject json) {
         final long createdAt = json.get("createdAt").getAsLong();
-        final TriggerName trigger = TriggerName.fromJson(json.getAsJsonPrimitive("trigger"));
+        final TriggerName triggerName =
+            TriggerName.fromJson(json.getAsJsonPrimitive("triggerName"));
         final Author author = Author.fromJson(json.getAsJsonObject("author"));
         final BlockPosition position =
             BlockPosition.fromJson(json.getAsJsonObject("position"));
         final Options options = Options.fromJson(json.getAsJsonArray("options"));
-        return new Script(createdAt, trigger, author, position, options);
+        return new Script(createdAt, triggerName, author, position, options);
     }
 
     public JsonObject toJson() {
         final JsonObject json = new JsonObject();
         json.addProperty("createdAt", createdAt);
-        json.add("trigger", trigger.toJson());
+        json.add("triggerName", triggerName.toJson());
         json.add("author", author.toJson());
         json.add("position", position.toJson());
         json.add("options", options.toJson());
