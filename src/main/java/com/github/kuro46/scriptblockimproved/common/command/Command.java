@@ -21,24 +21,13 @@ public final class Command {
     private final CommandSection section;
     @Getter
     @NonNull
-    private final String description;
-    @Getter
-    @NonNull
     private final CommandHandler handler;
 
     public Command(
             @NonNull final CommandSection section,
             @NonNull final CommandHandler handler) {
-        this(section, handler, null);
-    }
-
-    public Command(
-            @NonNull final CommandSection section,
-            @NonNull final CommandHandler handler,
-            @NonNull final String description) {
         this.section = section;
         this.handler = handler;
-        this.description = description;
     }
 
     public static Builder builder() {
@@ -62,7 +51,6 @@ public final class Command {
         private final List<Command> children = new ArrayList<>();
 
         private CommandSection section;
-        private String description;
         private CommandHandler handler;
 
         public Builder section(final CommandSection section) {
@@ -73,12 +61,6 @@ public final class Command {
 
         public Builder section(final String section) {
             this.section = CommandSection.of(section);
-
-            return this;
-        }
-
-        public Builder description(final String description) {
-            this.description = description;
 
             return this;
         }
@@ -96,7 +78,7 @@ public final class Command {
         }
 
         public Command build() {
-            final Command command = new Command(section, handler, description);
+            final Command command = new Command(section, handler);
             children.forEach(command::addChild);
             return command;
         }
