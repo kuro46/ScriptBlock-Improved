@@ -2,10 +2,11 @@ package com.github.kuro46.scriptblockimproved;
 
 import com.github.kuro46.scriptblockimproved.common.Debouncer;
 import com.github.kuro46.scriptblockimproved.common.ListUtils;
-import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ListMultimap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.SetMultimap;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -37,8 +39,8 @@ public final class PermissionDetector {
     @NonNull
     private final Debouncer debouncer;
     @NonNull
-    private volatile ImmutableListMultimap<Command, Permission> mappings =
-        ImmutableListMultimap.of();
+    private volatile ImmutableSetMultimap<Command, Permission> mappings =
+        ImmutableSetMultimap.of();
 
     private PermissionDetector(@NonNull final Path dataFolder) throws IOException {
         this.filePath = dataFolder.resolve("permission-mappings.yml");
@@ -80,7 +82,7 @@ public final class PermissionDetector {
         } finally {
             ioLock.unlock();
         }
-        final ListMultimap<Command, Permission> mappings = ArrayListMultimap.create();
+        final SetMultimap<Command, Permission> mappings = HashMultimap.create();
         for (final String command : configuration.getKeys(false)) {
             final List<Permission> permissions = configuration.getStringList(command).stream()
                 .map(Permission::new)
@@ -91,7 +93,7 @@ public final class PermissionDetector {
     }
 
     private void loadRegistered() {
-        final ListMultimap<Command, Permission> mappings = ArrayListMultimap.create();
+        final SetMultimap<Command, Permission> mappings = HashMultimap.create();
         for (final Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
             final Map<String, Map<String, Object>> commands =
                 plugin.getDescription().getCommands();
@@ -121,23 +123,23 @@ public final class PermissionDetector {
         }
     }
 
-    public ListMultimap<Command, Permission> mutable() {
-        return ArrayListMultimap.create(mappings);
+    public SetMultimap<Command, Permission> mutable() {
+        return HashMultimap.create(mappings);
     }
 
     public void associate(@NonNull final String command, @NonNull final String permission) {
-        final ListMultimap<Command, Permission> mutable = mutable();
+        final SetMultimap<Command, Permission> mutable = mutable();
         mutable.put(new Command(command), new Permission(permission));
         update(mutable);
         debouncer.runLater();
     }
 
-    private void update(final ListMultimap<Command, Permission> newMappings) {
-        mappings = ImmutableListMultimap.copyOf(newMappings);
+    private void update(final SetMultimap<Command, Permission> newMappings) {
+        mappings = ImmutableSetMultimap.copyOf(newMappings);
     }
 
     public Optional<List<String>> getPermissionsByCommand(@NonNull final String strCommand) {
-        List<Permission> permissions = null;
+        Set<Permission> permissions = null;
         Command command = new Command(strCommand);
         while (true) {
             if (mappings.containsKey(command)) {
