@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -50,7 +51,7 @@ public final class CommandRoot {
             @NonNull final String label,
             @NonNull final String[] args) {
         validateIncomingCommand(bukkitCommand);
-        final FindResult result = findCommand(Arrays.asList(args));
+        final FindResult result = findCommand(FindMode.FOR_EXECUTION, Arrays.asList(args));
         final ImmutableList<CommandSection> path = new ImmutableList.Builder<CommandSection>()
             .add(CommandSection.of(bukkitCommand.getName()))
             .addAll(result.getUsed().stream()
@@ -95,22 +96,23 @@ public final class CommandRoot {
             .filter(arg -> !arg.equals(" "))
             .collect(Collectors.toList());
         // Find command
-        final FindResult result = findCommand(args);
+        final FindResult result = findCommand(FindMode.FOR_COMPLETION, args);
         final Command command = result.getCommand();
         final List<String> free = result.getFree();
         // Get completing value and argument name of it
         final List<Arg> argsInfo = command.getHandler().getArgs().asList();
         if (argsInfo.isEmpty()) return Collections.emptyList();
         final Arg argInfo = ListUtils.get(argsInfo, free.size() - 1)
-            .orElse(argsInfo.get(argsInfo.size() - 1));
+            .orElse(ListUtils.last(argsInfo).get());
+        final String currentValue = ListUtils.last(free)
+            .orElseGet(() -> ListUtils.last(result.getUsed()).get());
         // Build data
         final CompletionData data = CompletionData.builder()
             .root(this)
             .dispatcher(sender)
             .command(command)
             .argName(argInfo.getName())
-            // TODO: Fix 'orElse'
-            .currentValue(ListUtils.get(free, free.size() - 1).orElse(""))
+            .currentValue(currentValue)
             .build();
         return command.getHandler().complete(data);
     }
@@ -123,11 +125,13 @@ public final class CommandRoot {
         Preconditions.checkState(bukkitCommandName.equals(rootCommandName));
     }
 
-    private FindResult findCommand(@NonNull final List<String> args) {
+    private FindResult findCommand(@NonNull FindMode mode, @NonNull final List<String> args) {
         final ImmutableList.Builder<String> used = new ImmutableList.Builder<>();
         int nest = 0;
         Command command = rootCommand;
-        for (final String arg : args) {
+        for (final ListIterator<String> iterator = args.listIterator(); iterator.hasNext();) {
+            final String arg = iterator.next();
+            if (mode == FindMode.FOR_COMPLETION && !arg.isEmpty() && !iterator.hasNext()) break;
             final CommandSection section = CommandSection.of(arg);
             final Command retrieved = command.getChild(section).orElse(null);
             if (retrieved == null) break;
@@ -160,5 +164,10 @@ public final class CommandRoot {
         @NonNull
         @Getter
         private final ImmutableList<String> free;
+    }
+
+    private enum FindMode {
+        FOR_COMPLETION,
+        FOR_EXECUTION
     }
 }

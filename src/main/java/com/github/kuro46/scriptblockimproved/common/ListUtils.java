@@ -18,6 +18,10 @@ public final class ListUtils {
             : Optional.empty();
     }
 
+    public static <T> Optional<T> last(final List<T> list) {
+        return get(list, list.size() - 1);
+    }
+
     public static <T> List<T> removeLastElement(final List<T> list) {
         return list.subList(0, list.size() - 1);
     }
