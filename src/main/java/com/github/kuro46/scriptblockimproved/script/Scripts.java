@@ -9,6 +9,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import lombok.NonNull;
 import lombok.ToString;
@@ -16,7 +19,8 @@ import lombok.ToString;
 @ToString
 public final class Scripts {
 
-    private final List<ScriptsListener> listeners = new ArrayList<>();
+    private final Lock modifyLock = new ReentrantLock();
+    private final List<ScriptsListener> listeners = new CopyOnWriteArrayList<>();
     @NonNull
     private volatile ImmutableListMultimap<BlockPosition, Script> scripts =
         ImmutableListMultimap.of();
@@ -52,9 +56,15 @@ public final class Scripts {
     }
 
     private void compute(@NonNull Consumer<ListMultimap<BlockPosition, Script>> modifier) {
-        final ListMultimap<BlockPosition, Script> mutable = ArrayListMultimap.create(scripts);
-        modifier.accept(mutable);
-        this.scripts = ImmutableListMultimap.copyOf(mutable);
+        final Lock lock = modifyLock;
+        lock.lock();
+        try {
+            final ListMultimap<BlockPosition, Script> mutable = ArrayListMultimap.create(scripts);
+            modifier.accept(mutable);
+            this.scripts = ImmutableListMultimap.copyOf(mutable);
+        } finally {
+            lock.unlock();
+        }
     }
 
     public void add(@NonNull final Script script) {
@@ -63,11 +73,13 @@ public final class Scripts {
     }
 
     public void removeAll(@NonNull final BlockPosition position) {
-        if (!scripts.containsKey(position)) {
-            throw new IllegalArgumentException(
-                    String.format("Script not exists at '%s'", position));
-        }
-        compute(mutable -> mutable.removeAll(position));
+        compute(mutable -> {
+            final List<Script> removed = mutable.removeAll(position);
+            if (removed.isEmpty()) {
+                throw new IllegalArgumentException(
+                        String.format("Script not exists at '%s'", position));
+            }
+        });
         listeners.forEach(listener -> listener.onModified(this));
     }
 
