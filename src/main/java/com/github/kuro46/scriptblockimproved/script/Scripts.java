@@ -7,7 +7,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ListMultimap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
@@ -22,17 +21,24 @@ public final class Scripts {
     private final Lock modifyLock = new ReentrantLock();
     private final List<ScriptsListener> listeners = new CopyOnWriteArrayList<>();
     @NonNull
-    private volatile ImmutableListMultimap<BlockPosition, Script> scripts =
-        ImmutableListMultimap.of();
+    private volatile ImmutableListMultimap<BlockPosition, Script> scripts;
 
-    public void addListener(@NonNull final ScriptsListener listener) {
-        listeners.add(listener);
+    public Scripts() {
+        this.scripts = ImmutableListMultimap.of();
+    }
+
+    public Scripts(@NonNull final ListMultimap<BlockPosition, Script> initial) {
+        this.scripts = ImmutableListMultimap.copyOf(initial);
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     public static Scripts fromJson(@NonNull final JsonArray json) {
-        final Scripts scripts = new Scripts();
-        json.forEach(element -> scripts.add(Script.fromJson((JsonObject) element)));
-        return scripts;
+        final Scripts.Builder builder = Scripts.builder();
+        json.forEach(element -> builder.add(Script.fromJson((JsonObject) element)));
+        return builder.build();
     }
 
     public JsonArray toJson() {
@@ -41,6 +47,10 @@ public final class Scripts {
             .map(Script::toJson)
             .forEach(json::add);
         return json;
+    }
+
+    public void addListener(@NonNull final ScriptsListener listener) {
+        listeners.add(listener);
     }
 
     public ImmutableListMultimap<BlockPosition, Script> getView() {
@@ -72,6 +82,11 @@ public final class Scripts {
         listeners.forEach(listener -> listener.onModified(this));
     }
 
+    public void addAll(@NonNull final Scripts scripts) {
+        compute(mutable -> mutable.putAll(scripts.scripts));
+        listeners.forEach(listener -> listener.onModified(this));
+    }
+
     public void removeAll(@NonNull final BlockPosition position) {
         compute(mutable -> {
             final List<Script> removed = mutable.removeAll(position);
@@ -85,5 +100,19 @@ public final class Scripts {
 
     public boolean contains(@NonNull final BlockPosition position) {
         return scripts.containsKey(position);
+    }
+
+    public static final class Builder {
+
+        private final ListMultimap<BlockPosition, Script> multimap = ArrayListMultimap.create();
+
+        public Builder add(@NonNull final Script script) {
+            multimap.put(script.getPosition(), script);
+            return this;
+        }
+
+        public Scripts build() {
+            return new Scripts(multimap);
+        }
     }
 }

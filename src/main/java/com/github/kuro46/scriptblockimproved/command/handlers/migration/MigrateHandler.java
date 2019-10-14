@@ -54,7 +54,7 @@ public final class MigrateHandler extends CommandHandler {
                         + e.getMessage());
                 return;
             }
-            loadedScripts.getView().values().forEach(scripts::add);
+            scripts.addAll(loadedScripts);
             sendMessage(sender, MessageKind.SUCCESS, "Successfully migrated!");
             try {
                 markAsMigrated();
@@ -73,7 +73,7 @@ public final class MigrateHandler extends CommandHandler {
             .resolve(eventType.getFileName());
         final Scripts loadedScripts = SBScriptLoader.load(eventType.getTriggerName(), filePath);
         // merge loaded scripts to current scripts
-        loadedScripts.getView().values().forEach(dest::add);
+        dest.addAll(loadedScripts);
     }
 
     private void markAsMigrated() throws IOException {

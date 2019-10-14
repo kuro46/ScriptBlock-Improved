@@ -47,7 +47,7 @@ final class SBScriptLoader {
     }
 
     private Scripts load(@NonNull final Path path) throws MigrationException {
-        final Scripts scripts = new Scripts();
+        final Scripts.Builder scriptsBuilder = Scripts.builder();
 
         final Configuration worlds;
         try (final BufferedReader reader = Files.newBufferedReader(path)) {
@@ -71,11 +71,11 @@ final class SBScriptLoader {
                 }
                 final Options options = new Options(builder.build());
                 final Script script = new Script(-1, trigger, author, parsedCoord, options);
-                scripts.add(script);
+                scriptsBuilder.add(script);
             }
         }
 
-        return scripts;
+        return scriptsBuilder.build();
     }
 
     private Author trimAuthor(@NonNull final String author) throws MigrationException {
