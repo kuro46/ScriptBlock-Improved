@@ -2,10 +2,17 @@ package com.github.kuro46.scriptblockimproved.command.handlers;
 
 import com.github.kuro46.scriptblockimproved.PermissionDetector;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
+import com.github.kuro46.scriptblockimproved.common.command.CandidateBuilder;
+import com.github.kuro46.scriptblockimproved.common.command.CandidateFactories;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
+import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permission;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
 public final class PermMapHandler extends CommandHandler {
@@ -25,5 +32,16 @@ public final class PermMapHandler extends CommandHandler {
         final String command = args.getOrFail("command");
         PermissionDetector.getInstance().associate(command, permission);
         sendMessage(sender, "Mapped");
+    }
+
+    @Override
+    public List<String> complete(final CompletionData data) {
+        return new CandidateBuilder()
+            .when("permission", CandidateFactories.filter(value -> {
+                return Bukkit.getPluginManager().getPermissions().stream()
+                    .map(Permission::getName)
+                    .collect(Collectors.toList());
+            }))
+            .build(data.getArgName(), data.getCurrentValue());
     }
 }

@@ -17,7 +17,9 @@ import com.github.kuro46.scriptblockimproved.script.option.OptionHandlers;
 import com.github.kuro46.scriptblockimproved.script.option.Options;
 import com.github.kuro46.scriptblockimproved.script.option.ParseException;
 import com.github.kuro46.scriptblockimproved.script.trigger.TriggerName;
+import com.github.kuro46.scriptblockimproved.script.trigger.TriggerRegistry;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
@@ -28,6 +30,8 @@ public final class AddAtHandler extends CommandHandler {
     private final OptionHandlers handlers;
     @NonNull
     private final Scripts scripts;
+    @NonNull
+    private final TriggerRegistry triggerRegistry;
 
     public AddAtHandler() {
         super(Args.builder()
@@ -41,6 +45,7 @@ public final class AddAtHandler extends CommandHandler {
         final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
         this.handlers = sbi.getOptionHandlers();
         this.scripts = sbi.getScripts();
+        this.triggerRegistry = sbi.getTriggerRegistry();
     }
 
     @Override
@@ -86,6 +91,11 @@ public final class AddAtHandler extends CommandHandler {
     public List<String> complete(final CompletionData data) {
         return new CandidateBuilder()
             .when("world", CandidateFactories.worlds())
+            .when("trigger", CandidateFactories.filter(value -> {
+                return triggerRegistry.getView().stream()
+                    .map(TriggerName::getName)
+                    .collect(Collectors.toList());
+            }))
             .build(data.getArgName(), data.getCurrentValue());
     }
 }
