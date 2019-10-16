@@ -7,6 +7,8 @@ import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
@@ -162,32 +164,33 @@ public final class CommonOptionHandlers {
             final PermissionAttachment attachment = player.addAttachment(plugin);
             try {
                 final String command = removeSlashIfNeeded(args.getOrFail("command"));
-                final String argPerm = args.getOrFail("permission");
-
-                final List<String> permissions;
-                if (argPerm.equals("auto")) {
-                    final List<String> detected = PermissionDetector.getInstance()
-                        .getPermissionsByCommand(command).orElse(null);
-                    if (detected == null) {
-                        sendMessage(
-                                player,
-                                MessageKind.ERROR,
-                                "No permissions found for '%s'",
-                                command);
-                        return;
-                    }
-                    permissions = detected;
-                } else {
-                    permissions = Collections.singletonList(argPerm);
-                }
-
-                permissions.forEach(permission -> {
-                    attachment.setPermission(permission, true);
-                });
+                final String maybePerm = args.getOrFail("permission");
+                final List<String> permissions =
+                    getPermsByStr(player, command, maybePerm).orElse(null);
+                if (permissions == null) return;
+                permissions.forEach(permission -> attachment.setPermission(permission, true));
                 player.performCommand(command);
             } finally {
                 attachment.remove();
             }
+        }
+
+        private Optional<List<String>> getPermsByStr(
+                @NonNull final Player player,
+                @NonNull final String command,
+                @NonNull final String str) {
+            if (!str.equalsIgnoreCase("auto")) return Optional.of(Collections.singletonList(str));
+            final List<String> detected = PermissionDetector.getInstance()
+                .getPermissionsByCommand(command).orElse(null);
+            if (detected == null) {
+                sendMessage(
+                        player,
+                        MessageKind.ERROR,
+                        "No permissions found for '%s'",
+                        command);
+                return Optional.empty();
+            }
+            return Optional.of(detected);
         }
     }
 }
