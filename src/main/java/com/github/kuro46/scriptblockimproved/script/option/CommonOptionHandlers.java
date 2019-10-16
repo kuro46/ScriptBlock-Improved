@@ -48,7 +48,7 @@ public final class CommonOptionHandlers {
 
         @Override
         public void execute(final ExecutionData data) {
-            final ParsedArgs args = data.getOption().getArgs();
+            final ParsedArgs args = data.getArgs();
             data.getPlayer().performCommand(removeSlashIfNeeded(args.getOrFail("command")));
         }
     };
@@ -71,7 +71,7 @@ public final class CommonOptionHandlers {
 
         @Override
         public void execute(final ExecutionData data) {
-            final ParsedArgs args = data.getOption().getArgs();
+            final ParsedArgs args = data.getArgs();
             Bukkit.dispatchCommand(
                     Bukkit.getConsoleSender(),
                     removeSlashIfNeeded(args.getOrFail("command")));
@@ -96,7 +96,7 @@ public final class CommonOptionHandlers {
 
         @Override
         public void execute(final ExecutionData data) {
-            final ParsedArgs args = data.getOption().getArgs();
+            final ParsedArgs args = data.getArgs();
             Bukkit.broadcastMessage(args.getOrFail("message"));
         }
     };
@@ -119,7 +119,7 @@ public final class CommonOptionHandlers {
 
         @Override
         public void execute(final ExecutionData data) {
-            final ParsedArgs args = data.getOption().getArgs();
+            final ParsedArgs args = data.getArgs();
             data.getPlayer().sendMessage(args.getOrFail("message"));
         }
     };
@@ -157,7 +157,7 @@ public final class CommonOptionHandlers {
 
         @Override
         public void execute(final ExecutionData data) {
-            final ParsedArgs args = data.getOption().getArgs();
+            final ParsedArgs args = data.getArgs();
             final Player player = data.getPlayer();
             final PermissionAttachment attachment = player.addAttachment(plugin);
             try {
