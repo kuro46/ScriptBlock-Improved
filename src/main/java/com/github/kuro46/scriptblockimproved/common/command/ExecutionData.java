@@ -16,7 +16,7 @@ public final class ExecutionData {
      * Name of command<br>
      *
      * <pre>
-     * /foo bar buz <arg1> <arg2>...
+     * /foo bar buz &lt;arg1&gt; &lt;arg2&gt;...
      *  \--here---/
      * </pre>
      */
@@ -35,7 +35,7 @@ public final class ExecutionData {
      * Data of arguments<br>
      *
      * <pre>
-     * /foo bar buz <arg1> <arg2>...
+     * /foo bar buz &lt;arg1&gt; &lt;arg2&gt;...
      *              \-----here-----/
      * </pre>
      */
