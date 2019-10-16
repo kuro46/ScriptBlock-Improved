@@ -4,7 +4,6 @@ import com.github.kuro46.scriptblockimproved.PermissionDetector;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
-import com.github.kuro46.scriptblockimproved.script.Script;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -43,20 +42,14 @@ public final class CommonOptionHandlers {
         }
 
         @Override
-        public PreExecuteResult preExecute(
-                final Player player,
-                final Script script,
-                final Option option) {
+        public PreExecuteResult preExecute(final ExecutionData data) {
             return PreExecuteResult.CONTINUE;
         }
 
         @Override
-        public void execute(
-                final Player player,
-                final Script script,
-                final Option option) {
-            final ParsedArgs args = option.getArgs();
-            player.performCommand(removeSlashIfNeeded(args.getOrFail("command")));
+        public void execute(final ExecutionData data) {
+            final ParsedArgs args = data.getOption().getArgs();
+            data.getPlayer().performCommand(removeSlashIfNeeded(args.getOrFail("command")));
         }
     };
 
@@ -72,19 +65,13 @@ public final class CommonOptionHandlers {
         }
 
         @Override
-        public PreExecuteResult preExecute(
-                final Player player,
-                final Script script,
-                final Option option) {
+        public PreExecuteResult preExecute(final ExecutionData data) {
             return PreExecuteResult.CONTINUE;
         }
 
         @Override
-        public void execute(
-                final Player player,
-                final Script script,
-                final Option option) {
-            final ParsedArgs args = option.getArgs();
+        public void execute(final ExecutionData data) {
+            final ParsedArgs args = data.getOption().getArgs();
             Bukkit.dispatchCommand(
                     Bukkit.getConsoleSender(),
                     removeSlashIfNeeded(args.getOrFail("command")));
@@ -103,19 +90,13 @@ public final class CommonOptionHandlers {
         }
 
         @Override
-        public PreExecuteResult preExecute(
-                final Player player,
-                final Script script,
-                final Option option) {
+        public PreExecuteResult preExecute(final ExecutionData data) {
             return PreExecuteResult.CONTINUE;
         }
 
         @Override
-        public void execute(
-                final Player player,
-                final Script script,
-                final Option option) {
-            final ParsedArgs args = option.getArgs();
+        public void execute(final ExecutionData data) {
+            final ParsedArgs args = data.getOption().getArgs();
             Bukkit.broadcastMessage(args.getOrFail("message"));
         }
     };
@@ -132,20 +113,14 @@ public final class CommonOptionHandlers {
         }
 
         @Override
-        public PreExecuteResult preExecute(
-                final Player player,
-                final Script script,
-                final Option option) {
+        public PreExecuteResult preExecute(final ExecutionData data) {
             return PreExecuteResult.CONTINUE;
         }
 
         @Override
-        public void execute(
-                final Player player,
-                final Script script,
-                final Option option) {
-            final ParsedArgs args = option.getArgs();
-            player.sendMessage(args.getOrFail("message"));
+        public void execute(final ExecutionData data) {
+            final ParsedArgs args = data.getOption().getArgs();
+            data.getPlayer().sendMessage(args.getOrFail("message"));
         }
     };
 
@@ -176,19 +151,14 @@ public final class CommonOptionHandlers {
         }
 
         @Override
-        public PreExecuteResult preExecute(
-                final Player player,
-                final Script script,
-                final Option option) {
+        public PreExecuteResult preExecute(final ExecutionData data) {
             return PreExecuteResult.CONTINUE;
         }
 
         @Override
-        public void execute(
-                final Player player,
-                final Script script,
-                final Option option) {
-            final ParsedArgs args = option.getArgs();
+        public void execute(final ExecutionData data) {
+            final ParsedArgs args = data.getOption().getArgs();
+            final Player player = data.getPlayer();
             final PermissionAttachment attachment = player.addAttachment(plugin);
             try {
                 final String command = removeSlashIfNeeded(args.getOrFail("command"));

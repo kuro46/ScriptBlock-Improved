@@ -59,6 +59,10 @@ public final class Options {
         return options.stream();
     }
 
+    public ImmutableList<Option> getView() {
+        return options;
+    }
+
     @Override
     public boolean equals(final Object other) {
         if (!(other instanceof Options)) return false;

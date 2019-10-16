@@ -1,6 +1,8 @@
 package com.github.kuro46.scriptblockimproved.script;
 
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
+import com.github.kuro46.scriptblockimproved.script.option.ExecutionData;
+import com.github.kuro46.scriptblockimproved.script.option.Option;
 import com.github.kuro46.scriptblockimproved.script.option.OptionHandler;
 import com.github.kuro46.scriptblockimproved.script.option.OptionHandlers;
 import com.github.kuro46.scriptblockimproved.script.option.OptionName;
@@ -75,20 +77,39 @@ public final class ScriptExecutor {
             .player(player)
             .build();
         final Options replaced = script.getOptions().replaced(placeholderGroup, sourceData);
-        final boolean needCancel = replaced.stream()
-            .anyMatch(option -> {
-                final OptionHandler handler = handlers.getOrFail(option.getName());
-                final PreExecuteResult result = handler.preExecute(
-                        player,
-                        script,
-                        option);
-                return result == PreExecuteResult.CANCEL;
-            });
-        if (needCancel) return;
-        replaced.forEach(option -> {
-            final OptionName name = option.getName();
-            final OptionHandler handler = handlers.getOrFail(name);
-            handler.execute(player, script, option);
-        });
+        // Stop execution if needed
+        for (final Option option : replaced.getView()) {
+            final PreExecuteResult result = preExecuteOption(option, player, script);
+            if (result == PreExecuteResult.CANCEL) return;
+        }
+        // Execute all scripts
+        replaced.forEach(option -> executeOption(option, player, script));
+    }
+
+    private PreExecuteResult preExecuteOption(
+            @NonNull final Option option,
+            @NonNull final Player player,
+            @NonNull final Script script) {
+        final OptionHandler handler = handlers.getOrFail(option.getName());
+        final ExecutionData data = ExecutionData.builder()
+            .player(player)
+            .script(script)
+            .option(option)
+            .build();
+        return handler.preExecute(data);
+    }
+
+    private void executeOption(
+            @NonNull final Option option,
+            @NonNull final Player player,
+            @NonNull final Script script) {
+        final OptionName name = option.getName();
+        final OptionHandler handler = handlers.getOrFail(name);
+        final ExecutionData data = ExecutionData.builder()
+            .player(player)
+            .script(script)
+            .option(option)
+            .build();
+        handler.execute(data);
     }
 }
