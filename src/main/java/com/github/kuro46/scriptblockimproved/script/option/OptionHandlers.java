@@ -18,6 +18,10 @@ public final class OptionHandlers {
         return handlers.containsKey(key);
     }
 
+    public boolean contains(@NonNull final String key) {
+        return contains(OptionName.of(key));
+    }
+
     public void add(
             @NonNull final OptionName key,
             @NonNull final OptionHandler handler) {
@@ -28,12 +32,24 @@ public final class OptionHandlers {
         handlers.put(key, handler);
     }
 
+    public void add(@NonNull final String key, @NonNull final OptionHandler handler) {
+        add(OptionName.of(key), handler);
+    }
+
     public Optional<OptionHandler> get(@NonNull final OptionName key) {
         return Optional.ofNullable(handlers.get(key));
+    }
+
+    public Optional<OptionHandler> get(@NonNull final String key) {
+        return get(OptionName.of(key));
     }
 
     public OptionHandler getOrFail(@NonNull final OptionName key) {
         return get(key).orElseThrow(() -> new IllegalArgumentException(
                 String.format("A handler for '%s' not exists", key)));
+    }
+
+    public OptionHandler getOrFail(@NonNull final String key) {
+        return getOrFail(OptionName.of(key));
     }
 }
