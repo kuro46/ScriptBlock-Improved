@@ -3,7 +3,6 @@ package com.github.kuro46.scriptblockimproved.common.command;
 import com.google.common.base.MoreObjects;
 import java.util.Formattable;
 import java.util.Formatter;
-import java.util.Objects;
 
 /**
  * A representation of an argument.
@@ -18,17 +17,10 @@ public final class Arg implements Formattable {
 
     private final ArgName name;
     private final boolean required;
-    private final String description;
 
     public Arg(final String name, final boolean required) {
-        this(name, required, null);
-    }
-
-    public Arg(final String name, final boolean required, final String description) {
-        Objects.requireNonNull(name, "'name' cannot be null");
         this.name = ArgName.of(name);
         this.required = required;
-        this.description = description;
     }
 
     public ArgName getName() {
@@ -77,7 +69,6 @@ public final class Arg implements Formattable {
         return MoreObjects.toStringHelper(this)
             .add("name", name)
             .add("required", required)
-            .add("description", description)
             .toString();
     }
 }
