@@ -24,6 +24,8 @@ dependencies {
     implementation 'com.google.guava:guava:28.1-jre'
     // Apache Commons Lang
     implementation 'org.apache.commons:commons-lang3:3.9'
+    // JUnit
+    testImplementation('org.junit.jupiter:junit-jupiter:5.5.2')
     // ErrorProne
     errorprone("com.google.errorprone:error_prone_core:2.+")
 }
@@ -72,4 +74,11 @@ task pluginJar {
     }
 
     finalizedBy "shadowJar"
+}
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
 }

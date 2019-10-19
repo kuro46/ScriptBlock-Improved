@@ -1,5 +1,6 @@
 package com.github.kuro46.scriptblockimproved.common;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -20,6 +21,7 @@ public final class Debouncer {
     @NonNull
     private final TimeUnit delayUnit;
     private final long delay;
+    private volatile boolean shutdown = false;
 
     private ScheduledFuture<?> scheduled;
 
@@ -36,12 +38,23 @@ public final class Debouncer {
     }
 
     public void runLater() {
+        if (shutdown) throw new IllegalStateException("This debouncer is shut down!");
         lock.lock();
         try {
             if (scheduled != null) scheduled.cancel(false);
             scheduled = executor.schedule(task, delay, delayUnit);
         } finally {
             lock.unlock();
+        }
+    }
+
+    public void shutdown() {
+        shutdown = true;
+        if (scheduled == null || scheduled.isDone()) return;
+        try {
+            scheduled.get();
+        } catch (final InterruptedException | ExecutionException e) {
+            throw new IllegalStateException("Cannot terminate ScheduledFuture", e);
         }
     }
 }
