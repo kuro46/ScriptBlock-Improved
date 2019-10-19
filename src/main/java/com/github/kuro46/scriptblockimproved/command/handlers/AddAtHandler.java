@@ -92,7 +92,7 @@ public final class AddAtHandler extends CommandHandler {
         return new CandidateBuilder()
             .when("world", CandidateFactories.worlds())
             .when("trigger", CandidateFactories.filter(value -> {
-                return triggerRegistry.getView().stream()
+                return triggerRegistry.getView().keySet().stream()
                     .map(TriggerName::getName)
                     .collect(Collectors.toList());
             }))

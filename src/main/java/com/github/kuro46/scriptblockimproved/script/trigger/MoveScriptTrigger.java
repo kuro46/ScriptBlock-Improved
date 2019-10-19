@@ -9,6 +9,7 @@ import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -23,8 +24,9 @@ public final class MoveScriptTrigger implements Listener {
         this.executor = ScriptExecutor.getInstance();
         final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
         final TriggerRegistry registry = sbi.getTriggerRegistry();
-        registry.register(TRIGGER_MOVE);
+        final RegisteredTrigger trigger = registry.register(TRIGGER_MOVE);
         Bukkit.getPluginManager().registerEvents(this, sbi.getPlugin());
+        trigger.onUnregistered(() -> HandlerList.unregisterAll(this));
     }
 
     public static void listen() {

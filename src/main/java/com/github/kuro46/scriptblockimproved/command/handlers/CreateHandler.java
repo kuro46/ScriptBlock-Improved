@@ -54,7 +54,7 @@ public final class CreateHandler extends CommandHandler {
     public List<String> complete(final CompletionData data) {
         return new CandidateBuilder()
             .when("trigger", CandidateFactories.filter(value -> {
-                return triggerRegistry.getView().stream()
+                return triggerRegistry.getView().keySet().stream()
                     .map(TriggerName::getName)
                     .collect(Collectors.toList());
             }))

@@ -1,20 +1,26 @@
 package com.github.kuro46.scriptblockimproved.script.trigger;
 
-import com.google.common.collect.ImmutableSet;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import com.google.common.collect.ImmutableMap;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.NonNull;
 
 public final class TriggerRegistry {
 
-    private final Set<TriggerName> names = ConcurrentHashMap.newKeySet();
+    private final Map<TriggerName, RegisteredTrigger> triggers = new HashMap<>();
 
-    public void register(@NonNull final String name) {
-        register(TriggerName.of(name));
+    public RegisteredTrigger register(@NonNull final String name) {
+        return register(TriggerName.of(name));
     }
 
-    public void register(@NonNull final TriggerName name) {
-        names.add(name);
+    public RegisteredTrigger register(@NonNull final TriggerName name) {
+        if (triggers.containsKey(name)) {
+            final String message = String.format("Trigger '%s' is already registered", name);
+            throw new TriggerRegistrationException(message);
+        }
+        final RegisteredTrigger trigger = new RegisteredTrigger(name);
+        triggers.put(name, trigger);
+        return trigger;
     }
 
     public void unregister(@NonNull final String name) {
@@ -22,7 +28,12 @@ public final class TriggerRegistry {
     }
 
     public void unregister(@NonNull final TriggerName name) {
-        names.remove(name);
+        final RegisteredTrigger removed = triggers.remove(name);
+        if (removed == null) { // Trigger is not registered
+            final String message = String.format("Trigger '%s' is not registered", name);
+            throw new TriggerRegistrationException(message);
+        }
+        removed.unregister();
     }
 
     public boolean isRegistered(@NonNull final String name) {
@@ -30,10 +41,10 @@ public final class TriggerRegistry {
     }
 
     public boolean isRegistered(@NonNull final TriggerName name) {
-        return names.contains(name);
+        return triggers.containsKey(name);
     }
 
-    public ImmutableSet<TriggerName> getView() {
-        return ImmutableSet.copyOf(names);
+    public ImmutableMap<TriggerName, RegisteredTrigger> getView() {
+        return ImmutableMap.copyOf(triggers);
     }
 }

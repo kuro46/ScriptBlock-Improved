@@ -13,11 +13,13 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.plugin.Plugin;
 
-public final class SBScriptTrigger implements Listener {
+public final class SBScriptTrigger {
 
     private static final TriggerName TRIGGER_INTERACT = TriggerName.of("sbinteract");
     private static final TriggerName TRIGGER_WALK = TriggerName.of("sbwalk");
@@ -28,17 +30,32 @@ public final class SBScriptTrigger implements Listener {
     private SBScriptTrigger() {
         this.executor = ScriptExecutor.getInstance();
         final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
+        final Plugin plugin = sbi.getPlugin();
         final TriggerRegistry registry = sbi.getTriggerRegistry();
-        registry.register(TRIGGER_INTERACT);
-        registry.register(TRIGGER_WALK);
-        Bukkit.getPluginManager().registerEvents(this, sbi.getPlugin());
+        initInteract(plugin, registry);
+        initMove(plugin, registry);
     }
 
     public static void listen() {
         new SBScriptTrigger();
     }
 
-    @EventHandler
+    private void initInteract(
+            @NonNull final Plugin plugin,
+            @NonNull final TriggerRegistry registry) {
+        final RegisteredTrigger interactTrigger = registry.register(TRIGGER_INTERACT);
+        final InteractListener listener = new InteractListener();
+        Bukkit.getPluginManager().registerEvents(listener, plugin);
+        interactTrigger.onUnregistered(() -> HandlerList.unregisterAll(listener));
+    }
+
+    private void initMove(@NonNull final Plugin plugin, @NonNull final TriggerRegistry registry) {
+        final RegisteredTrigger walkTrigger = registry.register(TRIGGER_WALK);
+        final MoveListener listener = new MoveListener();
+        Bukkit.getPluginManager().registerEvents(listener, plugin);
+        walkTrigger.onUnregistered(() -> HandlerList.unregisterAll(listener));
+    }
+
     public void onInteract(@NonNull final PlayerInteractEvent event) {
         final Player player = event.getPlayer();
         final BlockPosition clickedPosition = Optional.ofNullable(event.getClickedBlock())
@@ -48,7 +65,6 @@ public final class SBScriptTrigger implements Listener {
         executor.execute(TRIGGER_INTERACT, player, clickedPosition);
     }
 
-    @EventHandler
     public void onMove(@NonNull final PlayerMoveEvent event) {
         final Player player = event.getPlayer();
         final Block walkingBlock = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
@@ -60,5 +76,21 @@ public final class SBScriptTrigger implements Listener {
         lastWalkedPositions.put(player, walkingPos);
 
         executor.execute(TRIGGER_WALK, player, walkingPos);
+    }
+
+    private final class InteractListener implements Listener {
+
+        @EventHandler
+        public void onInteract(@NonNull final PlayerInteractEvent event) {
+            SBScriptTrigger.this.onInteract(event);
+        }
+    }
+
+    private final class MoveListener implements Listener {
+
+        @EventHandler
+        public void onMove(@NonNull final PlayerMoveEvent event) {
+            SBScriptTrigger.this.onMove(event);
+        }
     }
 }

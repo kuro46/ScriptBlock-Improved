@@ -45,7 +45,7 @@ public final class AvailablesHandler extends CommandHandler {
     }
 
     private void triggers(final CommandSender sender) {
-        final ImmutableSet<TriggerName> triggers = triggerRegistry.getView();
+        final ImmutableSet<TriggerName> triggers = triggerRegistry.getView().keySet();
         if (triggers.isEmpty()) {
             sendMessage(sender, "No available triggers exist");
         } else {

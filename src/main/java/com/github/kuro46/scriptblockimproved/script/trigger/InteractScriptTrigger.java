@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -23,14 +24,17 @@ public final class InteractScriptTrigger implements Listener {
 
     private final Map<Player, Long> lastExecutedTimes = new WeakHashMap<>();
     private final ScriptExecutor executor;
+    private final RegisteredTrigger rightClickTrigger;
+    private final RegisteredTrigger leftClickTrigger;
+    private final RegisteredTrigger pressTrigger;
 
     private InteractScriptTrigger() {
         this.executor = ScriptExecutor.getInstance();
         final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
         final TriggerRegistry registry = sbi.getTriggerRegistry();
-        registry.register(TRIGGER_RIGHT_CLICK);
-        registry.register(TRIGGER_LEFT_CLICK);
-        registry.register(TRIGGER_PRESS);
+        this.rightClickTrigger = registry.register(TRIGGER_RIGHT_CLICK);
+        this.leftClickTrigger = registry.register(TRIGGER_LEFT_CLICK);
+        this.pressTrigger = registry.register(TRIGGER_PRESS);
         Bukkit.getPluginManager().registerEvents(this, sbi.getPlugin());
     }
 
@@ -40,6 +44,12 @@ public final class InteractScriptTrigger implements Listener {
 
     @EventHandler
     public void onInteract(@NonNull final PlayerInteractEvent event) {
+        if (leftClickTrigger.isUnregistered()
+                && rightClickTrigger.isUnregistered()
+                && pressTrigger.isUnregistered()) {
+            HandlerList.unregisterAll(this);
+            return;
+        }
         final Player player = event.getPlayer();
         final long executionTime = System.currentTimeMillis();
         if (shouldCancelExecution(player, executionTime)) return;
@@ -50,12 +60,15 @@ public final class InteractScriptTrigger implements Listener {
             .orElse(null);
         switch (event.getAction()) {
             case LEFT_CLICK_BLOCK:
+                if (leftClickTrigger.isUnregistered()) break;
                 executor.execute(TRIGGER_LEFT_CLICK, player, clickedPosition);
                 break;
             case RIGHT_CLICK_BLOCK:
+                if (rightClickTrigger.isUnregistered()) break;
                 executor.execute(TRIGGER_RIGHT_CLICK, player, clickedPosition);
                 break;
             case PHYSICAL:
+                if (pressTrigger.isUnregistered()) break;
                 executor.execute(TRIGGER_PRESS, player, clickedPosition);
                 break;
             default:
