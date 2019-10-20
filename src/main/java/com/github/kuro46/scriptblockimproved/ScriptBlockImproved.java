@@ -42,8 +42,8 @@ public final class ScriptBlockImproved {
     @Getter
     private final TriggerRegistry triggerRegistry = new TriggerRegistry();
 
-    @NonNull
-    private final ScriptAutoSaver scriptAutoSaver;
+    private final ScriptAutoSaver scriptAutoSaver = new ScriptAutoSaver();
+
     @NonNull
     @Getter
     private final Path scriptsPath;
@@ -66,13 +66,11 @@ public final class ScriptBlockImproved {
         this.logger = plugin.getLogger();
         this.scriptsPath = initScriptsPath();
         this.scripts = loadScripts();
-        this.scriptAutoSaver = new ScriptAutoSaver();
     }
 
     private void initInternal() throws IOException {
         PermissionDetector.init(dataFolder);
         initExecutor();
-        registerAsService();
         registerOptionHandlers();
         initTriggers();
         registerCommands();
