@@ -1,10 +1,16 @@
 package com.github.kuro46.scriptblockimproved.script.option.placeholder;
 
+import com.google.common.collect.ImmutableList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.NonNull;
+import org.apache.commons.text.TextStringBuilder;
 
 public final class PlaceholderGroup {
+
+    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("<(.+?)>");
 
     private final Map<PlaceholderName, Placeholder> placeholders = new HashMap<>();
 
@@ -12,10 +18,22 @@ public final class PlaceholderGroup {
         placeholders.put(placeholder.getName(), placeholder);
     }
 
-    public String replace(@NonNull String source, @NonNull final SourceData data) {
-        for (final Placeholder placeholder : placeholders.values()) {
-            source = placeholder.replace(source, data);
+    public String replace(@NonNull final String source, @NonNull final SourceData data) {
+        final ImmutableList<String> holderNames = findPlaceholders(source);
+        if (holderNames.isEmpty()) return source;
+        final TextStringBuilder builder = new TextStringBuilder(source);
+        for (final String holderName : holderNames) {
+            final Placeholder holder = placeholders.get(PlaceholderName.of(holderName));
+            if (holder == null) continue;
+            builder.replaceAll(holder.getTarget(), holder.getReplacementFactory().create(data));
         }
-        return source;
+        return builder.build();
+    }
+
+    private ImmutableList<String> findPlaceholders(@NonNull String source) {
+        final ImmutableList.Builder<String> placeholders = ImmutableList.builder();
+        final Matcher matcher = PLACEHOLDER_PATTERN.matcher(source);
+        while (matcher.find()) placeholders.add(matcher.group(1));
+        return placeholders.build();
     }
 }

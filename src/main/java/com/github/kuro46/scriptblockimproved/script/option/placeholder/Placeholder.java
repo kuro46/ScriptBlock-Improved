@@ -3,7 +3,6 @@ package com.github.kuro46.scriptblockimproved.script.option.placeholder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
 
 @ToString
 public final class Placeholder {
@@ -42,10 +41,6 @@ public final class Placeholder {
 
     public static Builder builder() {
         return new Builder();
-    }
-
-    public String replace(@NonNull final String source, @NonNull final SourceData data) {
-        return StringUtils.replace(source, target, replacementFactory.create(data));
     }
 
     public static final class Builder {

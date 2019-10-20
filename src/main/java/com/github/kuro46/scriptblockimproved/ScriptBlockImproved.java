@@ -27,7 +27,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.ServicePriority;
 
 public final class ScriptBlockImproved {
 

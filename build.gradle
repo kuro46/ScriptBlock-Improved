@@ -24,6 +24,8 @@ dependencies {
     implementation 'com.google.guava:guava:28.1-jre'
     // Apache Commons Lang
     implementation 'org.apache.commons:commons-lang3:3.9'
+    // Apache Commons Text
+    implementation 'org.apache.commons:commons-text:1.8'
     // JUnit
     testImplementation('org.junit.jupiter:junit-jupiter:5.5.2')
     // ErrorProne
@@ -58,7 +60,8 @@ shadowJar {
     archiveFileName = "ScriptBlock-Improved-${version}.jar"
 
     relocate 'com.google', 'com.github.kuro46.scriptblockimproved.libs.google'
-    relocate 'org.apache.commons.lang3', 'com.github.kuro46.scriptblockimproved.libs.apache.commons'
+    relocate 'org.apache.commons.lang3', 'com.github.kuro46.scriptblockimproved.libs.commons.lang'
+    relocate 'org.apache.commons.text', 'com.github.kuro46.scriptblockimproved.libs.commons.text'
     relocate 'org.checkerframework', 'com.github.kuro46.scriptblockimproved.libs.checkerframework'
 }
 
