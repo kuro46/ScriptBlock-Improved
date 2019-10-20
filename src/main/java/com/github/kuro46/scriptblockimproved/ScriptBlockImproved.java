@@ -139,14 +139,6 @@ public final class ScriptBlockImproved {
         }
     }
 
-    private void registerAsService() {
-        Bukkit.getServicesManager().register(
-            ScriptBlockImproved.class,
-            this,
-            plugin,
-            ServicePriority.Normal);
-    }
-
     private void registerScriptsListeners() {
         scripts.addListener(scripts -> scriptAutoSaver.saveLater());
     }
