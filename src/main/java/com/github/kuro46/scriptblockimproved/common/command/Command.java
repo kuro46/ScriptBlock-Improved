@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.NonNull;
@@ -83,9 +82,7 @@ public final class Command {
             return command;
         }
 
-        public void childOf(final Command command) {
-            Objects.requireNonNull(command, "'command' cannot be null");
-
+        public void childOf(@NonNull final Command command) {
             command.addChild(build());
         }
     }

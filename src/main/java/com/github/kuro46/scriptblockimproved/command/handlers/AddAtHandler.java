@@ -11,10 +11,10 @@ import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import com.github.kuro46.scriptblockimproved.script.Script;
-import com.github.kuro46.scriptblockimproved.script.Scripts;
+import com.github.kuro46.scriptblockimproved.script.ScriptMap;
 import com.github.kuro46.scriptblockimproved.script.author.Author;
-import com.github.kuro46.scriptblockimproved.script.option.OptionHandlers;
-import com.github.kuro46.scriptblockimproved.script.option.Options;
+import com.github.kuro46.scriptblockimproved.script.option.OptionHandlerMap;
+import com.github.kuro46.scriptblockimproved.script.option.OptionList;
 import com.github.kuro46.scriptblockimproved.script.option.ParseException;
 import com.github.kuro46.scriptblockimproved.script.trigger.TriggerName;
 import com.github.kuro46.scriptblockimproved.script.trigger.TriggerRegistry;
@@ -27,9 +27,9 @@ import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMess
 public final class AddAtHandler extends CommandHandler {
 
     @NonNull
-    private final OptionHandlers handlers;
+    private final OptionHandlerMap handlers;
     @NonNull
-    private final Scripts scripts;
+    private final ScriptMap scripts;
     @NonNull
     private final TriggerRegistry triggerRegistry;
 
@@ -55,9 +55,9 @@ public final class AddAtHandler extends CommandHandler {
 
         final String trigger = args.getOrFail("trigger");
         final String rawOptions = args.getOrFail("script");
-        final Options options;
+        final OptionList options;
         try {
-            options = Options.parse(handlers, rawOptions);
+            options = OptionList.parse(handlers, rawOptions);
         } catch (final ParseException e) {
             sendMessage(sender, MessageKind.ERROR, e.getMessage());
             return;

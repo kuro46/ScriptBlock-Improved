@@ -1,10 +1,10 @@
 package com.github.kuro46.scriptblockimproved.common.command;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
+import lombok.NonNull;
+import lombok.ToString;
 
 /**
  * A representation of parsed args
@@ -25,13 +25,13 @@ import java.util.Optional;
  * parsed.get("first").get(); // => "first"
  * }</pre>
  */
+@ToString
 public final class ParsedArgs {
 
+    @NonNull
     private final ImmutableMap<ArgName, String> args;
 
-    public ParsedArgs(final Map<ArgName, String> args) {
-        Objects.requireNonNull(args, "'args' cannot be null");
-
+    public ParsedArgs(@NonNull final Map<ArgName, String> args) {
         this.args = ImmutableMap.copyOf(args);
     }
 
@@ -58,28 +58,15 @@ public final class ParsedArgs {
         return args;
     }
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("args", args)
-            .toString();
-    }
-
     public static class Builder {
 
         private final ImmutableMap.Builder<ArgName, String> args = ImmutableMap.builder();
 
-        public Builder put(final String name, final String value) {
-            Objects.requireNonNull(name, "'name' cannot be null");
-            Objects.requireNonNull(value, "'value' cannot be null");
-
+        public Builder put(@NonNull final String name, @NonNull final String value) {
             return put(ArgName.of(name), value);
         }
 
-        public Builder put(final ArgName name, final String value) {
-            Objects.requireNonNull(name, "'name' cannot be null");
-            Objects.requireNonNull(value, "'value' cannot be null");
-
+        public Builder put(@NonNull final ArgName name, @NonNull final String value) {
             args.put(name, value);
 
             return this;

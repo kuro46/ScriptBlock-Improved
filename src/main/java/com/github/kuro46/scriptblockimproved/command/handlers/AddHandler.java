@@ -2,7 +2,7 @@ package com.github.kuro46.scriptblockimproved.command.handlers;
 
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.command.clickaction.ActionAdd;
-import com.github.kuro46.scriptblockimproved.command.clickaction.Actions;
+import com.github.kuro46.scriptblockimproved.command.clickaction.ActionQueue;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CandidateBuilder;
@@ -22,7 +22,7 @@ import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMess
 public final class AddHandler extends CommandHandler {
 
     @NonNull
-    private final Actions actions;
+    private final ActionQueue actionQueue;
     @NonNull
     private final TriggerRegistry triggerRegistry;
 
@@ -32,7 +32,7 @@ public final class AddHandler extends CommandHandler {
                 .required("script")
                 .build());
         final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
-        this.actions = sbi.getActions();
+        this.actionQueue = sbi.getActionQueue();
         this.triggerRegistry = sbi.getTriggerRegistry();
     }
 
@@ -47,7 +47,7 @@ public final class AddHandler extends CommandHandler {
         }
         final Player player = (Player) sender;
         sendMessage(sender, "Click any block to add script to the block");
-        actions.add(player, new ActionAdd(data.getArgs()));
+        actionQueue.add(player, new ActionAdd(data.getArgs()));
     }
 
     @Override

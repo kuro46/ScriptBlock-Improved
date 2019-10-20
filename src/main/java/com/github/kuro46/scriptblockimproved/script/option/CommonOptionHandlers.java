@@ -6,7 +6,6 @@ import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
@@ -18,11 +17,8 @@ import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMess
 public final class CommonOptionHandlers {
 
     public static void registerAll(
-            final Plugin plugin,
-            final OptionHandlers handlers) {
-        Objects.requireNonNull(handlers, "'handlers' cannot be null");
-        Objects.requireNonNull(plugin, "'plugin' cannot be null");
-
+            @NonNull final Plugin plugin,
+            @NonNull final OptionHandlerMap handlers) {
         OptionHandler.builder()
             .args(Args.builder()
                 .required("command")
@@ -72,10 +68,11 @@ public final class CommonOptionHandlers {
 
     private static final class BypassCommandHandler implements OptionHandler {
 
+        @NonNull
         private final Plugin plugin;
 
-        public BypassCommandHandler(final Plugin plugin) {
-            this.plugin = Objects.requireNonNull(plugin, "'plugin' cannot be null");;
+        public BypassCommandHandler(@NonNull final Plugin plugin) {
+            this.plugin = plugin;
         }
 
         private final Args args = Args.builder()

@@ -1,6 +1,6 @@
 package com.github.kuro46.scriptblockimproved.script.serialize;
 
-import com.github.kuro46.scriptblockimproved.script.Scripts;
+import com.github.kuro46.scriptblockimproved.script.ScriptMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -9,9 +9,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import lombok.NonNull;
 
 public final class ScriptSerializer {
 
@@ -30,7 +30,7 @@ public final class ScriptSerializer {
 
     public static void serialize(
             final Path path,
-            final Scripts scripts,
+            final ScriptMap scripts,
             final boolean overwrite) throws IOException {
         IO_LOCK.lock();
         try {
@@ -56,10 +56,9 @@ public final class ScriptSerializer {
         Files.createFile(path);
     }
 
-    public static void serialize(final Appendable writer, final Scripts scripts) {
-        Objects.requireNonNull(writer, "'writer' cannot be null");
-        Objects.requireNonNull(scripts, "'scripts' cannot be null");
-
+    public static void serialize(
+            @NonNull final Appendable writer,
+            @NonNull final ScriptMap scripts) {
         final JsonObject root = new JsonObject();
         root.add("meta", createMeta());
         root.add("scripts", scripts.toJson());
@@ -72,15 +71,14 @@ public final class ScriptSerializer {
         return json;
     }
 
-    public static Scripts deserialize(final Reader reader) throws UnsupportedVersionException {
-        Objects.requireNonNull(reader, "'reader' cannot be null");
-
+    public static ScriptMap deserialize(@NonNull final Reader reader)
+            throws UnsupportedVersionException {
         final JsonObject root = gson().fromJson(reader, JsonObject.class);
         final Meta meta = Meta.fromJson(root.getAsJsonObject("meta"));
         if (!meta.getVersion().equals(FORMAT_VERSION)) {
             throw new UnsupportedVersionException(meta.getVersion());
         }
 
-        return Scripts.fromJson(root.getAsJsonArray("scripts"));
+        return ScriptMap.fromJson(root.getAsJsonArray("scripts"));
     }
 }

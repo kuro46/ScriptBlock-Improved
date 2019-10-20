@@ -6,16 +6,16 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.NonNull;
 
-public final class OptionHandlers {
+public final class OptionHandlerMap {
 
-    private final Map<OptionName, OptionHandler> handlers = new HashMap<>();
+    private final Map<OptionName, OptionHandler> map = new HashMap<>();
 
     public ImmutableSet<OptionName> names() {
-        return ImmutableSet.copyOf(handlers.keySet());
+        return ImmutableSet.copyOf(map.keySet());
     }
 
     public boolean contains(@NonNull final OptionName key) {
-        return handlers.containsKey(key);
+        return map.containsKey(key);
     }
 
     public boolean contains(@NonNull final String key) {
@@ -29,7 +29,7 @@ public final class OptionHandlers {
             throw new IllegalArgumentException(
                     String.format("A handler for '%s' has already added", key));
         }
-        handlers.put(key, handler);
+        map.put(key, handler);
     }
 
     public void add(@NonNull final String key, @NonNull final OptionHandler handler) {
@@ -37,7 +37,7 @@ public final class OptionHandlers {
     }
 
     public Optional<OptionHandler> get(@NonNull final OptionName key) {
-        return Optional.ofNullable(handlers.get(key));
+        return Optional.ofNullable(map.get(key));
     }
 
     public Optional<OptionHandler> get(@NonNull final String key) {

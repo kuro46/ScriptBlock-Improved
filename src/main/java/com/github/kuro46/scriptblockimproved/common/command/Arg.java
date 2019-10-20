@@ -1,8 +1,8 @@
 package com.github.kuro46.scriptblockimproved.common.command;
 
-import com.google.common.base.MoreObjects;
 import java.util.Formattable;
 import java.util.Formatter;
+import lombok.ToString;
 
 /**
  * A representation of an argument.
@@ -13,6 +13,7 @@ import java.util.Formatter;
  * assertEquals(arg1, arg2);
  * }</pre>
  */
+@ToString
 public final class Arg implements Formattable {
 
     private final ArgName name;
@@ -62,13 +63,5 @@ public final class Arg implements Formattable {
         final char begin = isRequired() ? '<' : '[';
         final char end = isRequired() ? '>' : ']';
         formatter.format("%s%s%s", begin, name, end);
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("name", name)
-            .add("required", required)
-            .toString();
     }
 }

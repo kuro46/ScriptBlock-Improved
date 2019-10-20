@@ -2,7 +2,7 @@ package com.github.kuro46.scriptblockimproved.command.handlers;
 
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.command.clickaction.ActionDelete;
-import com.github.kuro46.scriptblockimproved.command.clickaction.Actions;
+import com.github.kuro46.scriptblockimproved.command.clickaction.ActionQueue;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
@@ -15,11 +15,11 @@ import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMess
 public final class DeleteHandler extends CommandHandler {
 
     @NonNull
-    private final Actions actions;
+    private final ActionQueue actionQueue;
 
     public DeleteHandler() {
         super(Args.empty());
-        this.actions = ScriptBlockImproved.getInstance().getActions();
+        this.actionQueue = ScriptBlockImproved.getInstance().getActionQueue();
     }
 
     @Override
@@ -32,6 +32,6 @@ public final class DeleteHandler extends CommandHandler {
         }
         final Player player = (Player) sender;
         sendMessage(sender, "Click any block to delete scripts from the block");
-        actions.add(player, new ActionDelete());
+        actionQueue.add(player, new ActionDelete());
     }
 }

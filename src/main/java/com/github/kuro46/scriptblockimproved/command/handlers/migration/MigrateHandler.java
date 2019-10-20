@@ -5,7 +5,7 @@ import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
-import com.github.kuro46.scriptblockimproved.script.Scripts;
+import com.github.kuro46.scriptblockimproved.script.ScriptMap;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,7 +18,7 @@ public final class MigrateHandler extends CommandHandler {
 
     private static final String MIGRATED_MARKER_FILE_NAME = "mark_migrated_from_sb";
 
-    private final Scripts scripts;
+    private final ScriptMap scripts;
     private final Path dataFolder;
 
     public MigrateHandler() {
@@ -43,18 +43,18 @@ public final class MigrateHandler extends CommandHandler {
                         MIGRATED_MARKER_FILE_NAME);
                 return;
             }
-            final Scripts loadedScripts = new Scripts();
+            final ScriptMap loadedScriptMap = new ScriptMap();
             try {
                 for (final EventType eventType : EventType.values()) {
                     sendMessage(sender, "Migrating %s scripts...", eventType.name().toLowerCase());
-                    loadScripts(eventType, loadedScripts);
+                    loadScripts(eventType, loadedScriptMap);
                 }
             } catch (final MigrationException e) {
                 sendMessage(sender, MessageKind.ERROR, "Failed to migrate scripts: "
                         + e.getMessage());
                 return;
             }
-            scripts.addAll(loadedScripts);
+            scripts.addAll(loadedScriptMap);
             sendMessage(sender, MessageKind.SUCCESS, "Successfully migrated!");
             try {
                 markAsMigrated();
@@ -67,13 +67,13 @@ public final class MigrateHandler extends CommandHandler {
 
     private void loadScripts(
             @NonNull final EventType eventType,
-            @NonNull final Scripts dest) throws MigrationException {
+            @NonNull final ScriptMap dest) throws MigrationException {
         final Path filePath = dataFolder
             .resolve("../ScriptBlock/BlocksData/")
             .resolve(eventType.getFileName());
-        final Scripts loadedScripts = SBScriptLoader.load(eventType.getTriggerName(), filePath);
+        final ScriptMap loadedScriptMap = SBScriptLoader.load(eventType.getTriggerName(), filePath);
         // merge loaded scripts to current scripts
-        dest.addAll(loadedScripts);
+        dest.addAll(loadedScriptMap);
     }
 
     private void markAsMigrated() throws IOException {

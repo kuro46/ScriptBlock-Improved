@@ -1,9 +1,10 @@
 package com.github.kuro46.scriptblockimproved.common.command;
 
-import com.google.common.base.MoreObjects;
 import java.util.Formattable;
 import java.util.Formatter;
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.ToString;
 
 /**
  * Name of an argument.
@@ -14,17 +15,18 @@ import java.util.Objects;
  * assertEquals(name1, name2);
  * }</pre>
  */
+@EqualsAndHashCode
+@ToString
 public final class ArgName implements Formattable {
 
+    @NonNull
     private final String name;
 
-    private ArgName(final String name) {
-        this.name = Objects.requireNonNull(name, "'name' cannot be null").toLowerCase();
+    private ArgName(@NonNull final String name) {
+        this.name = name.toLowerCase();
     }
 
-    public static ArgName of(final String name) {
-        Objects.requireNonNull(name, "'name' cannot be null");
-
+    public static ArgName of(@NonNull final String name) {
         return new ArgName(name);
     }
 
@@ -39,27 +41,5 @@ public final class ArgName implements Formattable {
             final int width,
             final int precision) {
         formatter.format("%s", name);
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof ArgName)) {
-            return false;
-        }
-        final ArgName castedOther = (ArgName) other;
-
-        return name.equals(castedOther.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("name", name)
-            .toString();
     }
 }

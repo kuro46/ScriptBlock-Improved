@@ -10,7 +10,7 @@ import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import com.github.kuro46.scriptblockimproved.script.BlockPosition;
-import com.github.kuro46.scriptblockimproved.script.Scripts;
+import com.github.kuro46.scriptblockimproved.script.ScriptMap;
 import java.util.List;
 import lombok.NonNull;
 import org.bukkit.command.CommandSender;
@@ -19,7 +19,7 @@ import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMess
 public final class DeleteAtHandler extends CommandHandler {
 
     @NonNull
-    private final Scripts scripts;
+    private final ScriptMap scripts;
 
     public DeleteAtHandler() {
         super(Args.builder()

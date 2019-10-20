@@ -4,29 +4,27 @@ import com.github.kuro46.scriptblockimproved.common.command.ArgName;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import com.github.kuro46.scriptblockimproved.script.option.placeholder.PlaceholderGroup;
 import com.github.kuro46.scriptblockimproved.script.option.placeholder.SourceData;
-import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.Map;
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.ToString;
 
+@ToString
+@EqualsAndHashCode
 public final class Option {
 
     private final OptionName name;
     private final ParsedArgs args;
 
-    public Option(final OptionName name, final ParsedArgs args) {
-        Objects.requireNonNull(name, "'name' cannot be null");
-        Objects.requireNonNull(args, "'args' cannot be null");
-
+    public Option(@NonNull final OptionName name, @NonNull final ParsedArgs args) {
         this.name = name;
         this.args = args;
     }
 
-    public static Option fromJson(final JsonObject json) {
-        Objects.requireNonNull(json, "'json' cannot be null");
-
+    public static Option fromJson(@NonNull final JsonObject json) {
         final OptionName name = OptionName.fromJson(json.getAsJsonPrimitive("name"));
 
         final JsonObject jsonArgs = json.getAsJsonObject("args");
@@ -49,7 +47,7 @@ public final class Option {
         return json;
     }
 
-    public Option replaced(
+    public Option replacePlaceholders(
             final PlaceholderGroup placeholderGroup,
             final SourceData data) {
         final ImmutableMap.Builder<ArgName, String> builder = ImmutableMap.builder();
@@ -65,29 +63,5 @@ public final class Option {
 
     public ParsedArgs getArgs() {
         return args;
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof Option)) {
-            return false;
-        }
-        final Option castedOther = (Option) other;
-
-        return this.name.equals(castedOther.name)
-            && this.args.equals(castedOther.args);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, args);
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("name", name)
-            .add("args", args)
-            .toString();
     }
 }

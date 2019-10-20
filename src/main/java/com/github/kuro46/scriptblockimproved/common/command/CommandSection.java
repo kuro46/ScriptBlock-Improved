@@ -1,37 +1,22 @@
 package com.github.kuro46.scriptblockimproved.common.command;
 
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
 
+@EqualsAndHashCode
 public final class CommandSection {
 
+    @NonNull
+    @Getter
     private final String name;
 
-    public CommandSection(final String name) {
-        this.name = Objects.requireNonNull(name, "'name' cannot be null")
-            .toLowerCase();
+    public CommandSection(@NonNull final String name) {
+        this.name = name.toLowerCase();
     }
 
     public static CommandSection of(final String name) {
         return new CommandSection(name);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof CommandSection)) {
-            return false;
-        }
-        final CommandSection castedOther = (CommandSection) other;
-
-        return name.equals(castedOther.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode();
     }
 
     @Override

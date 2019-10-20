@@ -4,11 +4,11 @@ import com.github.kuro46.scriptblockimproved.common.command.ArgName;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import com.github.kuro46.scriptblockimproved.script.Script;
-import com.github.kuro46.scriptblockimproved.script.Scripts;
+import com.github.kuro46.scriptblockimproved.script.ScriptMap;
 import com.github.kuro46.scriptblockimproved.script.author.Author;
 import com.github.kuro46.scriptblockimproved.script.option.Option;
+import com.github.kuro46.scriptblockimproved.script.option.OptionList;
 import com.github.kuro46.scriptblockimproved.script.option.OptionName;
-import com.github.kuro46.scriptblockimproved.script.option.Options;
 import com.github.kuro46.scriptblockimproved.script.trigger.TriggerName;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -39,15 +39,15 @@ final class SBScriptLoader {
         this.trigger = trigger;
     }
 
-    public static Scripts load(
+    public static ScriptMap load(
             @NonNull final TriggerName trigger,
             @NonNull final Path path) throws MigrationException {
         final SBScriptLoader loader = new SBScriptLoader(trigger);
         return loader.load(path);
     }
 
-    private Scripts load(@NonNull final Path path) throws MigrationException {
-        final Scripts.Builder scriptsBuilder = Scripts.builder();
+    private ScriptMap load(@NonNull final Path path) throws MigrationException {
+        final ScriptMap.Builder scriptsBuilder = ScriptMap.builder();
 
         final Configuration worlds;
         try (final BufferedReader reader = Files.newBufferedReader(path)) {
@@ -69,7 +69,7 @@ final class SBScriptLoader {
                     final Option option = convertToSBIOption(sbOption);
                     builder.add(option);
                 }
-                final Options options = new Options(builder.build());
+                final OptionList options = new OptionList(builder.build());
                 final Script script = new Script(-1, trigger, author, parsedCoord, options);
                 scriptsBuilder.add(script);
             }

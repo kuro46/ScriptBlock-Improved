@@ -4,9 +4,9 @@ import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.script.option.ExecutionData;
 import com.github.kuro46.scriptblockimproved.script.option.Option;
 import com.github.kuro46.scriptblockimproved.script.option.OptionHandler;
-import com.github.kuro46.scriptblockimproved.script.option.OptionHandlers;
+import com.github.kuro46.scriptblockimproved.script.option.OptionHandlerMap;
+import com.github.kuro46.scriptblockimproved.script.option.OptionList;
 import com.github.kuro46.scriptblockimproved.script.option.OptionName;
-import com.github.kuro46.scriptblockimproved.script.option.Options;
 import com.github.kuro46.scriptblockimproved.script.option.PreExecuteResult;
 import com.github.kuro46.scriptblockimproved.script.option.placeholder.PlaceholderGroup;
 import com.github.kuro46.scriptblockimproved.script.option.placeholder.SourceData;
@@ -25,8 +25,8 @@ public final class ScriptExecutor {
 
     private final TriggerRegistry triggerRegistry;
     private final PlaceholderGroup placeholderGroup;
-    private final OptionHandlers handlers;
-    private final Scripts scripts;
+    private final OptionHandlerMap handlers;
+    private final ScriptMap scripts;
 
     private ScriptExecutor() {
         final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
@@ -76,9 +76,10 @@ public final class ScriptExecutor {
             .position(script.getPosition())
             .player(player)
             .build();
-        final Options replaced = script.getOptions().replaced(placeholderGroup, sourceData);
+        final OptionList replaced = script.getOptions()
+            .replacePlaceholders(placeholderGroup, sourceData);
         // Stop execution if needed
-        for (final Option option : replaced.getView()) {
+        for (final Option option : replaced.asList()) {
             final PreExecuteResult result = preExecuteOption(option, player, script);
             if (result == PreExecuteResult.CANCEL) return;
         }

@@ -1,36 +1,22 @@
 package com.github.kuro46.scriptblockimproved.script.option.placeholder;
 
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
 
+@EqualsAndHashCode
 public final class PlaceholderName {
 
+    @Getter
+    @NonNull
     private final String name;
 
-    public PlaceholderName(final String name) {
-        this.name = Objects.requireNonNull(name, "'name' cannot be null").toLowerCase();
+    public PlaceholderName(@NonNull final String name) {
+        this.name = name.toLowerCase();
     }
 
     public static PlaceholderName of(final String name) {
         return new PlaceholderName(name);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof PlaceholderName)) {
-            return false;
-        }
-        final PlaceholderName castedOther = (PlaceholderName) other;
-
-        return name.equals(castedOther.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode();
     }
 
     @Override

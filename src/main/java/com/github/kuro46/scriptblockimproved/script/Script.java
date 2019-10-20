@@ -1,9 +1,10 @@
 package com.github.kuro46.scriptblockimproved.script;
 
 import com.github.kuro46.scriptblockimproved.script.author.Author;
-import com.github.kuro46.scriptblockimproved.script.option.Options;
+import com.github.kuro46.scriptblockimproved.script.option.OptionList;
 import com.github.kuro46.scriptblockimproved.script.trigger.TriggerName;
 import com.google.gson.JsonObject;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
@@ -11,6 +12,7 @@ import lombok.ToString;
 
 @ToString
 @EqualsAndHashCode
+@Builder(builderClassName = "Builder")
 public final class Script {
 
     @Getter
@@ -26,14 +28,14 @@ public final class Script {
     private final BlockPosition position;
     @Getter
     @NonNull
-    private final Options options;
+    private final OptionList options;
 
     public Script(
             final long createdAt,
             @NonNull final TriggerName triggerName,
             @NonNull final Author author,
             @NonNull final BlockPosition position,
-            @NonNull final Options options) {
+            @NonNull final OptionList options) {
         this.createdAt = createdAt;
         this.triggerName = triggerName;
         this.author = author;
@@ -42,14 +44,13 @@ public final class Script {
     }
 
     public static Script fromJson(@NonNull final JsonObject json) {
-        final long createdAt = json.get("createdAt").getAsLong();
-        final TriggerName triggerName =
-            TriggerName.fromJson(json.getAsJsonPrimitive("triggerName"));
-        final Author author = Author.fromJson(json.getAsJsonObject("author"));
-        final BlockPosition position =
-            BlockPosition.fromJson(json.getAsJsonObject("position"));
-        final Options options = Options.fromJson(json.getAsJsonArray("options"));
-        return new Script(createdAt, triggerName, author, position, options);
+        return Script.builder()
+            .createdAt(json.get("createdAt").getAsLong())
+            .triggerName(TriggerName.fromJson(json.getAsJsonPrimitive("triggerName")))
+            .position(BlockPosition.fromJson(json.getAsJsonObject("position")))
+            .author(Author.fromJson(json.getAsJsonObject("author")))
+            .options(OptionList.fromJson(json.getAsJsonArray("options")))
+            .build();
     }
 
     public JsonObject toJson() {

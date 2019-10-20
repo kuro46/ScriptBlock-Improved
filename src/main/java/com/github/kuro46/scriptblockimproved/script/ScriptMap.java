@@ -16,62 +16,62 @@ import lombok.NonNull;
 import lombok.ToString;
 
 @ToString
-public final class Scripts {
+public final class ScriptMap {
 
     private final Lock modifyLock = new ReentrantLock();
-    private final List<ScriptsListener> listeners = new CopyOnWriteArrayList<>();
+    private final List<ScriptMapListener> listeners = new CopyOnWriteArrayList<>();
     @NonNull
-    private volatile ImmutableListMultimap<BlockPosition, Script> scripts;
+    private volatile ImmutableListMultimap<BlockPosition, Script> map;
 
-    public Scripts() {
-        this.scripts = ImmutableListMultimap.of();
+    public ScriptMap() {
+        this(ImmutableListMultimap.of());
     }
 
-    public Scripts(@NonNull final ListMultimap<BlockPosition, Script> initial) {
-        this.scripts = ImmutableListMultimap.copyOf(initial);
+    public ScriptMap(@NonNull final ListMultimap<BlockPosition, Script> initial) {
+        this.map = ImmutableListMultimap.copyOf(initial);
     }
 
     public static Builder builder() {
         return new Builder();
     }
 
-    public static Scripts fromJson(@NonNull final JsonArray json) {
-        final Scripts.Builder builder = Scripts.builder();
+    public static ScriptMap fromJson(@NonNull final JsonArray json) {
+        final ScriptMap.Builder builder = ScriptMap.builder();
         json.forEach(element -> builder.add(Script.fromJson((JsonObject) element)));
         return builder.build();
     }
 
     public JsonArray toJson() {
         final JsonArray json = new JsonArray();
-        scripts.values().stream()
+        map.values().stream()
             .map(Script::toJson)
             .forEach(json::add);
         return json;
     }
 
-    public void addListener(@NonNull final ScriptsListener listener) {
+    public void addListener(@NonNull final ScriptMapListener listener) {
         listeners.add(listener);
     }
 
-    public ImmutableListMultimap<BlockPosition, Script> getView() {
-        return scripts;
+    public ImmutableListMultimap<BlockPosition, Script> asListMultimap() {
+        return map;
     }
 
     public ImmutableSet<BlockPosition> getPositions() {
-        return scripts.keySet();
+        return map.keySet();
     }
 
     public ImmutableList<Script> get(@NonNull final BlockPosition position) {
-        return scripts.get(position);
+        return map.get(position);
     }
 
     private void compute(@NonNull Consumer<ListMultimap<BlockPosition, Script>> modifier) {
         final Lock lock = modifyLock;
         lock.lock();
         try {
-            final ListMultimap<BlockPosition, Script> mutable = ArrayListMultimap.create(scripts);
+            final ListMultimap<BlockPosition, Script> mutable = ArrayListMultimap.create(map);
             modifier.accept(mutable);
-            this.scripts = ImmutableListMultimap.copyOf(mutable);
+            this.map = ImmutableListMultimap.copyOf(mutable);
         } finally {
             lock.unlock();
         }
@@ -82,8 +82,8 @@ public final class Scripts {
         listeners.forEach(listener -> listener.onModified(this));
     }
 
-    public void addAll(@NonNull final Scripts scripts) {
-        compute(mutable -> mutable.putAll(scripts.scripts));
+    public void addAll(@NonNull final ScriptMap scripts) {
+        compute(mutable -> mutable.putAll(scripts.map));
         listeners.forEach(listener -> listener.onModified(this));
     }
 
@@ -99,7 +99,7 @@ public final class Scripts {
     }
 
     public boolean contains(@NonNull final BlockPosition position) {
-        return scripts.containsKey(position);
+        return map.containsKey(position);
     }
 
     public static final class Builder {
@@ -111,8 +111,8 @@ public final class Scripts {
             return this;
         }
 
-        public Scripts build() {
-            return new Scripts(multimap);
+        public ScriptMap build() {
+            return new ScriptMap(multimap);
         }
     }
 }

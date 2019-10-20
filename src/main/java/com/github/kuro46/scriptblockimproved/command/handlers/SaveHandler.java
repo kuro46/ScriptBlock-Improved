@@ -6,7 +6,7 @@ import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
-import com.github.kuro46.scriptblockimproved.script.Scripts;
+import com.github.kuro46.scriptblockimproved.script.ScriptMap;
 import com.github.kuro46.scriptblockimproved.script.serialize.ScriptSerializer;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -19,7 +19,7 @@ public final class SaveHandler extends CommandHandler {
     @NonNull
     private final Path dataFolder;
     @NonNull
-    private final Scripts scripts;
+    private final ScriptMap scripts;
 
     public SaveHandler() {
         super(Args.builder()

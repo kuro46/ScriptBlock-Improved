@@ -2,16 +2,15 @@ package com.github.kuro46.scriptblockimproved.command.clickaction;
 
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import com.github.kuro46.scriptblockimproved.script.BlockPosition;
-import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.bukkit.entity.Player;
 
+@AllArgsConstructor
 public final class ActionCreate implements Action {
 
+    @NonNull
     private final ParsedArgs args;
-
-    public ActionCreate(final ParsedArgs args) {
-        this.args = Objects.requireNonNull(args, "'args' cannot be null");
-    }
 
     @Override
     public void action(final Player player, final BlockPosition position) {

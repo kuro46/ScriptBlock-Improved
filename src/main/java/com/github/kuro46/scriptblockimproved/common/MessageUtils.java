@@ -1,7 +1,7 @@
 package com.github.kuro46.scriptblockimproved.common;
 
 import java.util.List;
-import java.util.Objects;
+import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -30,13 +30,9 @@ public final class MessageUtils {
     }
 
     public static void sendMessage(
-            final CommandSender sender,
-            final MessageKind kind,
-            final String message) {
-        Objects.requireNonNull(sender, "'sender' cannot be null");
-        Objects.requireNonNull(kind, "'kind' cannot be null");
-        Objects.requireNonNull(message, "'message' cannot be null");
-
+            @NonNull final CommandSender sender,
+            @NonNull final MessageKind kind,
+            @NonNull final String message) {
         sender.sendMessage(PREFIX + kind.getColor() + message);
     }
 

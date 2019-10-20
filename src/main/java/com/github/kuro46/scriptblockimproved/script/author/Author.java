@@ -2,18 +2,21 @@ package com.github.kuro46.scriptblockimproved.script.author;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import java.util.Objects;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.NonNull;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 public final class Author {
 
+    @NonNull
+    @Getter
     private final AuthorData data;
 
-    private Author(final AuthorData data) {
-        this.data = Objects.requireNonNull(data, "'data' cannot be null");
+    private Author(@NonNull final AuthorData data) {
+        this.data = data;
     }
 
     public static Author player(final String name, final UUID uniqueId) {
@@ -44,9 +47,7 @@ public final class Author {
         }
     }
 
-    public static Author fromJson(final JsonObject json) {
-        Objects.requireNonNull(json, "'json' cannot be null");
-
+    public static Author fromJson(@NonNull final JsonObject json) {
         final AuthorData data;
         final String type = json.get("type").getAsString();
         switch (type) {
@@ -111,10 +112,6 @@ public final class Author {
 
     public boolean isConsole() {
         return data instanceof ConsoleAuthorData;
-    }
-
-    public AuthorData getData() {
-        return data;
     }
 
     @Override

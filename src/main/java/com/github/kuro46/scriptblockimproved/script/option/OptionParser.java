@@ -6,10 +6,10 @@ import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.Getter;
 import lombok.NonNull;
 
 public final class OptionParser {
@@ -21,8 +21,8 @@ public final class OptionParser {
     private static final Pattern OPTIONS_PATTERN = Pattern.compile("\\[(.+?[^\\\\])]");
     private static final Pattern OPTION_PATTERN = Pattern.compile("@([^ ]+) ?(.*)");
 
-    public static Options parse(
-            @NonNull final OptionHandlers handlers,
+    public static OptionList parse(
+            @NonNull final OptionHandlerMap handlers,
             @NonNull final String source) throws ParseException {
         final List<Option> options = new ArrayList<>();
         for (final String stringOption : splitStringOptions(source)) {
@@ -40,7 +40,7 @@ public final class OptionParser {
             final Option option = new Option(name, parsedArgs);
             options.add(option);
         }
-        return new Options(options);
+        return new OptionList(options);
     }
 
     private static Optional<RawOption> splitStringOption(final String str) {
@@ -73,21 +73,16 @@ public final class OptionParser {
 
     private static class RawOption {
 
+        @NonNull
+        @Getter
         private final OptionName name;
+        @NonNull
+        @Getter
         private final ImmutableList<String> args;
 
-        public RawOption(final OptionName name, final List<String> args) {
-            this.name = Objects.requireNonNull(name, "'name' cannot be null");
-            this.args = ImmutableList.copyOf(
-                    Objects.requireNonNull(args, "'args' cannot be null"));
-        }
-
-        public OptionName getName() {
-            return name;
-        }
-
-        public ImmutableList<String> getArgs() {
-            return args;
+        public RawOption(@NonNull final OptionName name, @NonNull final List<String> args) {
+            this.name = name;
+            this.args = ImmutableList.copyOf(args);
         }
     }
 }

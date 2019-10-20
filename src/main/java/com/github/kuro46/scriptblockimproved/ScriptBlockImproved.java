@@ -2,12 +2,12 @@ package com.github.kuro46.scriptblockimproved;
 
 import com.github.kuro46.scriptblockimproved.command.SBICommand;
 import com.github.kuro46.scriptblockimproved.command.clickaction.ActionExecutor;
-import com.github.kuro46.scriptblockimproved.command.clickaction.Actions;
+import com.github.kuro46.scriptblockimproved.command.clickaction.ActionQueue;
 import com.github.kuro46.scriptblockimproved.common.Debouncer;
 import com.github.kuro46.scriptblockimproved.script.ScriptExecutor;
-import com.github.kuro46.scriptblockimproved.script.Scripts;
+import com.github.kuro46.scriptblockimproved.script.ScriptMap;
 import com.github.kuro46.scriptblockimproved.script.option.CommonOptionHandlers;
-import com.github.kuro46.scriptblockimproved.script.option.OptionHandlers;
+import com.github.kuro46.scriptblockimproved.script.option.OptionHandlerMap;
 import com.github.kuro46.scriptblockimproved.script.option.placeholder.Placeholder;
 import com.github.kuro46.scriptblockimproved.script.option.placeholder.PlaceholderGroup;
 import com.github.kuro46.scriptblockimproved.script.serialize.ScriptSerializer;
@@ -34,11 +34,11 @@ public final class ScriptBlockImproved {
     private volatile static ScriptBlockImproved instance;
 
     @Getter
-    private final OptionHandlers optionHandlers = new OptionHandlers();
+    private final OptionHandlerMap optionHandlers = new OptionHandlerMap();
     @Getter
     private final PlaceholderGroup placeholderGroup = new PlaceholderGroup();
     @Getter
-    private final Actions actions = new Actions();
+    private final ActionQueue actionQueue = new ActionQueue();
     @Getter
     private final TriggerRegistry triggerRegistry = new TriggerRegistry();
 
@@ -52,7 +52,7 @@ public final class ScriptBlockImproved {
     private final Plugin plugin;
     @Getter
     @NonNull
-    private final Scripts scripts;
+    private final ScriptMap scripts;
     @Getter
     @NonNull
     private final Path dataFolder;
@@ -130,8 +130,8 @@ public final class ScriptBlockImproved {
         return path;
     }
 
-    private Scripts loadScripts() throws IOException {
-        if (Files.size(scriptsPath) == 0) return new Scripts();
+    private ScriptMap loadScripts() throws IOException {
+        if (Files.size(scriptsPath) == 0) return new ScriptMap();
         try (final BufferedReader reader = Files.newBufferedReader(scriptsPath)) {
             return ScriptSerializer.deserialize(reader);
         } catch (final IOException | UnsupportedVersionException e) {
@@ -152,7 +152,7 @@ public final class ScriptBlockImproved {
     }
 
     private void registerListeners() {
-        Bukkit.getPluginManager().registerEvents(new ActionExecutor(actions), plugin);
+        Bukkit.getPluginManager().registerEvents(new ActionExecutor(actionQueue), plugin);
     }
 
     private void registerOptionHandlers() {

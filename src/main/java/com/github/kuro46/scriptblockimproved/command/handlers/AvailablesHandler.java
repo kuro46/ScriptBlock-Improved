@@ -4,7 +4,7 @@ import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
-import com.github.kuro46.scriptblockimproved.script.option.OptionHandlers;
+import com.github.kuro46.scriptblockimproved.script.option.OptionHandlerMap;
 import com.github.kuro46.scriptblockimproved.script.option.OptionName;
 import com.github.kuro46.scriptblockimproved.script.trigger.TriggerName;
 import com.github.kuro46.scriptblockimproved.script.trigger.TriggerRegistry;
@@ -16,7 +16,7 @@ import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMess
 public final class AvailablesHandler extends CommandHandler {
 
     @NonNull
-    private final OptionHandlers handlers;
+    private final OptionHandlerMap handlers;
     @NonNull
     private final TriggerRegistry triggerRegistry;
 

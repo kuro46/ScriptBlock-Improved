@@ -1,7 +1,6 @@
 package com.github.kuro46.scriptblockimproved.common.command;
 
 import com.github.kuro46.scriptblockimproved.common.ListUtils;
-import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,10 +10,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.NonNull;
+import lombok.ToString;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 /**
@@ -38,15 +38,14 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
  * assertFalse(parsed.isPresent());
  * }</pre>
  */
+@ToString
 public final class Args implements Formattable {
 
     private static final Args EMPTY = new Args(ImmutableList.of());
 
     private final ImmutableList<Arg> args;
 
-    public Args(final List<Arg> args) {
-        Objects.requireNonNull(args, "'args' cannot be null");
-
+    public Args(@NonNull final List<Arg> args) {
         Args.validate(args);
 
         this.args = ImmutableList.copyOf(args);
@@ -106,13 +105,6 @@ public final class Args implements Formattable {
             .map(arg -> String.format("%s", arg))
             .collect(Collectors.joining(" "));
         formatter.format("%s", appended);
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("args", args)
-            .toString();
     }
 
     private class Parser {
@@ -179,28 +171,20 @@ public final class Args implements Formattable {
 
         private final ImmutableList.Builder<Arg> args = ImmutableList.builder();
 
-        public Builder add(final Arg arg) {
-            Objects.requireNonNull(arg, "'arg' cannot be null");
-
+        public Builder add(@NonNull final Arg arg) {
             args.add(arg);
             return this;
         }
 
-        public Builder add(final String name, final boolean required) {
-            Objects.requireNonNull(name, "'name' cannot be null");
-
+        public Builder add(@NonNull final String name, final boolean required) {
             return add(new Arg(name, required));
         }
 
-        public Builder required(final String name) {
-            Objects.requireNonNull(name, "'name' cannot be null");
-
+        public Builder required(@NonNull final String name) {
             return add(new Arg(name, true));
         }
 
-        public Builder optional(final String name) {
-            Objects.requireNonNull(name, "'name' cannot be null");
-
+        public Builder optional(@NonNull final String name) {
             return add(new Arg(name, false));
         }
 

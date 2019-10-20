@@ -2,52 +2,32 @@ package com.github.kuro46.scriptblockimproved.script.trigger;
 
 import com.google.errorprone.annotations.Immutable;
 import com.google.gson.JsonPrimitive;
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
 
+@EqualsAndHashCode
 @Immutable
 public final class TriggerName {
 
+    @Getter
+    @NonNull
     private final String name;
 
-    private TriggerName(final String name) {
-        Objects.requireNonNull(name, "'name' cannot be null");
-
+    private TriggerName(@NonNull final String name) {
         this.name = name.toLowerCase();
     }
 
-    public static TriggerName of(final String name) {
-        Objects.requireNonNull(name, "'name' cannot be null");
-
+    public static TriggerName of(@NonNull final String name) {
         return new TriggerName(name);
     }
 
-    public static TriggerName fromJson(final JsonPrimitive json) {
-        Objects.requireNonNull(json, "'json' cannot be null");
-
+    public static TriggerName fromJson(@NonNull final JsonPrimitive json) {
         return new TriggerName(json.getAsString());
     }
 
     public JsonPrimitive toJson() {
         return new JsonPrimitive(name);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof TriggerName)) {
-            return false;
-        }
-        final TriggerName castedOther = (TriggerName) other;
-
-        return name.equals(castedOther.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode();
     }
 
     @Override

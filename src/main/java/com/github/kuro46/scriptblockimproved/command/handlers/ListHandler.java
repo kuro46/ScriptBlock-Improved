@@ -9,7 +9,7 @@ import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
 import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.script.BlockPosition;
-import com.github.kuro46.scriptblockimproved.script.Scripts;
+import com.github.kuro46.scriptblockimproved.script.ScriptMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.NonNull;
@@ -19,7 +19,7 @@ import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMess
 public final class ListHandler extends CommandHandler {
 
     @NonNull
-    private final Scripts scripts;
+    private final ScriptMap scripts;
 
     public ListHandler() {
         super(Args.builder()

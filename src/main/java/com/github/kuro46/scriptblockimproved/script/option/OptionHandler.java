@@ -79,13 +79,13 @@ public interface OptionHandler {
         }
 
         public void register(
-                @NonNull final OptionHandlers handlers,
+                @NonNull final OptionHandlerMap handlers,
                 @NonNull final OptionName name) {
             handlers.add(name, build());
         }
 
         public void register(
-                @NonNull final OptionHandlers handlers,
+                @NonNull final OptionHandlerMap handlers,
                 @NonNull final String name) {
             register(handlers, OptionName.of(name));
         }
