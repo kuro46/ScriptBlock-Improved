@@ -1,8 +1,8 @@
 package com.github.kuro46.scriptblockimproved.command.handlers;
 
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
-import com.github.kuro46.scriptblockimproved.command.clickaction.ActionView;
 import com.github.kuro46.scriptblockimproved.command.clickaction.ActionQueue;
+import com.github.kuro46.scriptblockimproved.command.clickaction.ActionView;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
