@@ -19,7 +19,7 @@ dependencies {
     // Bukkit
     compileOnly 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
     // Gson
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.code.gson:gson:2.8.6'
     // Guava
     implementation 'com.google.guava:guava:28.1-jre'
     // Apache Commons Lang
