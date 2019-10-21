@@ -14,6 +14,9 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
+/**
+ * A BlockPosition represents a position of the block.<br>
+ */
 @EqualsAndHashCode
 @ToString
 public final class BlockPosition implements Comparable<BlockPosition> {

@@ -12,6 +12,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 
+/**
+ * This class is a representation of option.
+ */
 @ToString
 @EqualsAndHashCode
 public final class Option {

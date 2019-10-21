@@ -14,6 +14,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 
+/**
+ * List of option.
+ */
 @EqualsAndHashCode
 @ToString
 public final class OptionList {

@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
 
+/**
+ * This class is a representation of placeholder
+ */
 @ToString
 public final class Placeholder {
 

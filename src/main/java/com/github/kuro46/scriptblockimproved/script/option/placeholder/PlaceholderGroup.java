@@ -8,6 +8,9 @@ import java.util.regex.Pattern;
 import lombok.NonNull;
 import org.apache.commons.text.TextStringBuilder;
 
+/**
+ * Group of Placeholder.
+ */
 public final class PlaceholderGroup {
 
     private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("<(.+?)>");

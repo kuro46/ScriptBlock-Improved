@@ -17,6 +17,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 
+/**
+ * ScriptExecutor is a class for execute script.
+ */
 public final class ScriptExecutor {
 
     private static final Lock INIT_LOCK = new ReentrantLock();

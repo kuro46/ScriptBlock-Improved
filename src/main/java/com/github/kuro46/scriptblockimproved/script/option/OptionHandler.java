@@ -4,6 +4,9 @@ import com.github.kuro46.scriptblockimproved.common.command.Args;
 import java.util.Objects;
 import lombok.NonNull;
 
+/**
+ * Handler of option.
+ */
 public interface OptionHandler {
 
     Args getArgs();

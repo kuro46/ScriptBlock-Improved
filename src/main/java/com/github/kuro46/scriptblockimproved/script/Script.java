@@ -10,6 +10,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
 
+/**
+ * A class that represents script.
+ */
 @ToString
 @EqualsAndHashCode
 @Builder(builderClassName = "Builder")
