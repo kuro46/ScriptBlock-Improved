@@ -2,17 +2,18 @@
 
 # ScriptBlock-Improved [![jitpack](https://jitpack.io/v/kuro46/ScriptBlock-Improved.svg)](https://jitpack.io/#kuro46/ScriptBlock-Improved)
 
-[ScriptBlock](https://dev.bukkit.org/projects/scriptblock)の設計や機能を改善したプラグインです
+[ScriptBlock](https://dev.bukkit.org/projects/scriptblock)の設計や機能を改善したプラグインです。
 
 **注意:** このプラグインは現在安定していません。思わぬバグがあったり、更新時にスクリプトが読み込めなくなったりするかもしれません。  
 試験的に使う場合を除いて、安定化予定のバージョン1.0.0のリリースまで待つことをおすすめします。
 
 ## 特徴
 
-このプラグインは外部のプラグインに依存しないため、プラグイン単体で動作させる事が可能です。  
-また、他の似たプラグインにはない便利なオプションを実装しています。
+- 外部プラグインに依存しないため、プラグイン単体で動作させることができます
+- コンソールからコマンドを実行するためのオプションなど、便利なオプションを実装しています
+- 使いやすいAPIを実装しています
 
-将来的には開発者向けのAPIも実装する予定です([#3](https://github.com/kuro46/ScriptBlock-Improved/issues/3))
+コマンドリスト/オプションリスト/APIの使用方法は[Wiki](https://github.com/kuro46/ScriptBlock-Improved/wiki/)を参照してください。
 
 ## テスト済みのバージョン
 
@@ -23,27 +24,13 @@
 - Java8かそれ以上
 - 殆どのバージョンのBukkitを実装したサーバー
 
-## 開発者向け
+## 導入方法
 
-### APIを使う
+[ここをクリック](https://github.com/kuro46/ScriptBlock-Improved/releases/latest/download/ScriptBlock-Improved.jar)
+して最新のjarファイルをダウンロードし、サーバーのpluginsフォルダに入れてください。
 
-#### 依存関係に追加する
+## ソースコードからビルドする
 
-##### Gradle
-
-```groovy
-repositories {
-    maven { url "https://jitpack.io" }
-}
-
-dependencies {
-    implementation 'com.github.kuro46:ScriptBlock-Improved:v0.5.0'
-}
-```
-
-### SBIに変更を加える
-
-#### 主なGradleタスク
-
-`./gradlew pluginjar`で、サーバー導入用のjarファイルを生成できます。(ファイル名にバージョンを含みません)  
-`./gradlew build`でSpotBugsやcheckstyleを一括で実行できます。
+このリポジトリをクローンしたあと、  
+サーバー導入用のjarファイルを生成したい場合は`./gradlew pluginjar`を、  
+各種テスト(checkstyleや単体テスト)を実行したい場合は`./gradlew build`を実行してください。
