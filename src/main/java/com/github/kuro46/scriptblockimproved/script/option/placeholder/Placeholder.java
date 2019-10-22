@@ -39,7 +39,7 @@ public final class Placeholder {
     public Placeholder(@NonNull PlaceholderName name, @NonNull ReplacementFactory factory) {
         this.name = name;
         this.replacementFactory = factory;
-        this.target = "<" + name.getName() + ">";
+        this.target = "<" + name + ">";
     }
 
     public static Builder builder() {

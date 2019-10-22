@@ -55,7 +55,7 @@ public final class AddHandler extends CommandHandler {
         return new CandidateBuilder()
             .when("trigger", CandidateFactories.filter(value -> {
                 return triggerRegistry.getView().keySet().stream()
-                    .map(TriggerName::getName)
+                    .map(TriggerName::toString)
                     .collect(Collectors.toList());
             }))
             .build(data.getArgName(), data.getCurrentValue());

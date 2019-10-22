@@ -40,7 +40,7 @@ public final class AvailablesHandler extends CommandHandler {
             sendMessage(sender, "No available options exist");
         } else {
             sendMessage(sender, "Available options:");
-            names.forEach(optionName -> sendMessage(sender, "  " + optionName.getName()));
+            names.forEach(optionName -> sendMessage(sender, "  " + optionName));
         }
     }
 

@@ -1,24 +1,19 @@
 package com.github.kuro46.scriptblockimproved.script.option;
 
+import com.github.kuro46.scriptblockimproved.common.Name;
 import com.google.gson.JsonPrimitive;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.ToString;
 
-@ToString
-@EqualsAndHashCode
-public final class OptionName implements Comparable<OptionName> {
-
-    @Getter
-    @NonNull
-    private final String name;
+/**
+ * A OptionName represents a name of option.
+ */
+public final class OptionName extends Name {
 
     private OptionName(@NonNull final String name) {
-        this.name = name.toLowerCase();
+        super(name);
     }
 
-    public static OptionName of(final String name) {
+    public static OptionName of(@NonNull final String name) {
         return new OptionName(name);
     }
 
@@ -27,11 +22,6 @@ public final class OptionName implements Comparable<OptionName> {
     }
 
     public JsonPrimitive toJson() {
-        return new JsonPrimitive(name);
-    }
-
-    @Override
-    public int compareTo(OptionName other) {
-        return this.name.compareTo(other.name);
+        return new JsonPrimitive(string);
     }
 }

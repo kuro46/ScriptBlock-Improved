@@ -44,7 +44,7 @@ public final class Option {
         json.add("name", name.toJson());
         final JsonObject argsJson = new JsonObject();
         args.asMap().forEach((key, value) -> {
-            argsJson.addProperty(key.getName(), value);
+            argsJson.addProperty(key.toString(), value);
         });
         json.add("args", argsJson);
         return json;

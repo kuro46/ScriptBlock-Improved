@@ -57,7 +57,7 @@ public final class Arg implements Formattable {
             final int flags,
             final int width,
             final int precision) {
-        if (name.getName().isEmpty()) {
+        if (name.toString().isEmpty()) {
             return;
         }
         final char begin = isRequired() ? '<' : '[';

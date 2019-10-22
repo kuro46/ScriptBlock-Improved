@@ -1,21 +1,13 @@
 package com.github.kuro46.scriptblockimproved.script.trigger;
 
-import com.google.errorprone.annotations.Immutable;
+import com.github.kuro46.scriptblockimproved.common.Name;
 import com.google.gson.JsonPrimitive;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NonNull;
 
-@EqualsAndHashCode
-@Immutable
-public final class TriggerName {
-
-    @Getter
-    @NonNull
-    private final String name;
+public final class TriggerName extends Name {
 
     private TriggerName(@NonNull final String name) {
-        this.name = name.toLowerCase();
+        super(name);
     }
 
     public static TriggerName of(@NonNull final String name) {
@@ -27,11 +19,6 @@ public final class TriggerName {
     }
 
     public JsonPrimitive toJson() {
-        return new JsonPrimitive(name);
-    }
-
-    @Override
-    public String toString() {
-        return name;
+        return new JsonPrimitive(string);
     }
 }
