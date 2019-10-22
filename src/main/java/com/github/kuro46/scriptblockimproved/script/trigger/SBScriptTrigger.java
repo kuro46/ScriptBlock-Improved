@@ -2,7 +2,6 @@ package com.github.kuro46.scriptblockimproved.script.trigger;
 
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.script.BlockPosition;
-import com.github.kuro46.scriptblockimproved.script.ScriptExecutor;
 import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
@@ -21,17 +20,16 @@ import org.bukkit.plugin.Plugin;
 
 public final class SBScriptTrigger {
 
-    private static final TriggerName TRIGGER_INTERACT = TriggerName.of("sbinteract");
-    private static final TriggerName TRIGGER_WALK = TriggerName.of("sbwalk");
-
     private final Map<Player, BlockPosition> lastWalkedPositions = new WeakHashMap<>();
-    private final ScriptExecutor executor;
+    private final RegisteredTrigger interactTrigger;
+    private final RegisteredTrigger walkTrigger;
 
     private SBScriptTrigger() {
-        this.executor = ScriptExecutor.getInstance();
         final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
         final Plugin plugin = sbi.getPlugin();
         final TriggerRegistry registry = sbi.getTriggerRegistry();
+        this.interactTrigger = registry.register("sbinteract");
+        this.walkTrigger = registry.register("sbwalk");
         initInteract(plugin, registry);
         initMove(plugin, registry);
     }
@@ -43,14 +41,12 @@ public final class SBScriptTrigger {
     private void initInteract(
             @NonNull final Plugin plugin,
             @NonNull final TriggerRegistry registry) {
-        final RegisteredTrigger interactTrigger = registry.register(TRIGGER_INTERACT);
         final InteractListener listener = new InteractListener();
         Bukkit.getPluginManager().registerEvents(listener, plugin);
         interactTrigger.onUnregistered(() -> HandlerList.unregisterAll(listener));
     }
 
     private void initMove(@NonNull final Plugin plugin, @NonNull final TriggerRegistry registry) {
-        final RegisteredTrigger walkTrigger = registry.register(TRIGGER_WALK);
         final MoveListener listener = new MoveListener();
         Bukkit.getPluginManager().registerEvents(listener, plugin);
         walkTrigger.onUnregistered(() -> HandlerList.unregisterAll(listener));
@@ -62,7 +58,7 @@ public final class SBScriptTrigger {
             .map(BlockPosition::fromBlock)
             .orElse(null);
         if (clickedPosition == null) return;
-        executor.execute(TRIGGER_INTERACT, player, clickedPosition);
+        interactTrigger.executeIfAvailable(player, clickedPosition);
     }
 
     public void onMove(@NonNull final PlayerMoveEvent event) {
@@ -75,7 +71,7 @@ public final class SBScriptTrigger {
         if (lastWalkedPos != null && lastWalkedPos.equals(walkingPos)) return;
         lastWalkedPositions.put(player, walkingPos);
 
-        executor.execute(TRIGGER_WALK, player, walkingPos);
+        walkTrigger.executeIfAvailable(player, walkingPos);
     }
 
     private final class InteractListener implements Listener {

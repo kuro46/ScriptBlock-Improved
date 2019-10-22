@@ -2,7 +2,6 @@ package com.github.kuro46.scriptblockimproved.script.trigger;
 
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.script.BlockPosition;
-import com.github.kuro46.scriptblockimproved.script.ScriptExecutor;
 import java.util.Map;
 import java.util.WeakHashMap;
 import lombok.NonNull;
@@ -15,18 +14,15 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 public final class MoveScriptTrigger implements Listener {
 
-    private static final TriggerName TRIGGER_MOVE = TriggerName.of("move");
-
     private final Map<Player, BlockPosition> lastPositions = new WeakHashMap<>();
-    private final ScriptExecutor executor;
+    private final RegisteredTrigger trigger;
 
     private MoveScriptTrigger() {
-        this.executor = ScriptExecutor.getInstance();
         final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
         final TriggerRegistry registry = sbi.getTriggerRegistry();
-        final RegisteredTrigger trigger = registry.register(TRIGGER_MOVE);
+        this.trigger = registry.register("move");
+        this.trigger.onUnregistered(() -> HandlerList.unregisterAll(this));
         Bukkit.getPluginManager().registerEvents(this, sbi.getPlugin());
-        trigger.onUnregistered(() -> HandlerList.unregisterAll(this));
     }
 
     public static void listen() {
@@ -39,7 +35,7 @@ public final class MoveScriptTrigger implements Listener {
         final BlockPosition position = BlockPosition.fromLocation(player.getLocation());
         if (shouldCancelExecution(player, position)) return;
         updatePosition(player, position);
-        executor.execute(TRIGGER_MOVE, player, position);
+        trigger.executeIfAvailable(player, position);
     }
 
     private boolean shouldCancelExecution(

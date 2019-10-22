@@ -4,7 +4,7 @@ import org.apache.commons.lang3.mutable.MutableInt;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class TriggerRegistryTests {
+class RegisteredTriggerTests {
 
     @Test
     void unregisterListenerTest() {
