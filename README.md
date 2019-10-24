@@ -15,14 +15,10 @@
 
 コマンドリスト/オプションリスト/APIの使用方法は[Wiki](https://github.com/kuro46/ScriptBlock-Improved/wiki/)を参照してください。
 
-## テスト済みのバージョン
+## 動作環境
 
-- Java 8, Paper 1.12.2
-
-## 恐らく動作するバージョン
-
-- Java8かそれ以上
-- 殆どのバージョンのBukkitを実装したサーバー
+- Java8以上
+- 1.8.8~1.14.4までのBukkitを実装したサーバー
 
 ## 導入方法
 
