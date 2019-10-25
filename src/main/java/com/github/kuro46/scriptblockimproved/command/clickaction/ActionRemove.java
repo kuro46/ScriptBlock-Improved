@@ -3,7 +3,7 @@ package com.github.kuro46.scriptblockimproved.command.clickaction;
 import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import org.bukkit.entity.Player;
 
-public final class ActionDelete implements Action {
+public final class ActionRemove implements Action {
 
     @Override
     public void action(final Player player, final BlockPosition position) {

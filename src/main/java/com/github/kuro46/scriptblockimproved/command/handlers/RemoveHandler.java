@@ -1,7 +1,7 @@
 package com.github.kuro46.scriptblockimproved.command.handlers;
 
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
-import com.github.kuro46.scriptblockimproved.command.clickaction.ActionDelete;
+import com.github.kuro46.scriptblockimproved.command.clickaction.ActionRemove;
 import com.github.kuro46.scriptblockimproved.command.clickaction.ActionQueue;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
@@ -12,12 +12,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class DeleteHandler extends CommandHandler {
+public final class RemoveHandler extends CommandHandler {
 
     @NonNull
     private final ActionQueue actionQueue;
 
-    public DeleteHandler() {
+    public RemoveHandler() {
         super(Args.empty());
         this.actionQueue = ScriptBlockImproved.getInstance().getActionQueue();
     }
@@ -32,6 +32,6 @@ public final class DeleteHandler extends CommandHandler {
         }
         final Player player = (Player) sender;
         sendMessage(sender, "Click any block to delete scripts from the block");
-        actionQueue.add(player, new ActionDelete());
+        actionQueue.add(player, new ActionRemove());
     }
 }

@@ -16,12 +16,12 @@ import lombok.NonNull;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class DeleteAtHandler extends CommandHandler {
+public final class RemoveAtHandler extends CommandHandler {
 
     @NonNull
     private final ScriptMap scripts;
 
-    public DeleteAtHandler() {
+    public RemoveAtHandler() {
         super(Args.builder()
                 .required("world")
                 .required("x")

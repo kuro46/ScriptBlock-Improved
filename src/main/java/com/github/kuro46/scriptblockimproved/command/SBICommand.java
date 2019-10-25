@@ -5,8 +5,8 @@ import com.github.kuro46.scriptblockimproved.command.handlers.AddHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.AvailablesHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.CreateAtHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.CreateHandler;
-import com.github.kuro46.scriptblockimproved.command.handlers.DeleteAtHandler;
-import com.github.kuro46.scriptblockimproved.command.handlers.DeleteHandler;
+import com.github.kuro46.scriptblockimproved.command.handlers.RemoveAtHandler;
+import com.github.kuro46.scriptblockimproved.command.handlers.RemoveHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.HelpHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.ListHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.PermMapHandler;
@@ -75,11 +75,11 @@ public final class SBICommand {
             .childOf(root);
         Command.builder()
             .section("delete")
-            .handler(new DeleteHandler())
+            .handler(new RemoveHandler())
             .childOf(root);
         Command.builder()
             .section("deleteat")
-            .handler(new DeleteAtHandler())
+            .handler(new RemoveAtHandler())
             .childOf(root);
         Command.builder()
             .section("view")
