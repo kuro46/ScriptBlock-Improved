@@ -74,11 +74,11 @@ public final class SBICommand {
             .handler(new AddAtHandler())
             .childOf(root);
         Command.builder()
-            .section("delete")
+            .section("remove")
             .handler(new RemoveHandler())
             .childOf(root);
         Command.builder()
-            .section("deleteat")
+            .section("removeat")
             .handler(new RemoveAtHandler())
             .childOf(root);
         Command.builder()
