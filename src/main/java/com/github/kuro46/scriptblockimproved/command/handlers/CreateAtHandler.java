@@ -53,7 +53,6 @@ public final class CreateAtHandler extends CommandHandler {
         final ParsedArgs args = data.getArgs();
         final CommandSender sender = data.getDispatcher();
 
-        final String trigger = args.getOrFail("trigger");
         final String rawOptions = args.getOrFail("script");
         final OptionList options;
         try {
@@ -74,10 +73,18 @@ public final class CreateAtHandler extends CommandHandler {
                     "Script already exists at that place. Instead use '/sbi add[at]'");
             return;
         }
-
+        final TriggerName triggerName = TriggerName.of(args.getOrFail("trigger"));
+        if (!triggerRegistry.isRegistered(triggerName)) {
+            sendMessage(
+                    sender,
+                    MessageKind.ERROR,
+                    "Trigger: '%s' is not registered",
+                    triggerName);
+            return;
+        }
         scripts.add(new Script(
                     System.currentTimeMillis(),
-                    TriggerName.of(trigger),
+                    triggerName,
                     author,
                     position,
                     options));
