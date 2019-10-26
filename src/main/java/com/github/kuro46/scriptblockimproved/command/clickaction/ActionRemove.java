@@ -7,7 +7,7 @@ public final class ActionRemove implements Action {
 
     @Override
     public void action(final Player player, final BlockPosition position) {
-        player.performCommand(String.format("sbi deleteat %s %s %s %s",
+        player.performCommand(String.format("sbi removeat %s %s %s %s",
                     position.getWorld(),
                     position.getX(),
                     position.getY(),
