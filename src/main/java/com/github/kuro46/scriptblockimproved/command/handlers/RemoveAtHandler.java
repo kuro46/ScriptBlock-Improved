@@ -43,7 +43,7 @@ public final class RemoveAtHandler extends CommandHandler {
 
         if (scripts.contains(position)) {
             scripts.removeAll(position);
-            sendMessage(sender, MessageKind.SUCCESS, "Script(s) has been deleted");
+            sendMessage(sender, MessageKind.SUCCESS, "Script(s) has been removed");
         } else {
             sendMessage(sender, MessageKind.ERROR, "Script not exists");
         }

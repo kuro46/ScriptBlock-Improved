@@ -69,7 +69,7 @@ public final class AddAtHandler extends CommandHandler {
 
         if (!scripts.contains(position)) {
             sendMessage(sender,
-                    MessageKind.ERROR,
+                    MessageKind.SUCCESS,
                     "Script not exists at that place. Instead use '/sbi create[at]'");
             return;
         }

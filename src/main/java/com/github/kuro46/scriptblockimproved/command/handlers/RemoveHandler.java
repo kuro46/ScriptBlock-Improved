@@ -1,8 +1,8 @@
 package com.github.kuro46.scriptblockimproved.command.handlers;
 
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
-import com.github.kuro46.scriptblockimproved.command.clickaction.ActionRemove;
 import com.github.kuro46.scriptblockimproved.command.clickaction.ActionQueue;
+import com.github.kuro46.scriptblockimproved.command.clickaction.ActionRemove;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
@@ -31,7 +31,7 @@ public final class RemoveHandler extends CommandHandler {
             return;
         }
         final Player player = (Player) sender;
-        sendMessage(sender, "Click any block to delete scripts from the block");
+        sendMessage(sender, "Click any block to remove scripts from the block");
         actionQueue.add(player, new ActionRemove());
     }
 }
