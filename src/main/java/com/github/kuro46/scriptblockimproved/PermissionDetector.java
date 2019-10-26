@@ -144,6 +144,8 @@ public final class PermissionDetector {
             if (mappings.containsKey(command)) {
                 permissions = mappings.get(command);
                 break;
+            } else if (command.getParts().isEmpty()) {
+                return Optional.empty();
             } else {
                 command = new Command(ListUtils.removeLastElement(command.getParts()));
             }
