@@ -1,7 +1,5 @@
 package com.github.kuro46.scriptblockimproved.command;
 
-import com.github.kuro46.scriptblockimproved.command.handlers.AddAtHandler;
-import com.github.kuro46.scriptblockimproved.command.handlers.AddHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.AvailablesHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.CreateAtHandler;
 import com.github.kuro46.scriptblockimproved.command.handlers.CreateHandler;
@@ -64,14 +62,6 @@ public final class SBICommand {
         Command.builder()
             .section("createat")
             .handler(new CreateAtHandler())
-            .childOf(root);
-        Command.builder()
-            .section("add")
-            .handler(new AddHandler())
-            .childOf(root);
-        Command.builder()
-            .section("addat")
-            .handler(new AddAtHandler())
             .childOf(root);
         Command.builder()
             .section("remove")

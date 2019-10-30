@@ -67,12 +67,6 @@ public final class CreateAtHandler extends CommandHandler {
         }
         final Author author = Author.fromCommandSender(sender);
 
-        if (scripts.contains(position)) {
-            sendMessage(sender,
-                    MessageKind.ERROR,
-                    "Script already exists at that place. Instead use '/sbi add[at]'");
-            return;
-        }
         final TriggerName triggerName = TriggerName.of(args.getOrFail("trigger"));
         if (!triggerRegistry.isRegistered(triggerName)) {
             sendMessage(
