@@ -10,6 +10,7 @@ import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import com.github.kuro46.scriptblockimproved.script.BlockPosition;
+import com.github.kuro46.scriptblockimproved.script.InvalidNumberException;
 import com.github.kuro46.scriptblockimproved.script.Script;
 import com.github.kuro46.scriptblockimproved.script.ScriptMap;
 import com.github.kuro46.scriptblockimproved.script.author.Author;
@@ -62,8 +63,13 @@ public final class CreateAtHandler extends CommandHandler {
             return;
         }
         // Parse position
-        final BlockPosition position = BlockPosition.fromArgs(args).orElse(null);
-        if (position == null) return;
+        final BlockPosition position;
+        try {
+            position = BlockPosition.fromArgs(args);
+        } catch (final InvalidNumberException e) {
+            sendMessage(sender, MessageKind.ERROR, e.getMessage());
+            return;
+        }
         // Get and validate trigger name
         final TriggerName triggerName = TriggerName.of(args.getOrFail("trigger"));
         if (!triggerRegistry.isRegistered(triggerName)) {

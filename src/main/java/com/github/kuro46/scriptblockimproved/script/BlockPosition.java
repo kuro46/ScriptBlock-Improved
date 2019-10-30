@@ -1,10 +1,8 @@
 package com.github.kuro46.scriptblockimproved.script;
 
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
-import com.google.common.primitives.Ints;
 import com.google.gson.JsonObject;
 import java.util.Objects;
-import java.util.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
@@ -38,16 +36,23 @@ public final class BlockPosition implements Comparable<BlockPosition> {
         this.z = z;
     }
 
-    public static Optional<BlockPosition> fromArgs(@NonNull final ParsedArgs args) {
-        final World world = Bukkit.getWorld(args.getOrFail("world"));
-        if (world == null) return Optional.empty();
-        final Integer x = Ints.tryParse(args.getOrFail("x"));
-        if (x == null) return Optional.empty();
-        final Integer y = Ints.tryParse(args.getOrFail("y"));
-        if (y == null) return Optional.empty();
-        final Integer z = Ints.tryParse(args.getOrFail("z"));
-        if (z == null) return Optional.empty();
-        return Optional.of(new BlockPosition(world.getName(), x, y, z));
+    public static BlockPosition fromArgs(
+            @NonNull final ParsedArgs args) throws InvalidNumberException {
+        final int x = parseStringToInt("x", args);
+        final int y = parseStringToInt("y", args);
+        final int z = parseStringToInt("z", args);
+        return new BlockPosition(args.getOrFail("world"), x, y, z);
+    }
+
+    private static int parseStringToInt(
+            @NonNull final String argumentName,
+            @NonNull final ParsedArgs args) throws InvalidNumberException {
+        final String value = args.getOrFail(argumentName);
+        try {
+            return Integer.parseInt(value);
+        } catch (final NumberFormatException e) {
+            throw new InvalidNumberException(argumentName, value);
+        }
     }
 
     public static BlockPosition fromLocation(@NonNull final Location location) {

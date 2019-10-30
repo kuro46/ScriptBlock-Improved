@@ -10,6 +10,7 @@ import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import com.github.kuro46.scriptblockimproved.script.BlockPosition;
+import com.github.kuro46.scriptblockimproved.script.InvalidNumberException;
 import com.github.kuro46.scriptblockimproved.script.ScriptMap;
 import java.util.List;
 import lombok.NonNull;
@@ -36,8 +37,11 @@ public final class RemoveAtHandler extends CommandHandler {
         final CommandSender sender = data.getDispatcher();
         final ParsedArgs args = data.getArgs();
 
-        final BlockPosition position = BlockPosition.fromArgs(args).orElse(null);
-        if (position == null) {
+        final BlockPosition position;
+        try {
+            position = BlockPosition.fromArgs(args);
+        } catch (final InvalidNumberException e) {
+            sendMessage(sender, MessageKind.ERROR, e.getMessage());
             return;
         }
 
