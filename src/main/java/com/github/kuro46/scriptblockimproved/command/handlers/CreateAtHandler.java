@@ -52,21 +52,19 @@ public final class CreateAtHandler extends CommandHandler {
     public void execute(final ExecutionData data) {
         final ParsedArgs args = data.getArgs();
         final CommandSender sender = data.getDispatcher();
-
-        final String rawOptions = args.getOrFail("script");
+        // Parse options
         final OptionList options;
         try {
+            final String rawOptions = args.getOrFail("script");
             options = OptionList.parse(handlers, rawOptions);
         } catch (final ParseException e) {
             sendMessage(sender, MessageKind.ERROR, e.getMessage());
             return;
         }
+        // Parse position
         final BlockPosition position = BlockPosition.fromArgs(args).orElse(null);
-        if (position == null) {
-            return;
-        }
-        final Author author = Author.fromCommandSender(sender);
-
+        if (position == null) return;
+        // Get and validate trigger name
         final TriggerName triggerName = TriggerName.of(args.getOrFail("trigger"));
         if (!triggerRegistry.isRegistered(triggerName)) {
             sendMessage(
@@ -76,12 +74,15 @@ public final class CreateAtHandler extends CommandHandler {
                     triggerName);
             return;
         }
-        scripts.add(new Script(
-                    System.currentTimeMillis(),
-                    triggerName,
-                    author,
-                    position,
-                    options));
+        // Build script
+        final Script script = Script.builder()
+                    .author(Author.fromCommandSender(sender))
+                    .createdAt(System.currentTimeMillis())
+                    .triggerName(triggerName)
+                    .position(position)
+                    .options(options)
+                    .build();
+        scripts.add(script);
         sendMessage(sender, MessageKind.SUCCESS, "The script has been created");
     }
 
