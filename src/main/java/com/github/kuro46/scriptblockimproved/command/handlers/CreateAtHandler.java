@@ -41,7 +41,7 @@ public final class CreateAtHandler extends CommandHandler {
                 .required("y")
                 .required("z")
                 .required("trigger")
-                .required("script")
+                .required("options")
                 .build());
         final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
         this.handlers = sbi.getOptionHandlers();
@@ -56,7 +56,7 @@ public final class CreateAtHandler extends CommandHandler {
         // Parse options
         final OptionList options;
         try {
-            final String rawOptions = args.getOrFail("script");
+            final String rawOptions = args.getOrFail("options");
             options = OptionList.parse(handlers, rawOptions);
         } catch (final ParseException e) {
             sendMessage(sender, MessageKind.ERROR, e.getMessage());

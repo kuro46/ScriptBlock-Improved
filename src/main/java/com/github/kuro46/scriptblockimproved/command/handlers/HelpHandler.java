@@ -38,8 +38,8 @@ public final class HelpHandler extends CommandHandler {
     );
     private static final ImmutableList<String> TOPIC_MODIFY_MESSAGE = ImmutableList.of(
         ChatColor.BOLD + "create a script to clicked/specified block",
-        "  create <trigger> <script>",
-        "  createat <world> <x> <y> <z> <trigger> <script>",
+        "  create <trigger> <options>",
+        "  createat <world> <x> <y> <z> <trigger> <options>",
         ChatColor.BOLD + "remove all scripts in clicked/specified block",
         "  remove",
         "  removeat <world> <x> <y> <z>"

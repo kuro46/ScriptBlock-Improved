@@ -20,6 +20,6 @@ public final class ActionCreate implements Action {
                     position.getY(),
                     position.getZ(),
                     args.getOrFail("trigger"),
-                    args.getOrFail("script")));
+                    args.getOrFail("options")));
     }
 }

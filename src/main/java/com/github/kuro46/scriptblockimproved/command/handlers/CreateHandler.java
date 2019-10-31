@@ -29,7 +29,7 @@ public final class CreateHandler extends CommandHandler {
     public CreateHandler() {
         super(Args.builder()
                 .required("trigger")
-                .required("script")
+                .required("options")
                 .build());
         final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
         this.actionQueue = sbi.getActionQueue();
