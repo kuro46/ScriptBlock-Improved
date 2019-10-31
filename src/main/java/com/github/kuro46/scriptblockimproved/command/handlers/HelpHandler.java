@@ -41,8 +41,8 @@ public final class HelpHandler extends CommandHandler {
         "  create <trigger> <script>",
         "  createat <world> <x> <y> <z> <trigger> <script>",
         ChatColor.BOLD + "remove all scripts in clicked/specified block",
-        "  remove <trigger> <script>",
-        "  removeat <world> <x> <y> <z> <trigger> <script>"
+        "  remove",
+        "  removeat <world> <x> <y> <z>"
     );
     private static final ImmutableList<String> TOPIC_VIEW_MESSAGE = ImmutableList.of(
         ChatColor.BOLD + "view script info in clicked/specified block",
@@ -55,7 +55,7 @@ public final class HelpHandler extends CommandHandler {
         ChatColor.BOLD + "list available options and triggers",
         "  availables",
         ChatColor.BOLD + "save scripts into specified file or scripts.json",
-        "  save",
+        "  save [fileName]",
         ChatColor.BOLD + "associate permission for command",
         "  map-perm <permission> <command>",
         ChatColor.BOLD + "migrate scripts from ScriptBlock",
