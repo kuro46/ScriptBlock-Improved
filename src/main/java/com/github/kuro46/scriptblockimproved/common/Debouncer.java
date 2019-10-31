@@ -50,11 +50,13 @@ public final class Debouncer {
 
     public void shutdown() {
         shutdown = true;
-        if (scheduled == null || scheduled.isDone()) return;
         try {
+            if (scheduled == null || scheduled.isDone()) return;
             scheduled.get();
         } catch (final InterruptedException | ExecutionException e) {
             throw new IllegalStateException("Cannot terminate ScheduledFuture", e);
+        } finally {
+            executor.shutdown();
         }
     }
 }
