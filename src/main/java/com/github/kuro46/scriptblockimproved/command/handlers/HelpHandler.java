@@ -8,6 +8,7 @@ import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
 import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -79,7 +80,7 @@ public final class HelpHandler extends CommandHandler {
     }
 
     private void helpTopic(@NonNull final CommandSender sender, @NonNull final String topicStr) {
-        final Topic topic = Topic.getByName(topicStr.toLowerCase()).orElse(null);
+        final Topic topic = Topic.getByName(topicStr).orElse(null);
         if (topic == null) {
             sendMessage(sender, MessageKind.ERROR, "Unknown topic");
             return;
@@ -104,12 +105,14 @@ public final class HelpHandler extends CommandHandler {
         VIEW(TOPIC_VIEW_MESSAGE),
         OTHER(TOPIC_OTHER_MESSAGE);
 
-        private static final Map<String, Topic> byName = new HashMap<>();
+        private static final ImmutableMap<String, Topic> BY_NAME;
 
         static {
+            final Map<String, Topic> byName = new HashMap<>();
             for (final Topic topic : Topic.values()) {
                 byName.put(topic.name().toLowerCase(), topic);
             }
+            BY_NAME = ImmutableMap.copyOf(byName);
         }
 
         @NonNull
@@ -120,8 +123,12 @@ public final class HelpHandler extends CommandHandler {
             this.message = ImmutableList.copyOf(message);
         }
 
+        /**
+         * Returns Topic by name.<br>
+         * This operation is case-insensitive.
+         */
         public static Optional<Topic> getByName(@NonNull final String name) {
-            return Optional.ofNullable(byName.get(name));
+            return Optional.ofNullable(BY_NAME.get(name.toLowerCase()));
         }
     }
 }
