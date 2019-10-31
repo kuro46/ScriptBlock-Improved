@@ -24,7 +24,7 @@ public final class HelpHandler extends CommandHandler {
 
     private static final ImmutableList<String> ROOT_MESSAGE = ImmutableList.of(
         ChatColor.BOLD + "[modify] modify scripts",
-        "  create, createat, add, addat, remove, removeat",
+        "  create, createat, remove, removeat",
         ChatColor.BOLD + "[view] view scripts",
         "  view, viewat, list",
         ChatColor.BOLD + "[other] other",
@@ -39,9 +39,6 @@ public final class HelpHandler extends CommandHandler {
         ChatColor.BOLD + "create a script to clicked/specified block",
         "  create <trigger> <script>",
         "  createat <world> <x> <y> <z> <trigger> <script>",
-        ChatColor.BOLD + "add a script to clicked/specified block",
-        "  add <trigger> <script>",
-        "  addat <world> <x> <y> <z> <trigger> <script>",
         ChatColor.BOLD + "remove all scripts in clicked/specified block",
         "  remove <trigger> <script>",
         "  removeat <world> <x> <y> <z> <trigger> <script>"
@@ -49,7 +46,7 @@ public final class HelpHandler extends CommandHandler {
     private static final ImmutableList<String> TOPIC_VIEW_MESSAGE = ImmutableList.of(
         ChatColor.BOLD + "view script info in clicked/specified block",
         "  view",
-        "  view <world> <x> <y> <z>",
+        "  viewat <world> <x> <y> <z>",
         ChatColor.BOLD + "view list of scripts",
         "  list [world]"
     );
