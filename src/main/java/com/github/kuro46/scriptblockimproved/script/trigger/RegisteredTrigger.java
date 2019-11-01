@@ -45,7 +45,7 @@ public final class RegisteredTrigger {
         listenerList.add(listener);
     }
 
-    private final void fireUnregistered() {
+    private void fireUnregistered() {
         listenerList.forEach(UnregisteredListener::onUnregistered);
     }
 }

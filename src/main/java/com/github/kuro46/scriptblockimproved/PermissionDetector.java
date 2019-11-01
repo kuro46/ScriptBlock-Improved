@@ -138,7 +138,7 @@ public final class PermissionDetector {
     }
 
     public Optional<List<String>> getPermissionsByCommand(@NonNull final String strCommand) {
-        Set<Permission> permissions = null;
+        Set<Permission> permissions;
         Command command = new Command(strCommand);
         while (true) {
             if (mappings.containsKey(command)) {
@@ -150,12 +150,10 @@ public final class PermissionDetector {
                 command = new Command(ListUtils.removeLastElement(command.getParts()));
             }
         }
-        return Optional.ofNullable(permissions)
-            .map(nonNullPerms -> {
-                return nonNullPerms.stream()
-                    .map(Permission::getName)
-                    .collect(Collectors.toList());
-            });
+        final List<String> mapped = permissions.stream()
+            .map(Permission::getName)
+            .collect(Collectors.toList());
+        return Optional.of(mapped);
     }
 
     @EqualsAndHashCode

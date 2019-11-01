@@ -30,7 +30,7 @@ public final class SBScriptTrigger {
         final TriggerRegistry registry = sbi.getTriggerRegistry();
         this.interactTrigger = registry.register("sbinteract");
         this.walkTrigger = registry.register("sbwalk");
-        initInteract(plugin, registry);
+        initInteract(plugin);
         initMove(plugin, registry);
     }
 
@@ -39,8 +39,7 @@ public final class SBScriptTrigger {
     }
 
     private void initInteract(
-            @NonNull final Plugin plugin,
-            @NonNull final TriggerRegistry registry) {
+            @NonNull final Plugin plugin) {
         final InteractListener listener = new InteractListener();
         Bukkit.getPluginManager().registerEvents(listener, plugin);
         interactTrigger.onUnregistered(() -> HandlerList.unregisterAll(listener));
