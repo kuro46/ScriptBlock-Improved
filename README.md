@@ -2,18 +2,12 @@
 
 # ScriptBlock-Improved [![jitpack](https://jitpack.io/v/kuro46/ScriptBlock-Improved.svg)](https://jitpack.io/#kuro46/ScriptBlock-Improved)
 
-[ScriptBlock](https://dev.bukkit.org/projects/scriptblock)の設計や機能を改善したプラグインです。
+[ScriptBlock](https://dev.bukkit.org/projects/scriptblock)の設計や機能を改善したプラグインです。  
+使い方など、詳細は[Wiki](https://github.com/kuro46/ScriptBlock-Improved/wiki/)を参照してください。
 
-**注意:** このプラグインは現在安定していません。思わぬバグがあったり、更新時にスクリプトが読み込めなくなったりするかもしれません。  
-試験的に使う場合を除いて、安定化予定のバージョン1.0.0のリリースまで待つことをおすすめします。
+## 類似プラグインとの違い
 
-## 特徴
-
-- 外部プラグインに依存しないため、プラグイン単体で動作させることができます
-- コンソールからコマンドを実行するためのオプションなど、便利なオプションを実装しています
-- 使いやすいAPIを実装しています
-
-コマンドリスト/オプションリスト/APIの使用方法は[Wiki](https://github.com/kuro46/ScriptBlock-Improved/wiki/)を参照してください。
+[Wiki/類似プラグインとの比較](https://github.com/kuro46/ScriptBlock-Improved/wiki/%E9%A1%9E%E4%BC%BC%E3%83%97%E3%83%A9%E3%82%B0%E3%82%A4%E3%83%B3%E3%81%A8%E3%81%AE%E6%AF%94%E8%BC%83)を参照してください。
 
 ## 動作環境
 
