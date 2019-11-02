@@ -1,5 +1,6 @@
 package com.github.kuro46.scriptblockimproved.script.option;
 
+import com.github.kuro46.scriptblockimproved.common.MessageUtils;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import com.google.common.collect.ImmutableList;
@@ -14,12 +15,12 @@ import lombok.NonNull;
 
 public final class OptionParser {
 
+    private static final Pattern OPTIONS_PATTERN = Pattern.compile("\\[(.+?[^\\\\])]");
+    private static final Pattern OPTION_PATTERN = Pattern.compile("@([^ ]+) ?(.*)");
+
     private OptionParser() {
         throw new UnsupportedOperationException("Static method only");
     }
-
-    private static final Pattern OPTIONS_PATTERN = Pattern.compile("\\[(.+?[^\\\\])]");
-    private static final Pattern OPTION_PATTERN = Pattern.compile("@([^ ]+) ?(.*)");
 
     public static OptionList parse(
             @NonNull final OptionHandlerMap handlers,
@@ -43,17 +44,23 @@ public final class OptionParser {
         return new OptionList(options);
     }
 
+    /**
+     * Split an option in String to an option in RawOption.
+     */
     private static Optional<RawOption> splitStringOption(final String str) {
         final Matcher optionMatcher = OPTION_PATTERN.matcher(str);
-        if (!optionMatcher.find()) {
-            return Optional.empty();
-        }
+        if (!optionMatcher.find()) return Optional.empty();
+        final String value = MessageUtils.translateColorCodes('&', optionMatcher.group(2));
         final RawOption rawOption = new RawOption(
                 OptionName.of(optionMatcher.group(1)),
-                Arrays.asList(optionMatcher.group(2).split(" ")));
+                Arrays.asList(value.split(" ")));
         return Optional.of(rawOption);
     }
 
+    /**
+     * Split options in String to List&lt;an option&gt;
+     * <pre>&quot;[@opt1 arg][@opt2 arg]&quot; to &quot;@opt1 arg&quot;,&quot;@opt2 arg&quot;</pre>
+     */
     private static ImmutableList<String> splitStringOptions(final String stringOptions) {
         final Matcher optionsMatcher = OPTIONS_PATTERN.matcher(stringOptions);
         if (!optionsMatcher.find()) {
