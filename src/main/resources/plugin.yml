@@ -1,6 +1,8 @@
 name: ScriptBlock-Improved
 version: $version
 author: shirokuro
+# Suppress warnings that reported if using 1.13+ servers
+api-version: 1.13
 description: Improved ScriptBlock
 website: https://github.com/kuro46/ScriptBlock-Improved/
 load: STARTUP
