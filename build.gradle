@@ -26,6 +26,8 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.9'
     // Apache Commons Text
     implementation 'org.apache.commons:commons-text:1.8'
+    // Fuzzy Wuzzy
+    implementation 'me.xdrop:fuzzywuzzy:1.2.0'
     // Bukkit for test
     testImplementation 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
     // JUnit
@@ -62,6 +64,7 @@ shadowJar {
     archiveFileName = "ScriptBlock-Improved-${version}.jar"
 
     relocate 'com.google', 'com.github.kuro46.scriptblockimproved.libs.google'
+    relocate 'me.xdrop', 'com.github.kuro46.scriptblockimproved.libs.me.xdrop'
     relocate 'org.apache.commons.lang3', 'com.github.kuro46.scriptblockimproved.libs.commons.lang'
     relocate 'org.apache.commons.text', 'com.github.kuro46.scriptblockimproved.libs.commons.text'
     relocate 'org.checkerframework', 'com.github.kuro46.scriptblockimproved.libs.checkerframework'

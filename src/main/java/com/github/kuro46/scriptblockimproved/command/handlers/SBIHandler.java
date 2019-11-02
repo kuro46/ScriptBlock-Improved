@@ -7,7 +7,12 @@ import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
 import com.github.kuro46.scriptblockimproved.common.command.CommandSection;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
+import java.util.List;
 import java.util.stream.Collectors;
+import me.xdrop.fuzzywuzzy.FuzzySearch;
+import me.xdrop.fuzzywuzzy.model.ExtractedResult;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
@@ -33,14 +38,16 @@ public final class SBIHandler extends CommandHandler {
             // TODO: improve
             Bukkit.dispatchCommand(sender, "sbi help");
         } else {
-            sendMessage(sender, "Unknown command. Available commands:");
-            final String subCommands =
+            sendMessage(sender, "Unknown command.");
+            final List<String> subCommands =
                 data.getRoot().getRootCommand().getChildren().values().stream()
                     .map(Command::getSection)
                     .map(CommandSection::getName)
-                    .collect(Collectors.joining(", "));
-            sendMessage(sender, subCommands);
-            sendMessage(sender, "'/sbi help' for more details");
+                    .collect(Collectors.toList());
+            final String firstArgument = Iterables.get(Splitter.on(' ').split(free), 0);
+            final ExtractedResult result = FuzzySearch.extractOne(firstArgument, subCommands);
+            sendMessage(sender, "Did you mean '%s'? ", result.getString());
+            sendMessage(sender, "'/sbi help' for show all commands");
         }
     }
 }
