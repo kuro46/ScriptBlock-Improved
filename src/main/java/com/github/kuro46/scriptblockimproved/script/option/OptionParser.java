@@ -3,9 +3,9 @@ package com.github.kuro46.scriptblockimproved.script.option;
 import com.github.kuro46.scriptblockimproved.common.MessageUtils;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
+import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -17,6 +17,7 @@ public final class OptionParser {
 
     private static final Pattern OPTIONS_PATTERN = Pattern.compile("\\[(.+?[^\\\\])]");
     private static final Pattern OPTION_PATTERN = Pattern.compile("@([^ ]+) ?(.*)");
+    private static final Splitter OPTION_SPLITTER = Splitter.on(' ').omitEmptyStrings();
 
     private OptionParser() {
         throw new UnsupportedOperationException("Static method only");
@@ -53,7 +54,7 @@ public final class OptionParser {
         final String value = MessageUtils.translateColorCodes('&', optionMatcher.group(2));
         final RawOption rawOption = new RawOption(
                 OptionName.of(optionMatcher.group(1)),
-                Arrays.asList(value.split(" ")));
+                OPTION_SPLITTER.splitToList(value));
         return Optional.of(rawOption);
     }
 
