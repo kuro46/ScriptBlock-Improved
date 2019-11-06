@@ -3,7 +3,6 @@ package com.github.kuro46.scriptblockimproved.common.command;
 import com.github.kuro46.scriptblockimproved.common.ListUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -18,31 +17,22 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 
 @ToString
-public final class CommandRoot {
+public abstract class RootCommand extends Command {
 
-    private final List<Listener> listeners = new ArrayList<>();
-    @NonNull
-    @Getter
-    private final Command rootCommand;
+    public RootCommand(@NonNull final String name, @NonNull final Args args) {
+        this(CommandName.of(name), args);
+    }
 
-    private CommandRoot(@NonNull Command rootCommand) {
-        this.rootCommand = rootCommand;
+    public RootCommand(@NonNull final CommandName name, @NonNull final Args args) {
+        super(name, args);
         hookBukkit();
     }
 
-    public static CommandRoot register(@NonNull final Command rootCommand) {
-        return new CommandRoot(rootCommand);
-    }
-
     private void hookBukkit() {
-        final String commandName = rootCommand.getSection().getName();
+        final String commandName = getName().toString();
         final PluginCommand pluginCommand = Bukkit.getPluginCommand(commandName);
         pluginCommand.setExecutor(this::onCommand);
         pluginCommand.setTabCompleter(this::onTabComplete);
-    }
-
-    public void addListener(@NonNull final Listener listener) {
-        listeners.add(listener);
     }
 
     private boolean onCommand(
@@ -52,17 +42,17 @@ public final class CommandRoot {
             @NonNull final String[] args) {
         validateIncomingCommand(bukkitCommand);
         final FindResult result = findCommand(FindMode.FOR_EXECUTION, Arrays.asList(args));
-        final ImmutableList<CommandSection> path = new ImmutableList.Builder<CommandSection>()
-            .add(CommandSection.of(bukkitCommand.getName()))
+        final ImmutableList<CommandName> path = new ImmutableList.Builder<CommandName>()
+            .add(CommandName.of(bukkitCommand.getName()))
             .addAll(result.getUsed().stream()
-                .map(CommandSection::new)
+                .map(CommandName::new)
                 .collect(Collectors.toList()))
             .build();
         final Command command = result.getCommand();
         final ParsedArgs parsedArgs =
-            command.getHandler().getArgs().parse(result.getFree()).orElse(null);
+            command.getArgs().parse(result.getFree()).orElse(null);
         if (parsedArgs == null) {
-            fireParseFailed(sender, path, command);
+            onParseFailed(sender, path, command);
             return true;
         }
         final ExecutionData data = ExecutionData.builder()
@@ -72,17 +62,8 @@ public final class CommandRoot {
             .dispatcher(sender)
             .root(this)
             .build();
-        result.getCommand().getHandler().execute(data);
+        result.getCommand().execute(data);
         return true;
-    }
-
-    private void fireParseFailed(
-            @NonNull final CommandSender sender,
-            @NonNull final ImmutableList<CommandSection> path,
-            @NonNull final Command command) {
-        listeners.forEach(listener -> {
-            listener.onParseFailed(sender, path, command);
-        });
     }
 
     private List<String> onTabComplete(
@@ -100,7 +81,7 @@ public final class CommandRoot {
         final Command command = result.getCommand();
         final List<String> free = result.getFree();
         // Get completing value and argument name of it
-        final List<Arg> argsInfo = command.getHandler().getArgs().asList();
+        final List<Arg> argsInfo = command.getArgs().asList();
         if (argsInfo.isEmpty()) return Collections.emptyList();
         final Arg argInfo = ListUtils.get(argsInfo, free.size() - 1)
             .orElse(ListUtils.last(argsInfo).get());
@@ -114,25 +95,25 @@ public final class CommandRoot {
             .argName(argInfo.getName())
             .currentValue(currentValue)
             .build();
-        return command.getHandler().complete(data);
+        return command.complete(data);
     }
 
     // Validates incoming command
     // Throws IllegalStateException if name of incoming command is different from root command
     private void validateIncomingCommand(@NonNull final org.bukkit.command.Command bukkitCommand) {
         final String bukkitCommandName = bukkitCommand.getName();
-        final String rootCommandName = rootCommand.getSection().getName();
+        final String rootCommandName = getName().toString();
         Preconditions.checkState(bukkitCommandName.equals(rootCommandName));
     }
 
     private FindResult findCommand(@NonNull FindMode mode, @NonNull final List<String> args) {
         final ImmutableList.Builder<String> used = new ImmutableList.Builder<>();
         int nest = 0;
-        Command command = rootCommand;
+        Command command = this;
         for (final ListIterator<String> iterator = args.listIterator(); iterator.hasNext();) {
             final String arg = iterator.next();
             if (mode == FindMode.FOR_COMPLETION && !arg.isEmpty() && !iterator.hasNext()) break;
-            final CommandSection section = CommandSection.of(arg);
+            final CommandName section = CommandName.of(arg);
             final Command retrieved = command.getChild(section).orElse(null);
             if (retrieved == null) break;
             nest++;
@@ -143,13 +124,12 @@ public final class CommandRoot {
         return new FindResult(used.build(), command, ImmutableList.copyOf(free));
     }
 
-    public interface Listener {
 
-        void onParseFailed(
-                final CommandSender sender,
-                final ImmutableList<CommandSection> commandPath,
-                final Command command);
-    }
+    public abstract void onParseFailed(
+        final CommandSender sender,
+        final ImmutableList<CommandName> commandPath,
+        final Command command
+    );
 
     @AllArgsConstructor
     @ToString

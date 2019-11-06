@@ -14,7 +14,7 @@ public final class CompletionData {
 
     @NonNull
     @Getter
-    private final CommandRoot root;
+    private final RootCommand root;
     @NonNull
     @Getter
     private final Command command;

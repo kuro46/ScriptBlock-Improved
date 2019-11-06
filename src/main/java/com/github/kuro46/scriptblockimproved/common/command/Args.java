@@ -188,6 +188,16 @@ public final class Args implements Formattable {
             return add(new Arg(name, false));
         }
 
+        public Builder optionalArgs(@NonNull final String... names) {
+            for (String name : names) optional(name);
+            return this;
+        }
+
+        public Builder requiredArgs(@NonNull final String... names) {
+            for (String name : names) required(name);
+            return this;
+        }
+
         public Args build() {
             return new Args(args.build());
         }

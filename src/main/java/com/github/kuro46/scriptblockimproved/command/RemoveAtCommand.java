@@ -1,11 +1,11 @@
-package com.github.kuro46.scriptblockimproved.command.handlers;
+package com.github.kuro46.scriptblockimproved.command;
 
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CandidateBuilder;
 import com.github.kuro46.scriptblockimproved.common.command.CandidateFactories;
-import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
+import com.github.kuro46.scriptblockimproved.common.command.Command;
 import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
@@ -17,18 +17,18 @@ import lombok.NonNull;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class RemoveAtHandler extends CommandHandler {
+public final class RemoveAtCommand extends Command {
 
     @NonNull
     private final ScriptMap scripts;
 
-    public RemoveAtHandler() {
-        super(Args.builder()
-                .required("world")
-                .required("x")
-                .required("y")
-                .required("z")
-                .build());
+    public RemoveAtCommand() {
+        super(
+            "removeat",
+            Args.builder()
+                .requiredArgs("world", "x", "y", "z")
+                .build()
+        );
         this.scripts = ScriptBlockImproved.getInstance().getScripts();
     }
 

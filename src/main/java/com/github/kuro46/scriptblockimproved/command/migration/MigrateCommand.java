@@ -1,9 +1,9 @@
-package com.github.kuro46.scriptblockimproved.command.handlers.migration;
+package com.github.kuro46.scriptblockimproved.command.migration;
 
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
-import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
+import com.github.kuro46.scriptblockimproved.common.command.Command;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.script.ScriptMap;
 import java.io.IOException;
@@ -14,15 +14,15 @@ import lombok.NonNull;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class MigrateHandler extends CommandHandler {
+public final class MigrateCommand extends Command {
 
     private static final String MIGRATED_MARKER_FILE_NAME = "mark_migrated_from_sb";
 
     private final ScriptMap scripts;
     private final Path dataFolder;
 
-    public MigrateHandler() {
-        super(Args.empty());
+    public MigrateCommand() {
+        super("migrate", Args.empty());
         final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
         this.scripts = sbi.getScripts();
         this.dataFolder = sbi.getDataFolder();

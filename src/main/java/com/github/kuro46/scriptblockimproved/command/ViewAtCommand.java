@@ -1,11 +1,11 @@
-package com.github.kuro46.scriptblockimproved.command.handlers;
+package com.github.kuro46.scriptblockimproved.command;
 
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CandidateBuilder;
 import com.github.kuro46.scriptblockimproved.common.command.CandidateFactories;
-import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
+import com.github.kuro46.scriptblockimproved.common.command.Command;
 import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
@@ -19,18 +19,18 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class ViewAtHandler extends CommandHandler {
+public final class ViewAtCommand extends Command {
 
     @NonNull
     private final ScriptMap scripts;
 
-    public ViewAtHandler() {
-        super(Args.builder()
-                .required("world")
-                .required("x")
-                .required("y")
-                .required("z")
-                .build());
+    public ViewAtCommand() {
+        super(
+            "viewat",
+            Args.builder()
+                .requiredArgs("world", "x", "y", "z")
+                .build()
+        );
         this.scripts = ScriptBlockImproved.getInstance().getScripts();
     }
 

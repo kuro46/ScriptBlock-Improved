@@ -1,11 +1,11 @@
-package com.github.kuro46.scriptblockimproved.command.handlers;
+package com.github.kuro46.scriptblockimproved.command;
 
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CandidateBuilder;
 import com.github.kuro46.scriptblockimproved.common.command.CandidateFactories;
-import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
+import com.github.kuro46.scriptblockimproved.common.command.Command;
 import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
@@ -25,7 +25,7 @@ import lombok.NonNull;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class CreateAtHandler extends CommandHandler {
+public final class CreateAtCommand extends Command {
 
     @NonNull
     private final OptionHandlerMap handlers;
@@ -34,15 +34,13 @@ public final class CreateAtHandler extends CommandHandler {
     @NonNull
     private final TriggerRegistry triggerRegistry;
 
-    public CreateAtHandler() {
-        super(Args.builder()
-                .required("world")
-                .required("x")
-                .required("y")
-                .required("z")
-                .required("trigger")
-                .required("options")
-                .build());
+    public CreateAtCommand() {
+        super(
+            "createAt",
+            Args.builder()
+                .requiredArgs("world", "x", "y", "z", "trigger", "options")
+                .build()
+        );
         final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
         this.handlers = sbi.getOptionHandlers();
         this.scripts = sbi.getScripts();

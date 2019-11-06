@@ -1,9 +1,9 @@
-package com.github.kuro46.scriptblockimproved.command.handlers;
+package com.github.kuro46.scriptblockimproved.command;
 
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
-import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
+import com.github.kuro46.scriptblockimproved.common.command.Command;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
 import com.github.kuro46.scriptblockimproved.script.ScriptMap;
@@ -14,17 +14,20 @@ import lombok.NonNull;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class SaveHandler extends CommandHandler {
+public final class SaveCommand extends Command {
 
     @NonNull
     private final Path dataFolder;
     @NonNull
     private final ScriptMap scripts;
 
-    public SaveHandler() {
-        super(Args.builder()
+    public SaveCommand() {
+        super(
+            "save",
+            Args.builder()
                 .optional("fileName")
-                .build());
+                .build()
+        );
         final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
         this.dataFolder = sbi.getDataFolder();
         this.scripts = sbi.getScripts();

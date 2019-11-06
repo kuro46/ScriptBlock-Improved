@@ -1,8 +1,8 @@
-package com.github.kuro46.scriptblockimproved.command.handlers;
+package com.github.kuro46.scriptblockimproved.command;
 
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
-import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
+import com.github.kuro46.scriptblockimproved.common.command.Command;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.script.option.OptionHandlerMap;
 import com.github.kuro46.scriptblockimproved.script.option.OptionName;
@@ -13,15 +13,15 @@ import lombok.NonNull;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class AvailablesHandler extends CommandHandler {
+public final class AvailablesCommand extends Command {
 
     @NonNull
     private final OptionHandlerMap handlers;
     @NonNull
     private final TriggerRegistry triggerRegistry;
 
-    public AvailablesHandler() {
-        super(Args.empty());
+    public AvailablesCommand() {
+        super("availables", Args.empty());
         final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
         this.handlers = sbi.getOptionHandlers();
         this.triggerRegistry = sbi.getTriggerRegistry();

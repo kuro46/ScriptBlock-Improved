@@ -1,10 +1,10 @@
-package com.github.kuro46.scriptblockimproved.command.handlers;
+package com.github.kuro46.scriptblockimproved.command;
 
 import com.github.kuro46.scriptblockimproved.PermissionDetector;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CandidateBuilder;
 import com.github.kuro46.scriptblockimproved.common.command.CandidateFactories;
-import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
+import com.github.kuro46.scriptblockimproved.common.command.Command;
 import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
@@ -15,13 +15,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class PermMapHandler extends CommandHandler {
+public final class PermMapCommand extends Command {
 
-    public PermMapHandler() {
-        super(Args.builder()
-                .required("permission")
-                .required("command")
-                .build());
+    public PermMapCommand() {
+        super(
+            "map-perm",
+            Args.builder()
+                .requiredArgs("permission", "command")
+                .build()
+        );
     }
 
     @Override

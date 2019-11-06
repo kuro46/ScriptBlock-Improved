@@ -1,4 +1,4 @@
-package com.github.kuro46.scriptblockimproved.command.handlers.migration;
+package com.github.kuro46.scriptblockimproved.command.migration;
 
 import lombok.NonNull;
 

@@ -1,10 +1,10 @@
-package com.github.kuro46.scriptblockimproved.command.handlers;
+package com.github.kuro46.scriptblockimproved.command;
 
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CandidateBuilder;
 import com.github.kuro46.scriptblockimproved.common.command.CandidateFactories;
-import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
+import com.github.kuro46.scriptblockimproved.common.command.Command;
 import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.google.common.collect.ImmutableList;
@@ -21,7 +21,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class HelpHandler extends CommandHandler {
+public final class HelpCommand extends Command {
 
     private static final ImmutableList<String> ROOT_MESSAGE = ImmutableList.of(
         ChatColor.BOLD + "[modify] modify scripts",
@@ -62,10 +62,8 @@ public final class HelpHandler extends CommandHandler {
         "  migrate"
     );
 
-    public HelpHandler() {
-        super(Args.builder()
-                .optional("topic")
-                .build());
+    public HelpCommand() {
+        super("help", Args.builder().optional("topic").build());
     }
 
     @Override

@@ -1,11 +1,11 @@
-package com.github.kuro46.scriptblockimproved.command.handlers;
+package com.github.kuro46.scriptblockimproved.command;
 
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CandidateBuilder;
 import com.github.kuro46.scriptblockimproved.common.command.CandidateFactories;
-import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
+import com.github.kuro46.scriptblockimproved.common.command.Command;
 import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.script.BlockPosition;
@@ -16,15 +16,13 @@ import lombok.NonNull;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class ListHandler extends CommandHandler {
+public final class ListCommand extends Command {
 
     @NonNull
     private final ScriptMap scripts;
 
-    public ListHandler() {
-        super(Args.builder()
-                .optional("world")
-                .build());
+    public ListCommand() {
+        super("list", Args.builder().optional("world").build());
         this.scripts = ScriptBlockImproved.getInstance().getScripts();
     }
 

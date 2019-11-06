@@ -22,7 +22,7 @@ public final class ExecutionData {
      */
     @Getter
     @NonNull
-    private final ImmutableList<CommandSection> commandPath;
+    private final ImmutableList<CommandName> commandPath;
 
     /**
      * Command to executed
@@ -55,14 +55,14 @@ public final class ExecutionData {
      */
     @Getter
     @NonNull
-    private final CommandRoot root;
+    private final RootCommand root;
 
     public ExecutionData(
-            @NonNull final List<CommandSection> commandPath,
+            @NonNull final List<CommandName> commandPath,
             @NonNull final Command command,
             @NonNull final ParsedArgs args,
             @NonNull final CommandSender dispatcher,
-            @NonNull final CommandRoot root) {
+            @NonNull final RootCommand root) {
         this.commandPath = ImmutableList.copyOf(commandPath);
         this.command = command;
         this.args = args;

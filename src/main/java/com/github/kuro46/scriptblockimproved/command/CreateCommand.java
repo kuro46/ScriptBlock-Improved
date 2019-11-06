@@ -1,4 +1,4 @@
-package com.github.kuro46.scriptblockimproved.command.handlers;
+package com.github.kuro46.scriptblockimproved.command;
 
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.command.clickaction.ActionCreate;
@@ -7,7 +7,7 @@ import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import com.github.kuro46.scriptblockimproved.common.command.CandidateBuilder;
 import com.github.kuro46.scriptblockimproved.common.command.CandidateFactories;
-import com.github.kuro46.scriptblockimproved.common.command.CommandHandler;
+import com.github.kuro46.scriptblockimproved.common.command.Command;
 import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
 import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.github.kuro46.scriptblockimproved.script.trigger.TriggerName;
@@ -19,18 +19,21 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class CreateHandler extends CommandHandler {
+public final class CreateCommand extends Command {
 
     @NonNull
     private final ActionQueue actionQueue;
     @NonNull
     private final TriggerRegistry triggerRegistry;
 
-    public CreateHandler() {
-        super(Args.builder()
+    public CreateCommand() {
+        super(
+            "create",
+            Args.builder()
                 .required("trigger")
                 .required("options")
-                .build());
+                .build()
+        );
         final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
         this.actionQueue = sbi.getActionQueue();
         this.triggerRegistry = sbi.getTriggerRegistry();

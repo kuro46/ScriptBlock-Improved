@@ -1,8 +1,8 @@
 package com.github.kuro46.scriptblockimproved;
 
-import com.github.kuro46.scriptblockimproved.command.SBICommand;
 import com.github.kuro46.scriptblockimproved.command.clickaction.ActionExecutor;
 import com.github.kuro46.scriptblockimproved.command.clickaction.ActionQueue;
+import com.github.kuro46.scriptblockimproved.command.SBIRootCommand;
 import com.github.kuro46.scriptblockimproved.common.Debouncer;
 import com.github.kuro46.scriptblockimproved.script.ScriptExecutor;
 import com.github.kuro46.scriptblockimproved.script.ScriptMap;
@@ -155,7 +155,7 @@ public final class ScriptBlockImproved {
     }
 
     private void registerCommands() {
-        SBICommand.register();
+        SBIRootCommand.register();
     }
 
     private void registerPlaceholders() {
