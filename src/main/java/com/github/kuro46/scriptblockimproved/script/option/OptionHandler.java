@@ -2,22 +2,38 @@ package com.github.kuro46.scriptblockimproved.script.option;
 
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import java.util.Objects;
+import lombok.Getter;
 import lombok.NonNull;
 
 /**
  * Handler of option.
  */
-public interface OptionHandler {
+public abstract class OptionHandler {
 
-    Args getArgs();
+    @Getter
+    @NonNull
+    private final OptionName name;
 
-    PreExecuteResult preExecute(final ExecutionData data);
+    @Getter
+    @NonNull
+    private final Args args;
 
-    void execute(final ExecutionData data);
+    public OptionHandler(@NonNull final OptionName name, @NonNull final Args args) {
+        this.name = name;
+        this.args = args;
+    }
+
+    public OptionHandler(@NonNull final String name, @NonNull final Args args) {
+        this(OptionName.of(name), args);
+    }
 
     public static Builder builder() {
         return new Builder();
     }
+
+    public abstract PreExecuteResult preExecute(final ExecutionData data);
+
+    public abstract void execute(final ExecutionData data);
 
     /**
      * Functional interface for Builder
@@ -42,6 +58,16 @@ public interface OptionHandler {
         private PreExecutor preExecutor = data -> PreExecuteResult.CONTINUE;
         private Executor executor;
         private Args args;
+        private OptionName name;
+
+        public Builder name(final OptionName name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder name(final String name) {
+            return name(OptionName.of(name));
+        }
 
         public Builder args(final Args args) {
             this.args = args;
@@ -60,14 +86,10 @@ public interface OptionHandler {
 
         public OptionHandler build() {
             Objects.requireNonNull(args, "'args' cannot be null");
+            Objects.requireNonNull(name, "'name' cannot be null");
             Objects.requireNonNull(preExecutor, "'preExecutor' cannot be null");
             Objects.requireNonNull(executor, "'executor' cannot be null");
-            return new OptionHandler() {
-
-                @Override
-                public Args getArgs() {
-                    return args;
-                }
+            return new OptionHandler(name, args) {
 
                 @Override
                 public PreExecuteResult preExecute(final ExecutionData data) {
@@ -81,16 +103,8 @@ public interface OptionHandler {
             };
         }
 
-        public void register(
-                @NonNull final OptionHandlerMap handlers,
-                @NonNull final OptionName name) {
-            handlers.add(name, build());
-        }
-
-        public void register(
-                @NonNull final OptionHandlerMap handlers,
-                @NonNull final String name) {
-            register(handlers, OptionName.of(name));
+        public void register(@NonNull final OptionHandlerMap handlers) {
+            handlers.add(build());
         }
     }
 }

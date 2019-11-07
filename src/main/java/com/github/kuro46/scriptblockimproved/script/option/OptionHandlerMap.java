@@ -22,18 +22,12 @@ public final class OptionHandlerMap {
         return contains(OptionName.of(key));
     }
 
-    public void add(
-            @NonNull final OptionName key,
-            @NonNull final OptionHandler handler) {
-        if (contains(key)) {
+    public void add(@NonNull final OptionHandler handler) {
+        if (contains(handler.getName())) {
             throw new IllegalArgumentException(
-                    String.format("A handler for '%s' has already added", key));
+                    String.format("A handler for '%s' has already added", handler.getName()));
         }
-        map.put(key, handler);
-    }
-
-    public void add(@NonNull final String key, @NonNull final OptionHandler handler) {
-        add(OptionName.of(key), handler);
+        map.put(handler.getName(), handler);
     }
 
     public Optional<OptionHandler> get(@NonNull final OptionName key) {

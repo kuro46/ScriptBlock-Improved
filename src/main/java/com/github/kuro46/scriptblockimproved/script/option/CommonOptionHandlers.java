@@ -20,6 +20,7 @@ public final class CommonOptionHandlers {
             @NonNull final Plugin plugin,
             @NonNull final OptionHandlerMap handlers) {
         OptionHandler.builder()
+            .name("command")
             .args(Args.builder()
                 .required("command")
                 .build())
@@ -28,8 +29,9 @@ public final class CommonOptionHandlers {
                 final String command = removeSlashIfNeeded(args.getOrFail("command"));
                 data.getPlayer().performCommand(command);
             })
-            .register(handlers, "command");
+            .register(handlers);
         OptionHandler.builder()
+            .name("console")
             .args(Args.builder()
                 .required("command")
                 .build())
@@ -38,8 +40,9 @@ public final class CommonOptionHandlers {
                 final String command = removeSlashIfNeeded(args.getOrFail("command"));
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
             })
-            .register(handlers, "console");
+            .register(handlers);
         OptionHandler.builder()
+            .name("broadcast")
             .args(Args.builder()
                 .required("message")
                 .build())
@@ -47,8 +50,9 @@ public final class CommonOptionHandlers {
                 final ParsedArgs args = data.getArgs();
                 Bukkit.broadcastMessage(args.getOrFail("message"));
             })
-            .register(handlers, "broadcast");
+            .register(handlers);
         OptionHandler.builder()
+            .name("say")
             .args(Args.builder()
                 .required("message")
                 .build())
@@ -56,8 +60,8 @@ public final class CommonOptionHandlers {
                 final ParsedArgs args = data.getArgs();
                 data.getPlayer().sendMessage(args.getOrFail("message"));
             })
-            .register(handlers, "say");
-        handlers.add("bypassCommand", new BypassCommandHandler(plugin));
+            .register(handlers);
+        handlers.add(new BypassCommandHandler(plugin));
     }
 
     private static String removeSlashIfNeeded(final String source) {
@@ -66,23 +70,19 @@ public final class CommonOptionHandlers {
         return source.substring(1);
     }
 
-    private static final class BypassCommandHandler implements OptionHandler {
+    private static final class BypassCommandHandler extends OptionHandler {
 
         @NonNull
         private final Plugin plugin;
 
         public BypassCommandHandler(@NonNull final Plugin plugin) {
+            super(
+                "bypassCommand",
+                Args.builder()
+                    .requiredArgs("permission", "command")
+                    .build()
+            );
             this.plugin = plugin;
-        }
-
-        private final Args args = Args.builder()
-            .required("permission")
-            .required("command")
-            .build();
-
-        @Override
-        public Args getArgs() {
-            return args;
         }
 
         @Override
