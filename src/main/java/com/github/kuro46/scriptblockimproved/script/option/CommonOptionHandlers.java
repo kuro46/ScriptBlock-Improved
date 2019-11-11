@@ -10,6 +10,7 @@ import java.util.Optional;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.Plugin;
@@ -60,6 +61,21 @@ public final class CommonOptionHandlers {
             .executor(data -> {
                 final ParsedArgs args = data.getArgs();
                 data.getPlayer().sendMessage(args.getOrFail("message"));
+            })
+            .register(handlers);
+        OptionHandler.builder()
+            .name("cancelEvent")
+            .args(Args.empty())
+            .onTriggered(event -> {
+                if (!(event instanceof Cancellable)) {
+                    throw new IllegalStateException(
+                        event.getClass() + " does not implements Cancellable"
+                    );
+                }
+                ((Cancellable) event).setCancelled(true);
+            })
+            .executor(data -> {
+                // no-op
             })
             .register(handlers);
         handlers.add(new BypassCommandHandler(plugin));
