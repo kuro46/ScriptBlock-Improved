@@ -12,9 +12,12 @@ import com.github.kuro46.scriptblockimproved.script.option.placeholder.Placehold
 import com.github.kuro46.scriptblockimproved.script.option.placeholder.PlaceholderGroup;
 import com.github.kuro46.scriptblockimproved.script.serialize.ScriptSerializer;
 import com.github.kuro46.scriptblockimproved.script.serialize.UnsupportedVersionException;
-import com.github.kuro46.scriptblockimproved.script.trigger.InteractScriptTrigger;
-import com.github.kuro46.scriptblockimproved.script.trigger.MoveScriptTrigger;
-import com.github.kuro46.scriptblockimproved.script.trigger.SBScriptTrigger;
+import com.github.kuro46.scriptblockimproved.script.trigger.LeftClickTrigger;
+import com.github.kuro46.scriptblockimproved.script.trigger.MoveTrigger;
+import com.github.kuro46.scriptblockimproved.script.trigger.PressTrigger;
+import com.github.kuro46.scriptblockimproved.script.trigger.RightClickTrigger;
+import com.github.kuro46.scriptblockimproved.script.trigger.SBInteractTrigger;
+import com.github.kuro46.scriptblockimproved.script.trigger.SBWalkTrigger;
 import com.github.kuro46.scriptblockimproved.script.trigger.TriggerRegistry;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -149,9 +152,12 @@ public final class ScriptBlockImproved {
     }
 
     private void initTriggers() {
-        InteractScriptTrigger.listen();
-        MoveScriptTrigger.listen();
-        SBScriptTrigger.listen();
+        RightClickTrigger.register();
+        LeftClickTrigger.register();
+        MoveTrigger.register();
+        PressTrigger.register();
+        SBInteractTrigger.register();
+        SBWalkTrigger.register();
     }
 
     private void registerCommands() {
@@ -160,13 +166,13 @@ public final class ScriptBlockImproved {
 
     private void registerPlaceholders() {
         placeholderGroup.add(Placeholder.builder()
-                .name("player")
-                .factory(data -> data.getPlayer().getName())
-                .build());
+            .name("player")
+            .factory(data -> data.getPlayer().getName())
+            .build());
         placeholderGroup.add(Placeholder.builder()
-                .name("world")
-                .factory(data -> data.getPosition().getWorld())
-                .build());
+            .name("world")
+            .factory(data -> data.getPosition().getWorld())
+            .build());
     }
 
     private class ScriptAutoSaver {

@@ -9,6 +9,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.Map;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
 
@@ -19,7 +20,11 @@ import lombok.ToString;
 @EqualsAndHashCode
 public final class Option {
 
+    @Getter
+    @NonNull
     private final OptionName name;
+    @Getter
+    @NonNull
     private final ParsedArgs args;
 
     public Option(@NonNull final OptionName name, @NonNull final ParsedArgs args) {
@@ -58,13 +63,5 @@ public final class Option {
             builder.put(key, placeholderGroup.replace(value, data));
         });
         return new Option(name, new ParsedArgs(builder.build()));
-    }
-
-    public OptionName getName() {
-        return name;
-    }
-
-    public ParsedArgs getArgs() {
-        return args;
     }
 }

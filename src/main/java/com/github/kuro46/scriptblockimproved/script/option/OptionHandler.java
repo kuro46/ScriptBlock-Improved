@@ -2,8 +2,10 @@ package com.github.kuro46.scriptblockimproved.script.option;
 
 import com.github.kuro46.scriptblockimproved.common.command.Args;
 import java.util.Objects;
+import java.util.function.Consumer;
 import lombok.Getter;
 import lombok.NonNull;
+import org.bukkit.event.Event;
 
 /**
  * Handler of option.
@@ -31,9 +33,16 @@ public abstract class OptionHandler {
         return new Builder();
     }
 
-    public abstract PreExecuteResult preExecute(final ExecutionData data);
+    /**
+     * Called when a script that contains this option is triggered (not suppressed)
+     *
+     * @param event An event
+     */
+    public abstract void onTriggered(Event event);
 
-    public abstract void execute(final ExecutionData data);
+    public abstract PreExecuteResult preExecute(ExecutionData data);
+
+    public abstract void execute(ExecutionData data);
 
     /**
      * Functional interface for Builder
@@ -41,7 +50,7 @@ public abstract class OptionHandler {
     @FunctionalInterface
     public interface PreExecutor {
 
-        PreExecuteResult execute(final ExecutionData data);
+        PreExecuteResult execute(ExecutionData data);
     }
 
     /**
@@ -50,12 +59,13 @@ public abstract class OptionHandler {
     @FunctionalInterface
     public interface Executor {
 
-        void execute(final ExecutionData data);
+        void execute(ExecutionData data);
     }
 
     public static final class Builder {
 
         private PreExecutor preExecutor = data -> PreExecuteResult.CONTINUE;
+        private Consumer<Event> onTriggered = event -> { };
         private Executor executor;
         private Args args;
         private OptionName name;
@@ -84,12 +94,23 @@ public abstract class OptionHandler {
             return this;
         }
 
+        public Builder onTriggered(final Consumer<Event> consumer) {
+            this.onTriggered = consumer;
+            return this;
+        }
+
         public OptionHandler build() {
             Objects.requireNonNull(args, "'args' cannot be null");
             Objects.requireNonNull(name, "'name' cannot be null");
             Objects.requireNonNull(preExecutor, "'preExecutor' cannot be null");
             Objects.requireNonNull(executor, "'executor' cannot be null");
+            Objects.requireNonNull(onTriggered, "'onTriggered' cannot be null");
             return new OptionHandler(name, args) {
+
+                @Override
+                public void onTriggered(final Event event) {
+                    onTriggered.accept(event);
+                }
 
                 @Override
                 public PreExecuteResult preExecute(final ExecutionData data) {

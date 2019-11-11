@@ -10,6 +10,7 @@ import java.util.Optional;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.Plugin;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
@@ -83,6 +84,11 @@ public final class CommonOptionHandlers {
                     .build()
             );
             this.plugin = plugin;
+        }
+
+        @Override
+        public void onTriggered(final Event event) {
+            // no-op
         }
 
         @Override

@@ -7,20 +7,16 @@ import lombok.NonNull;
 
 public final class TriggerRegistry {
 
-    private final Map<TriggerName, RegisteredTrigger> triggers = new HashMap<>();
+    private final Map<TriggerName, Trigger<?>> triggers = new HashMap<>();
 
-    public RegisteredTrigger register(@NonNull final String name) {
-        return register(TriggerName.of(name));
-    }
-
-    public RegisteredTrigger register(@NonNull final TriggerName name) {
+    // For constructor of Trigger
+    void register(@NonNull final Trigger<?> trigger) {
+        final TriggerName name = trigger.getName();
         if (triggers.containsKey(name)) {
             final String message = String.format("Trigger '%s' is already registered", name);
             throw new TriggerRegistrationException(message);
         }
-        final RegisteredTrigger trigger = new RegisteredTrigger(name);
         triggers.put(name, trigger);
-        return trigger;
     }
 
     public void unregister(@NonNull final String name) {
@@ -28,12 +24,12 @@ public final class TriggerRegistry {
     }
 
     public void unregister(@NonNull final TriggerName name) {
-        final RegisteredTrigger removed = triggers.remove(name);
+        final Trigger<?> removed = triggers.remove(name);
         if (removed == null) { // Trigger is not registered
             final String message = String.format("Trigger '%s' is not registered", name);
             throw new TriggerRegistrationException(message);
         }
-        removed.unregister();
+        removed.unhookBukkit();
     }
 
     public boolean isRegistered(@NonNull final String name) {
@@ -44,7 +40,7 @@ public final class TriggerRegistry {
         return triggers.containsKey(name);
     }
 
-    public ImmutableMap<TriggerName, RegisteredTrigger> getView() {
+    public ImmutableMap<TriggerName, Trigger<?>> getView() {
         return ImmutableMap.copyOf(triggers);
     }
 }
