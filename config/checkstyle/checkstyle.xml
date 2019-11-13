@@ -8,17 +8,18 @@
     <property name="severity" value="error"/>
     <property name="fileExtensions" value="java, properties, xml"/>
 
+    <!-- don't use a TAB! -->
     <module name="FileTabCharacter">
         <property name="eachLine" value="true"/>
     </module>
 
-    <module name="TreeWalker">
-        <!-- max line length -->
-        <module name="LineLength">
-            <property name="max" value="100"/>
-            <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://|.*?\(&quot;.*?&quot;\);??$|.*?//.*?$"/>
-        </module>
+    <!-- max line length -->
+    <module name="LineLength">
+        <property name="max" value="100"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://|.*?\(&quot;.*?&quot;\);??$|.*?//.*?$"/>
+    </module>
 
+    <module name="TreeWalker">
         <!-- indentation -->
         <module name="Indentation"/>
 
