@@ -28,26 +28,22 @@ public final class RightClickTrigger extends Trigger<PlayerInteractEvent> {
     }
 
     @Override
-    public boolean validateCondition(@NonNull final PlayerInteractEvent event) {
-        return event.getAction() == Action.RIGHT_CLICK_BLOCK;
-    }
-
-    @Override
-    public BlockPosition retrievePosition(@NonNull final PlayerInteractEvent event) {
-        return BlockPosition.fromBlock(event.getClickedBlock());
-    }
-
-    @Override
-    public Player retrievePlayer(@NonNull final PlayerInteractEvent event) {
-        return event.getPlayer();
+    public ValidationResult validateCondition(@NonNull final PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return ValidationResult.invalid();
+        }
+        return ValidationResult.valid(AdditionalEventData.builder()
+            .position(BlockPosition.fromBlock(event.getClickedBlock()))
+            .player(event.getPlayer())
+            .build());
     }
 
     @Override
     public boolean shouldSuppress(
         @NonNull final PlayerInteractEvent event,
-        @NonNull final BlockPosition position,
-        @NonNull final Player player
+        @NonNull final AdditionalEventData additionalData
     ) {
+        final Player player = additionalData.getPlayer();
         if (shouldCancelExecution(player)) return true;
         updateExecutionTime(player);
         return false;

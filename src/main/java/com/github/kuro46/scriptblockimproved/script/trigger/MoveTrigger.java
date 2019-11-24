@@ -25,26 +25,20 @@ public final class MoveTrigger extends Trigger<PlayerMoveEvent> {
     }
 
     @Override
-    public boolean validateCondition(@NonNull final PlayerMoveEvent event) {
-        return true;
-    }
-
-    @Override
-    public BlockPosition retrievePosition(@NonNull final PlayerMoveEvent event) {
-        return BlockPosition.fromLocation(event.getPlayer().getLocation());
-    }
-
-    @Override
-    public Player retrievePlayer(@NonNull final PlayerMoveEvent event) {
-        return event.getPlayer();
+    public ValidationResult validateCondition(@NonNull final PlayerMoveEvent event) {
+        return ValidationResult.valid(AdditionalEventData.builder()
+            .position(BlockPosition.fromLocation(event.getPlayer().getLocation()))
+            .player(event.getPlayer())
+            .build());
     }
 
     @Override
     public boolean shouldSuppress(
         @NonNull final PlayerMoveEvent event,
-        @NonNull final BlockPosition position,
-        @NonNull final Player player
+        @NonNull final AdditionalEventData additionalData
     ) {
+        final Player player = additionalData.getPlayer();
+        final BlockPosition position = additionalData.getPosition();
         if (shouldCancelExecution(player, position)) return true;
         updatePosition(player, position);
         return false;

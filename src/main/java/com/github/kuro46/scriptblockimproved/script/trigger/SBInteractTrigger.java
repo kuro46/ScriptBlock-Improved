@@ -3,7 +3,6 @@ package com.github.kuro46.scriptblockimproved.script.trigger;
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.script.BlockPosition;
 import lombok.NonNull;
-import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public final class SBInteractTrigger extends Trigger<PlayerInteractEvent> {
@@ -21,25 +20,17 @@ public final class SBInteractTrigger extends Trigger<PlayerInteractEvent> {
     }
 
     @Override
-    public boolean validateCondition(@NonNull final PlayerInteractEvent event) {
-        return true;
-    }
-
-    @Override
-    public BlockPosition retrievePosition(@NonNull final PlayerInteractEvent event) {
-        return BlockPosition.fromBlock(event.getClickedBlock());
-    }
-
-    @Override
-    public Player retrievePlayer(@NonNull final PlayerInteractEvent event) {
-        return event.getPlayer();
+    public ValidationResult validateCondition(@NonNull final PlayerInteractEvent event) {
+        return ValidationResult.valid(AdditionalEventData.builder()
+            .position(BlockPosition.fromBlock(event.getClickedBlock()))
+            .player(event.getPlayer())
+            .build());
     }
 
     @Override
     public boolean shouldSuppress(
         @NonNull final PlayerInteractEvent event,
-        @NonNull final BlockPosition position,
-        @NonNull final Player player
+        @NonNull final AdditionalEventData additionalData
     ) {
         return false;
     }

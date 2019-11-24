@@ -28,31 +28,23 @@ public final class SBWalkTrigger extends Trigger<PlayerMoveEvent> {
     }
 
     @Override
-    public boolean validateCondition(@NonNull final PlayerMoveEvent event) {
-        final Block walkingBlock = event.getPlayer()
-            .getLocation().getBlock().getRelative(BlockFace.DOWN);
-        if (walkingBlock.getType() == Material.AIR) return false;
-        return true;
-    }
-
-    @Override
-    public BlockPosition retrievePosition(@NonNull final PlayerMoveEvent event) {
-        final Block walkingBlock = event.getPlayer()
-            .getLocation().getBlock().getRelative(BlockFace.DOWN);
-        return BlockPosition.fromBlock(walkingBlock);
-    }
-
-    @Override
-    public Player retrievePlayer(@NonNull final PlayerMoveEvent event) {
-        return event.getPlayer();
+    public ValidationResult validateCondition(@NonNull final PlayerMoveEvent event) {
+        final Player player = event.getPlayer();
+        final Block walkingBlock = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
+        if (walkingBlock.getType() == Material.AIR) return ValidationResult.invalid();
+        return ValidationResult.valid(AdditionalEventData.builder()
+            .position(BlockPosition.fromBlock(walkingBlock))
+            .player(player)
+            .build());
     }
 
     @Override
     public boolean shouldSuppress(
         @NonNull final PlayerMoveEvent event,
-        @NonNull final BlockPosition position,
-        @NonNull final Player player
+        @NonNull final AdditionalEventData additionalData
     ) {
+        final BlockPosition position = additionalData.getPosition();
+        final Player player = additionalData.getPlayer();
         final BlockPosition lastWalkedPos = lastWalkedPositions.get(player);
         if (lastWalkedPos != null && lastWalkedPos.equals(position)) return true;
         lastWalkedPositions.put(player, position);

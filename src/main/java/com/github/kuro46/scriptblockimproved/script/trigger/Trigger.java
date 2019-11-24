@@ -11,7 +11,6 @@ import com.github.kuro46.scriptblockimproved.script.option.PreExecuteResult;
 import com.github.kuro46.scriptblockimproved.script.option.placeholder.SourceData;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
-import java.util.Objects;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
@@ -76,44 +75,29 @@ public abstract class Trigger<E extends Event> implements EventExecutor {
      * @param event An event to validate
      * @return {@code true} if specified event is valid, otherwise {@code false}
      */
-    public abstract boolean validateCondition(E event);
-
-    /**
-     * Retrieves a {@code BlockPosition} from specified event.
-     * This method should be called second. (after {@code validateCondition} is called)
-     *
-     * @param event An event to retrieve
-     * @return A BlockPosition that must be non-null
-     */
-    public abstract BlockPosition retrievePosition(E event);
-
-    /**
-     * Retrieves a {@code Player} from specified event.
-     * This method should be called third. (after {@code retrievePosition} is called)
-     */
-    public abstract Player retrievePlayer(E event);
+    public abstract ValidationResult validateCondition(E event);
 
     /**
      * Returns a bool that represents whether to suppress script execution.<br>
-     * This method should be called third. (after {@code retrievePlayer} is called)
+     * This method should be called after {@code validateCondition} is called.
      *
      * @param event An event to check
      * @return {@code true} if should suppress script execution, otherwise {@code false}
      */
-    public abstract boolean shouldSuppress(E event, BlockPosition position, Player player);
+    public abstract boolean shouldSuppress(E event, AdditionalEventData additionalData);
 
     @Override
     public final void execute(@NonNull final Listener listener, @NonNull final Event rawEvent) {
         @SuppressWarnings("unchecked")
         final E event = (E) rawEvent;
-        if (!validateCondition(event)) {
+        final ValidationResult validationResult = validateCondition(event);
+        if (validationResult.isInvalid()) {
             return;
         }
-        // Retrieve necessary data
-        final BlockPosition position = retrievePosition(event);
-        Objects.requireNonNull(position, "'retrievePosition' must NOT be return 'null'");
-        final Player player = retrievePlayer(event);
-        Objects.requireNonNull(player, "'retrievePlayer' must NOT be return 'null'");
+        final AdditionalEventData additionalEventData = validationResult.getData()
+            .orElseThrow(() -> new IllegalStateException());
+        final BlockPosition position = additionalEventData.getPosition();
+        final Player player = additionalEventData.getPlayer();
         // Find scripts in the retrieved position
         final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
         final ImmutableList<Script> scripts = sbi.getScripts().get(position).stream()
@@ -122,7 +106,7 @@ public abstract class Trigger<E extends Event> implements EventExecutor {
         // Call OptionHandler#onTriggered
         fireOnTriggered(event, scripts);
         // Suppress or dont
-        if (shouldSuppress(event, position, player)) {
+        if (shouldSuppress(event, additionalEventData)) {
             return;
         }
         final SourceData sourceData = SourceData.builder()
