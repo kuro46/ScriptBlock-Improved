@@ -78,6 +78,21 @@ public final class CommonOptionHandlers {
                 // no-op
             })
             .register(handlers);
+        OptionHandler.builder()
+            .name("dontCancelEvent")
+            .args(Args.empty())
+            .onTriggered(event -> {
+                if (!(event instanceof Cancellable)) {
+                    throw new IllegalStateException(
+                        event.getClass() + " does not implements Cancellable"
+                    );
+                }
+                ((Cancellable) event).setCancelled(false);
+            })
+            .executor(data -> {
+                // no-op
+            })
+            .register(handlers);
         handlers.add(new BypassCommandHandler(plugin));
     }
 
