@@ -1,5 +1,6 @@
 package com.github.kuro46.scriptblockimproved.common;
 
+import com.google.errorprone.annotations.FormatMethod;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,7 @@ public final class MessageUtils {
         sendMessage(sender, MessageKind.NORMAL, message);
     }
 
+    @FormatMethod
     public static void sendMessage(
             final CommandSender sender,
             final String message,
@@ -38,6 +40,7 @@ public final class MessageUtils {
         sender.sendMessage(PREFIX + kind.getColor() + message);
     }
 
+    @FormatMethod
     public static void sendMessage(
             final CommandSender sender,
             final MessageKind kind,
