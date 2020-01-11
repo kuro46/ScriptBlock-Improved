@@ -1,6 +1,6 @@
 日本語 | [English](docs/README_EN.md)
 
-# ScriptBlock-Improved [![jitpack](https://jitpack.io/v/kuro46/ScriptBlock-Improved.svg)](https://jitpack.io/#kuro46/ScriptBlock-Improved)
+# ScriptBlock-Improved [![jitpack](https://jitpack.io/v/kuro46/ScriptBlock-Improved.svg)](https://jitpack.io/#kuro46/ScriptBlock-Improved)[![jitci](https://jitci.com/gh/kuro46/ScriptBlock-Improved/svg)](https://jitci.com/gh/kuro46/ScriptBlock-Improved)
 
 [ScriptBlock](https://dev.bukkit.org/projects/scriptblock)の設計や機能を改善したプラグインです。  
 使い方など、詳細は[Wiki](https://github.com/kuro46/ScriptBlock-Improved/wiki/)を参照してください。
