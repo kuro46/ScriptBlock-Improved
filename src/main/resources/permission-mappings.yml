@@ -1,0 +1,11 @@
+# Mappings of command and permission
+# Examples
+#
+# sbi:
+# - "sbi.admin"
+# "sbi remove":
+# - "sbi.admin"
+# - "special-permission"
+#
+# NOTE: Permissions described in command.permission of plugin.yml
+#       and vanilla commands are detected automatically.

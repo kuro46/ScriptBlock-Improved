@@ -38,6 +38,10 @@ public final class Debouncer {
     }
 
     public void runLater() {
+        runLater(task);
+    }
+
+    public void runLater(final Runnable task) {
         if (shutdown) throw new IllegalStateException("This debouncer is shut down!");
         lock.lock();
         try {

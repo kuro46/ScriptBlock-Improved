@@ -68,6 +68,10 @@ public final class ScriptBlockImproved {
         this.logger = plugin.getLogger();
         this.scriptsPath = initScriptsPath();
         this.scripts = loadScripts();
+
+        if (!Files.exists(dataFolder.resolve("permission-mappings.yml"))) {
+            plugin.saveResource("permission-mappings.yml", false);
+        }
     }
 
     private void initInternal() throws IOException {

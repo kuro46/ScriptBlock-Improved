@@ -4,137 +4,139 @@ import com.github.kuro46.scriptblockimproved.common.Debouncer;
 import com.github.kuro46.scriptblockimproved.common.ListUtils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.SetMultimap;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
 import org.bukkit.Bukkit;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
 
 public final class PermissionDetector {
 
-    private static final Lock INITIALIZER_LOCK = new ReentrantLock();
-    private static volatile PermissionDetector instance;
-    private final Lock ioLock = new ReentrantLock();
-    @NonNull
+    private static PermissionDetector instance;
     private final Path filePath;
-    @NonNull
-    private final Debouncer debouncer;
-    @NonNull
-    private volatile ImmutableSetMultimap<Command, Permission> mappings =
-        ImmutableSetMultimap.of();
+    private final Debouncer saveDebouncer;
+    private final SetMultimap<Command, Permission> mappings = HashMultimap.create();
 
     private PermissionDetector(@NonNull final Path dataFolder) throws IOException {
         this.filePath = dataFolder.resolve("permission-mappings.yml");
-        this.debouncer = new Debouncer(() -> {
-            try {
-                save();
-            } catch (final IOException e) {
-                // TODO: make better
-                System.out.println(e.getMessage());
-            }
+        this.saveDebouncer = new Debouncer(() -> {
         }, 1, TimeUnit.SECONDS);
-        if (Files.exists(filePath)) {
-            load();
-        } else {
-            loadRegistered();
-            save();
+        try {
+            Bukkit.getScheduler().runTask(ScriptBlockImproved.getInstance().getPlugin(), () -> {
+                try {
+                    // Load defaults
+                    mapCommands();
+                    // Load from file and override defaults
+                    overrideByFile();
+                } catch (final IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            });
+        } catch (final UncheckedIOException e) {
+            throw new IOException(e);
+        }
+    }
+
+    private void mapCommands() {
+        // Abort if running server is not based on CraftBukkit.
+        final Class<?> serverClass = Bukkit.getServer().getClass();
+        if (!serverClass.getName().matches("org\\.bukkit\\.craftbukkit\\..+?CraftServer")) {
+            return;
+        }
+        final Method getCommandMap;
+        try {
+            getCommandMap = serverClass.getMethod("getCommandMap");
+        } catch (final NoSuchMethodException e) {
+            // unreachable
+            throw new RuntimeException(e);
+        }
+        final SimpleCommandMap commandMap;
+        try {
+            commandMap = (SimpleCommandMap) getCommandMap.invoke(Bukkit.getServer());
+        } catch (final IllegalAccessException | InvocationTargetException e) {
+            // unreachable
+            throw new RuntimeException(e);
+        }
+        commandMap.getCommands().forEach(command -> {
+            if (command.getPermission() == null) {
+                return;
+            }
+            mappings.put(
+                new Command(command.getName()), new Permission(command.getPermission(), false)
+            );
+        });
+    }
+
+    private void overrideByFile() throws IOException {
+        final YamlConfiguration configuration;
+        try (final BufferedReader reader = Files.newBufferedReader(filePath)) {
+            configuration = YamlConfiguration.loadConfiguration(reader);
+        }
+        for (final String command : configuration.getKeys(false)) {
+            final List<Permission> permissions = configuration.getStringList(command).stream()
+                .map(perm -> new Permission(perm, true))
+                .collect(Collectors.toList());
+            final Set<Permission> loaded = mappings.get(new Command(command));
+            loaded.clear();
+            loaded.addAll(permissions);
         }
     }
 
     public static void init(@NonNull final Path dataFolder) throws IOException {
-        INITIALIZER_LOCK.lock();
-        try {
-            if (instance != null) throw new IllegalStateException("Already initialized");
-            instance = new PermissionDetector(dataFolder);
-        } finally {
-            INITIALIZER_LOCK.unlock();
-        }
+        if (instance != null) throw new IllegalStateException("Already initialized");
+        instance = new PermissionDetector(dataFolder);
     }
 
     public static PermissionDetector getInstance() {
         return instance;
     }
 
-    private void load() throws IOException {
-        final YamlConfiguration configuration;
-        ioLock.lock();
-        try (final BufferedReader reader = Files.newBufferedReader(filePath)) {
-            configuration = YamlConfiguration.loadConfiguration(reader);
-        } finally {
-            ioLock.unlock();
-        }
-        final SetMultimap<Command, Permission> mappings = HashMultimap.create();
-        for (final String command : configuration.getKeys(false)) {
-            final List<Permission> permissions = configuration.getStringList(command).stream()
-                .map(Permission::new)
-                .collect(Collectors.toList());
-            mappings.putAll(new Command(command), permissions);
-        }
-        update(mappings);
-    }
-
-    private void loadRegistered() {
-        final SetMultimap<Command, Permission> mappings = HashMultimap.create();
-        for (final Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-            final Map<String, Map<String, Object>> commands =
-                plugin.getDescription().getCommands();
-            if (commands == null) continue;
-            commands.forEach((name, values) -> {
-                final String permission = (String) values.get("permission");
-                if (permission == null) return;
-                mappings.put(new Command(name), new Permission(permission));
-            });
-        }
-        update(mappings);
-    }
-
-    private void save() throws IOException {
+    private void save(@NonNull final SetMultimap<Command, Permission> mappings) throws IOException {
         final YamlConfiguration configuration = new YamlConfiguration();
         mappings.asMap().forEach((command, permissions) -> {
             final List<String> stringPerms = permissions.stream()
+                .filter(Permission::doSave)
                 .map(Permission::getName)
                 .collect(Collectors.toList());
             configuration.set(command.getName(), stringPerms);
         });
-        ioLock.lock();
         try (final BufferedWriter writer = Files.newBufferedWriter(filePath)) {
             writer.write(configuration.saveToString());
-        } finally {
-            ioLock.unlock();
         }
     }
 
-    public SetMultimap<Command, Permission> mutable() {
+    private SetMultimap<Command, Permission> shallowCopy() {
         return HashMultimap.create(mappings);
     }
 
     public void associate(@NonNull final String command, @NonNull final String permission) {
-        final SetMultimap<Command, Permission> mutable = mutable();
-        mutable.put(new Command(command), new Permission(permission));
-        update(mutable);
-        debouncer.runLater();
-    }
-
-    private void update(final SetMultimap<Command, Permission> newMappings) {
-        mappings = ImmutableSetMultimap.copyOf(newMappings);
+        mappings.put(new Command(command), new Permission(permission, true));
+        final SetMultimap<Command, Permission> copied = shallowCopy();
+        saveDebouncer.runLater(() -> {
+            try {
+                save(copied);
+            } catch (final IOException e) {
+                // TODO
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     public Optional<List<String>> getPermissionsByCommand(@NonNull final String strCommand) {
@@ -195,9 +197,15 @@ public final class PermissionDetector {
         @NonNull
         @Getter
         private final String name;
+        private final boolean save;
 
-        public Permission(@NonNull final String name) {
+        public Permission(@NonNull final String name, final boolean save) {
             this.name = name.toLowerCase();
+            this.save = save;
+        }
+
+        public boolean doSave() {
+            return save;
         }
     }
 }
