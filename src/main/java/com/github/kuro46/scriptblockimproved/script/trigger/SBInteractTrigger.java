@@ -22,12 +22,13 @@ public final class SBInteractTrigger extends Trigger<PlayerInteractEvent> {
     @Override
     public ValidationResult validateCondition(@NonNull final PlayerInteractEvent event) {
         if (event.getClickedBlock() == null) {
-            ValidationResult.invalid();
+            return ValidationResult.invalid();
+        } else {
+            return ValidationResult.valid(AdditionalEventData.builder()
+                .position(BlockPosition.fromBlock(event.getClickedBlock()))
+                .player(event.getPlayer())
+                .build());
         }
-        return ValidationResult.valid(AdditionalEventData.builder()
-            .position(BlockPosition.fromBlock(event.getClickedBlock()))
-            .player(event.getPlayer())
-            .build());
     }
 
     @Override
