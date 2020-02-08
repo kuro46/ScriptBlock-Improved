@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Consumer;
 import lombok.NonNull;
 import lombok.ToString;
 
@@ -21,16 +20,14 @@ import lombok.ToString;
 @ToString
 public final class ScriptMap {
 
-    private final Lock modifyLock = new ReentrantLock();
+    private final Lock lock = new ReentrantLock();
     private final List<ScriptMapListener> listeners = new CopyOnWriteArrayList<>();
-    @NonNull
-    private volatile ImmutableListMultimap<BlockPosition, Script> map;
+    private final ListMultimap<BlockPosition, Script> map = ArrayListMultimap.create();
 
     /**
      * Constructs a ScriptMap with empty scripts.
      */
     public ScriptMap() {
-        this(ImmutableListMultimap.of());
     }
 
     /**
@@ -39,7 +36,7 @@ public final class ScriptMap {
      * @param initial scripts
      */
     public ScriptMap(@NonNull final ListMultimap<BlockPosition, Script> initial) {
-        this.map = ImmutableListMultimap.copyOf(initial);
+        this.map.putAll(initial);
     }
 
     /**
@@ -70,7 +67,7 @@ public final class ScriptMap {
      */
     public JsonArray toJson() {
         final JsonArray json = new JsonArray();
-        map.values().stream()
+        snapshot().values().stream()
             .map(Script::toJson)
             .forEach(json::add);
         return json;
@@ -91,7 +88,7 @@ public final class ScriptMap {
      * @return ImmutableListMultimap which contains all entries of this ScriptMap
      */
     public ImmutableListMultimap<BlockPosition, Script> asListMultimap() {
-        return map;
+        return snapshot();
     }
 
     /**
@@ -100,7 +97,7 @@ public final class ScriptMap {
      * @return ImmutableSet
      */
     public ImmutableSet<BlockPosition> getPositions() {
-        return map.keySet();
+        return snapshot().keySet();
     }
 
     /**
@@ -110,19 +107,19 @@ public final class ScriptMap {
      * @return ImmutableSet. If no scripts were added, it will return an empty list.
      */
     public ImmutableList<Script> get(@NonNull final BlockPosition position) {
-        return map.get(position);
-    }
-
-    private void compute(@NonNull Consumer<ListMultimap<BlockPosition, Script>> modifier) {
-        final Lock lock = modifyLock;
         lock.lock();
         try {
-            final ListMultimap<BlockPosition, Script> mutable = ArrayListMultimap.create(map);
-            modifier.accept(mutable);
-            this.map = ImmutableListMultimap.copyOf(mutable);
+            return ImmutableList.copyOf(map.get(position));
         } finally {
             lock.unlock();
         }
+    }
+
+    /**
+     * Creates a immutable snapshot of map.
+     */
+    private ImmutableListMultimap<BlockPosition, Script> snapshot() {
+        return ImmutableListMultimap.copyOf(map);
     }
 
     /**
@@ -131,7 +128,12 @@ public final class ScriptMap {
      * @param script Script to add
      */
     public void add(@NonNull final Script script) {
-        compute(mutable -> mutable.put(script.getPosition(), script));
+        lock.lock();
+        try {
+            map.put(script.getPosition(), script);
+        } finally {
+            lock.unlock();
+        }
         listeners.forEach(listener -> listener.onModified(this));
     }
 
@@ -141,7 +143,12 @@ public final class ScriptMap {
      * @param scripts ScriptMap to add
      */
     public void addAll(@NonNull final ScriptMap scripts) {
-        compute(mutable -> mutable.putAll(scripts.map));
+        lock.lock();
+        try {
+            map.putAll(scripts.map);
+        } finally {
+            lock.unlock();
+        }
         listeners.forEach(listener -> listener.onModified(this));
     }
 
@@ -152,13 +159,16 @@ public final class ScriptMap {
      * @throws IllegalArgumentException if no scripts found for the specified position
      */
     public void removeAll(@NonNull final BlockPosition position) {
-        compute(mutable -> {
-            final List<Script> removed = mutable.removeAll(position);
+        lock.lock();
+        try {
+            final List<Script> removed = map.removeAll(position);
             if (removed.isEmpty()) {
                 throw new IllegalArgumentException(
                         String.format("Script not exists at '%s'", position));
             }
-        });
+        } finally {
+            lock.unlock();
+        }
         listeners.forEach(listener -> listener.onModified(this));
     }
 
@@ -169,7 +179,12 @@ public final class ScriptMap {
      * @return existence of scripts in the specified position.
      */
     public boolean contains(@NonNull final BlockPosition position) {
-        return map.containsKey(position);
+        lock.lock();
+        try {
+            return map.containsKey(position);
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
