@@ -9,6 +9,7 @@ import com.github.kuro46.scriptblockimproved.handler.ConsoleHandler;
 import com.github.kuro46.scriptblockimproved.handler.SayHandler;
 import com.github.kuro46.scriptblockimproved.listener.PlayerInteractListener;
 import com.github.kuro46.scriptblockimproved.listener.PlayerMoveListener;
+import com.github.kuro46.scriptblockimproved.storage.JSONStorage;
 import com.github.kuro46.scriptblockimproved.storage.NoOpStorage;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
@@ -41,7 +42,7 @@ public final class ScriptBlockImproved {
         this.logger = bootstrap.getLogger();
         this.plugin = bootstrap;
         try {
-            this.scriptList = ScriptList.load(new NoOpStorage());
+            this.scriptList = ScriptList.load(JSONStorage.load(bootstrap.getDataFolder().toPath().resolve("scripts.json")));
         } catch (IOException e) {
             throw new InitException("Unable to load ScriptList from Storage", e);
         }

@@ -1,5 +1,6 @@
 package com.github.kuro46.scriptblockimproved;
 
+import java.util.Optional;
 import java.util.UUID;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,10 +16,9 @@ public final class Author {
     private final Type type;
     @Getter
     private final String name;
-    @Getter
     private final UUID uniqueId;
 
-    private Author(@NonNull final Type type, @NonNull final String name, final UUID uniqueId) {
+    public Author(@NonNull final Type type, @NonNull final String name, final UUID uniqueId) {
         this.type = type;
         this.name = name;
         this.uniqueId = uniqueId;
@@ -34,6 +34,10 @@ public final class Author {
 
     public static Author player(@NonNull final Player player) {
         return player(player.getName(), player.getUniqueId());
+    }
+
+    public Optional<UUID> getUniqueId() {
+        return Optional.ofNullable(uniqueId);
     }
 
     public enum Type {
