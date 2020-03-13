@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.bukkit.entity.Player;
 
-public final class TellHandler implements OptionHandler {
+public final class SayHandler implements OptionHandler {
     @Override
     public void handleOption(TriggerInfo triggerInfo, Player player, ImmutableList<String> args) {
         player.sendMessage(String.join(" ", args));

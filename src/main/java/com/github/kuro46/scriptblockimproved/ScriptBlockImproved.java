@@ -1,6 +1,6 @@
 package com.github.kuro46.scriptblockimproved;
 
-import com.github.kuro46.scriptblockimproved.handler.TellHandler;
+import com.github.kuro46.scriptblockimproved.handler.SayHandler;
 import com.github.kuro46.scriptblockimproved.storage.NoOpStorage;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
@@ -37,9 +37,9 @@ public final class ScriptBlockImproved {
             throw new InitException("Unable to load ScriptList from Storage", e);
         }
 
-        scriptHandler.registerHandler("tell", new TellHandler());
+        scriptHandler.registerHandler("say", new SayHandler());
 
-        final Script script = new Script(Author.system("test"), OffsetDateTime.now(ZoneId.systemDefault()), "move", ImmutableList.of(new Script.Option("tell", ImmutableList.of("test message"))));
+        final Script script = new Script(Author.system("test"), OffsetDateTime.now(ZoneId.systemDefault()), "move", ImmutableList.of(new Script.Option("say", ImmutableList.of("test message"))));
         scriptList.add(new BlockPosition("world", 0, 4, 0), script);
         Bukkit.getPluginManager().registerEvents(new MoveListener(), bootstrap);
     }
