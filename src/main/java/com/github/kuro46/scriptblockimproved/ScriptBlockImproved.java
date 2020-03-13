@@ -71,7 +71,7 @@ public final class ScriptBlockImproved {
         scriptHandler.registerHandler("cancelEvent", new CancelEventHandler());
         scriptHandler.registerHandler("bypassCommand", new BypassCommandHandler());
 
-        final Script script = new Script(Author.system("test"), OffsetDateTime.now(ZoneId.systemDefault()), "move", ImmutableList.of(new Script.Option("say", ImmutableList.of("test message"))));
+        final Script script = new Script(Author.system("test"), OffsetDateTime.now(ZoneId.systemDefault()), "move", ImmutableList.of(new Script.Option("cancelEvent", ImmutableList.of())));
         scriptList.add(new BlockPosition("world", 0, 4, 0), script);
         Bukkit.getPluginManager().registerEvents(new MoveListener(), bootstrap);
     }
@@ -104,8 +104,9 @@ public final class ScriptBlockImproved {
             final Location location = player.getLocation();
             final BlockPosition position = new BlockPosition(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
             final BlockPosition lastTriggered = lastTriggeredMap.get(player);
-            if (lastTriggered == null || !lastTriggered.equals(position)) {
-                scriptHandler.handle(player, position, TriggerInfo.builder().name("move").event(event).build());
+            final boolean shouldSuppress = lastTriggered == null || !lastTriggered.equals(position);
+            scriptHandler.handle(player, position, TriggerInfo.builder().name("move").shouldSuppress(shouldSuppress).event(event).build());
+            if (!shouldSuppress) {
                 lastTriggeredMap.put(player, position);
             }
         }

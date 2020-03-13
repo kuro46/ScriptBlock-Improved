@@ -7,6 +7,11 @@ import org.bukkit.entity.Player;
 
 public interface OptionHandler {
 
+    @SuppressWarnings("unused")
+    default void onSuppressed(TriggerInfo triggerInfo, Player player, ImmutableList<String> args) {
+        // no-op
+    }
+
     void handleOption(TriggerInfo triggerInfo, Player player, ImmutableList<String> args);
 
     ValidationResult validateArgs(List<String> args);

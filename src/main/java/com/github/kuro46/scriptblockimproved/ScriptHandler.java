@@ -28,7 +28,11 @@ public final class ScriptHandler {
             for (Script.Option option : script.getOptions()) {
                 final OptionHandler optionHandler = optionHandlers.get(option.getName());
                 if (optionHandler != null) {
-                    optionHandler.handleOption(triggerInfo, player, option.getArgs());
+                    if (triggerInfo.shouldSuppress()) {
+                        optionHandler.onSuppressed(triggerInfo, player, option.getArgs());
+                    } else {
+                        optionHandler.handleOption(triggerInfo, player, option.getArgs());
+                    }
                 } else {
                     sbi.getLogger()
                         .warning(String.format("Unable to find OptionHandler for '%s'", option.getName()));

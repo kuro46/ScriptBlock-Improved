@@ -15,11 +15,17 @@ public final class TriggerInfo {
 
     @Getter
     private final String name;
+    private final boolean shouldSuppress;
     private final Event event;
 
-    public TriggerInfo(@NonNull final String name, Event event) {
+    public TriggerInfo(@NonNull final String name, final boolean shouldSuppress, Event event) {
         this.name = name;
+        this.shouldSuppress = shouldSuppress;
         this.event = event;
+    }
+
+    public boolean shouldSuppress() {
+        return shouldSuppress;
     }
 
     public Optional<Event> getEvent() {
