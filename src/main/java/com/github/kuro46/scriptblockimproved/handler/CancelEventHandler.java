@@ -11,12 +11,16 @@ public class CancelEventHandler implements OptionHandler {
 
     @Override
     public void onSuppressed(TriggerInfo triggerInfo, Player player, ImmutableList<String> args) {
+        boolean cancel = true;
+        if (args.size() > 0) {
+            cancel = Boolean.parseBoolean(args.get(0));
+        }
         if (triggerInfo.getEvent().isPresent()) {
             final Event event = triggerInfo.getEvent().get();
             if (!(event instanceof Cancellable)) {
                 throw new IllegalStateException(event.getClass() + " does not implements Cancellable");
             }
-            ((Cancellable) event).setCancelled(true);
+            ((Cancellable) event).setCancelled(cancel);
         }
     }
 
