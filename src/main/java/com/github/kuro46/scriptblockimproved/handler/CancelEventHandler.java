@@ -8,8 +8,9 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 
 public class CancelEventHandler implements OptionHandler {
+
     @Override
-    public void handleOption(TriggerInfo triggerInfo, Player player, ImmutableList<String> args) {
+    public void onSuppressed(TriggerInfo triggerInfo, Player player, ImmutableList<String> args) {
         if (triggerInfo.getEvent().isPresent()) {
             final Event event = triggerInfo.getEvent().get();
             if (!(event instanceof Cancellable)) {
@@ -17,6 +18,10 @@ public class CancelEventHandler implements OptionHandler {
             }
             ((Cancellable) event).setCancelled(true);
         }
+    }
+
+    @Override
+    public void handleOption(TriggerInfo triggerInfo, Player player, ImmutableList<String> args) {
     }
 
     @Override
