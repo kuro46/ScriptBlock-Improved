@@ -1,9 +1,16 @@
 package com.github.kuro46.scriptblockimproved;
 
+import com.github.kuro46.scriptblockimproved.handler.BroadcastHandler;
+import com.github.kuro46.scriptblockimproved.handler.BypassCommandHandler;
+import com.github.kuro46.scriptblockimproved.handler.CancelEventHandler;
+import com.github.kuro46.scriptblockimproved.handler.CommandHandler;
+import com.github.kuro46.scriptblockimproved.handler.ConsoleHandler;
 import com.github.kuro46.scriptblockimproved.handler.SayHandler;
 import com.github.kuro46.scriptblockimproved.storage.NoOpStorage;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Map;
@@ -17,6 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.plugin.Plugin;
 
 public final class ScriptBlockImproved {
 
@@ -28,16 +36,34 @@ public final class ScriptBlockImproved {
     private final ScriptList scriptList;
     @Getter
     private final ScriptHandler scriptHandler = new ScriptHandler();
+    @Getter
+    private final Plugin plugin;
 
     private ScriptBlockImproved(@NonNull Bootstrap bootstrap) throws InitException {
         this.logger = bootstrap.getLogger();
+        this.plugin = bootstrap;
         try {
             this.scriptList = ScriptList.load(new NoOpStorage());
         } catch (IOException e) {
             throw new InitException("Unable to load ScriptList from Storage", e);
         }
 
+        final Path dataFolder = plugin.getDataFolder().toPath();
+        if (!Files.exists(dataFolder.resolve("permission-mappings.yml"))) {
+            plugin.saveResource("permission-mapping.yml", false);
+        }
+        try {
+            PermissionDetector.init(plugin, dataFolder);
+        } catch (IOException e) {
+            throw new InitException("Unable to init PermissionDetector", e);
+        }
+
+        scriptHandler.registerHandler("command", new CommandHandler());
+        scriptHandler.registerHandler("console", new ConsoleHandler());
+        scriptHandler.registerHandler("broadcast", new BroadcastHandler());
         scriptHandler.registerHandler("say", new SayHandler());
+        scriptHandler.registerHandler("cancelEvent", new CancelEventHandler());
+        scriptHandler.registerHandler("bypassCommand", new BypassCommandHandler());
 
         final Script script = new Script(Author.system("test"), OffsetDateTime.now(ZoneId.systemDefault()), "move", ImmutableList.of(new Script.Option("say", ImmutableList.of("test message"))));
         scriptList.add(new BlockPosition("world", 0, 4, 0), script);
@@ -77,5 +103,11 @@ public final class ScriptBlockImproved {
                 lastTriggeredMap.put(player, position);
             }
         }
+    }
+
+    public static String removeSlashIfNeeded(final String source) {
+        if (source.isEmpty() || source.charAt(0) != '/') return source;
+        // 'source' is not empty and starts with '/'
+        return source.substring(1);
     }
 }
