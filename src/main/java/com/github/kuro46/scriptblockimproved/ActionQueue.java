@@ -23,4 +23,8 @@ public final class ActionQueue {
         Optional.ofNullable(queue.getIfPresent(player.getUniqueId())).ifPresent(consumer -> consumer.accept(location));
         queue.invalidate(player.getUniqueId());
     }
+
+    public boolean isQueued(@NonNull final Player player) {
+        return queue.asMap().containsKey(player.getUniqueId());
+    }
 }
