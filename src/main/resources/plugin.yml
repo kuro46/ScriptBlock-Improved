@@ -8,7 +8,7 @@ website: https://github.com/kuro46/ScriptBlock-Improved/
 load: STARTUP
 loadbefore:
   - Vault
-main: com.github.kuro46.scriptblockimproved.Initializer
+main: com.github.kuro46.scriptblockimproved.Bootstrap
 commands:
   sbi:
     description: Main command of ScriptBlock-Improved
