@@ -7,8 +7,6 @@ import org.bukkit.entity.Player;
 public final class TellHandler implements OptionHandler {
     @Override
     public void handleOption(TriggerInfo triggerInfo, Player player, ImmutableList<String> args) {
-        for (String arg : args) {
-            player.sendMessage(arg);
-        }
+        player.sendMessage(String.join(" ", args));
     }
 }
