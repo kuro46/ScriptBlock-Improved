@@ -1,9 +1,12 @@
 package com.github.kuro46.scriptblockimproved;
 
+import com.github.kuro46.scriptblockimproved.handler.OptionHandler;
+import com.github.kuro46.scriptblockimproved.handler.ValidationResult;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.NonNull;
@@ -22,7 +25,13 @@ public final class OptionListParser {
         final ImmutableList<String> stringOptions = stringOptions(string);
         final List<Script.Option> options = new ArrayList<>(stringOptions.size());
         for (String stringOption : stringOptions) {
-            options.add(stringOption(stringOption));
+            final Script.Option option = stringOption(stringOption);
+            final OptionHandler handler = ScriptBlockImproved.getInstance().getScriptHandler()
+                .getHandler(option.getName()).orElseThrow(() -> new ParseException("Cannot find handler for " + option.getName()));
+            if (handler.validateArgs(option.getArgs()) == ValidationResult.INVALID) {
+                throw new ParseException(String.format("Invalid args for '%s' : %s", option.getName(), option.getArgs()));
+            }
+            options.add(option);
         }
         return ImmutableList.copyOf(options);
     }

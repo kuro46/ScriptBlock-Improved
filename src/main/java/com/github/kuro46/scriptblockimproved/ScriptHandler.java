@@ -3,12 +3,17 @@ package com.github.kuro46.scriptblockimproved;
 import com.github.kuro46.scriptblockimproved.handler.OptionHandler;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 
 public final class ScriptHandler {
 
     private final Map<String, OptionHandler> optionHandlers = new HashMap<>();
+
+    public Optional<OptionHandler> getHandler(@NonNull final String optionName) {
+        return Optional.ofNullable(optionHandlers.get(optionName));
+    }
 
     public void registerHandler(@NonNull final String optionName, @NonNull final OptionHandler handler) {
         optionHandlers.put(optionName, handler);
