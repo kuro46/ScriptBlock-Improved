@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
+import org.bukkit.entity.Player;
 
 @ToString
 @EqualsAndHashCode
@@ -29,6 +30,10 @@ public final class Author {
 
     public static Author player(@NonNull final String name, @NonNull final UUID uniqueId) {
         return new Author(Type.PLAYER, name, uniqueId);
+    }
+
+    public static Author player(@NonNull final Player player) {
+        return player(player.getName(), player.getUniqueId());
     }
 
     public enum Type {

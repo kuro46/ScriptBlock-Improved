@@ -1,11 +1,13 @@
 package com.github.kuro46.scriptblockimproved;
 
+import com.github.kuro46.scriptblockimproved.command.SBICommandExecutor;
 import com.github.kuro46.scriptblockimproved.handler.BroadcastHandler;
 import com.github.kuro46.scriptblockimproved.handler.BypassCommandHandler;
 import com.github.kuro46.scriptblockimproved.handler.CancelEventHandler;
 import com.github.kuro46.scriptblockimproved.handler.CommandHandler;
 import com.github.kuro46.scriptblockimproved.handler.ConsoleHandler;
 import com.github.kuro46.scriptblockimproved.handler.SayHandler;
+import com.github.kuro46.scriptblockimproved.listener.PlayerInteractListener;
 import com.github.kuro46.scriptblockimproved.storage.NoOpStorage;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
@@ -31,6 +33,8 @@ public final class ScriptBlockImproved {
     @Getter
     private static ScriptBlockImproved instance;
     @Getter
+    private final ActionQueue actionQueue = new ActionQueue();
+    @Getter
     private final Logger logger;
     @Getter
     private final ScriptList scriptList;
@@ -47,6 +51,8 @@ public final class ScriptBlockImproved {
         } catch (IOException e) {
             throw new InitException("Unable to load ScriptList from Storage", e);
         }
+        Bukkit.getPluginCommand("sbi").setExecutor(new SBICommandExecutor());
+        Bukkit.getPluginManager().registerEvents(new PlayerInteractListener(), bootstrap);
 
         final Path dataFolder = plugin.getDataFolder().toPath();
         if (!Files.exists(dataFolder.resolve("permission-mappings.yml"))) {
@@ -103,11 +109,5 @@ public final class ScriptBlockImproved {
                 lastTriggeredMap.put(player, position);
             }
         }
-    }
-
-    public static String removeSlashIfNeeded(final String source) {
-        if (source.isEmpty() || source.charAt(0) != '/') return source;
-        // 'source' is not empty and starts with '/'
-        return source.substring(1);
     }
 }

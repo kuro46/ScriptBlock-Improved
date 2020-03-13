@@ -55,6 +55,15 @@ public final class PermissionDetector {
         }
     }
 
+    public static void init(@NonNull final Plugin plugin, @NonNull final Path dataFolder) throws IOException {
+        if (instance != null) throw new IllegalStateException("Already initialized");
+        instance = new PermissionDetector(plugin, dataFolder);
+    }
+
+    public static PermissionDetector getInstance() {
+        return instance;
+    }
+
     private void mapCommands() {
         // Abort if running server is not based on CraftBukkit.
         final Class<?> serverClass = Bukkit.getServer().getClass();
@@ -98,15 +107,6 @@ public final class PermissionDetector {
             loaded.clear();
             loaded.addAll(permissions);
         }
-    }
-
-    public static void init(@NonNull final Plugin plugin, @NonNull final Path dataFolder) throws IOException {
-        if (instance != null) throw new IllegalStateException("Already initialized");
-        instance = new PermissionDetector(plugin, dataFolder);
-    }
-
-    public static PermissionDetector getInstance() {
-        return instance;
     }
 
     private void save(@NonNull final SetMultimap<Command, Permission> mappings) throws IOException {

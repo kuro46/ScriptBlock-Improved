@@ -3,14 +3,14 @@ package com.github.kuro46.scriptblockimproved.handler;
 import com.github.kuro46.scriptblockimproved.PermissionDetector;
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.TriggerInfo;
+import com.github.kuro46.scriptblockimproved.common.Utils;
 import com.google.common.collect.ImmutableList;
-import lombok.NonNull;
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionAttachment;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import lombok.NonNull;
+import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachment;
 
 public class BypassCommandHandler implements OptionHandler {
     @Override
@@ -18,7 +18,7 @@ public class BypassCommandHandler implements OptionHandler {
         final PermissionAttachment attachment = player.addAttachment(ScriptBlockImproved.getInstance().getPlugin());
         try {
             final String maybePerm = args.get(0);
-            final String command = ScriptBlockImproved.removeSlashIfNeeded(String.join(" ", args.subList(1, args.size())));
+            final String command = Utils.removeSlashIfNeeded(String.join(" ", args.subList(1, args.size())));
             final List<String> permissions = getPermsByStr(player, command, maybePerm).orElse(null);
             if (permissions == null) return;
             permissions.forEach(permission -> attachment.setPermission(permission, true));

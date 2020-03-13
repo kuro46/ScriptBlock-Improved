@@ -6,7 +6,6 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.NonNull;
@@ -41,7 +40,7 @@ public final class OptionListParser {
         if (!optionMatcher.find()) {
             throw new ParseException(String.format("Cannot parse option: %s", source));
         }
-        return new Script.Option(optionMatcher.group(1), ImmutableList.copyOf(OPTION_SPLITTER.split(optionMatcher.group(1))));
+        return new Script.Option(optionMatcher.group(1), ImmutableList.copyOf(OPTION_SPLITTER.split(optionMatcher.group(2))));
     }
 
     private static ImmutableList<String> stringOptions(@NonNull final String source) {

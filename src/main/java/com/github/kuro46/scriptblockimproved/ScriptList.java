@@ -6,9 +6,12 @@ import com.google.common.collect.ListMultimap;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import lombok.NonNull;
+import lombok.ToString;
 
+@ToString
 public final class ScriptList {
 
     private final ListMultimap<BlockPosition, Script> multimap = ArrayListMultimap.create();
@@ -25,6 +28,10 @@ public final class ScriptList {
 
     public List<Script> get(@NonNull final BlockPosition position) {
         return Collections.unmodifiableList(multimap.get(position));
+    }
+
+    public void forEach(@NonNull final BiConsumer<BlockPosition, Script> consumer) {
+        multimap.forEach(consumer);
     }
 
     public void add(@NonNull final BlockPosition position, @NonNull final Script script) {

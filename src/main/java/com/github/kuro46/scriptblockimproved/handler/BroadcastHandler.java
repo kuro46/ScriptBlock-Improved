@@ -2,10 +2,9 @@ package com.github.kuro46.scriptblockimproved.handler;
 
 import com.github.kuro46.scriptblockimproved.TriggerInfo;
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
-import java.util.List;
 
 public class BroadcastHandler implements OptionHandler {
     @Override
