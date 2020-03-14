@@ -52,7 +52,7 @@ public final class ScriptBlockImproved {
 
         final Path dataFolder = plugin.getDataFolder().toPath();
         if (!Files.exists(dataFolder.resolve("permission-mappings.yml"))) {
-            plugin.saveResource("permission-mapping.yml", false);
+            plugin.saveResource("permission-mappings.yml", false);
         }
         try {
             PermissionDetector.init(plugin, dataFolder);
