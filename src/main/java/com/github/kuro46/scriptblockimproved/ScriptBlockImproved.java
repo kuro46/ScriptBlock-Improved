@@ -12,13 +12,9 @@ import com.github.kuro46.scriptblockimproved.listener.PlayerMoveListener;
 import com.github.kuro46.scriptblockimproved.placeholder.Placeholder;
 import com.github.kuro46.scriptblockimproved.placeholder.PlaceholderGroup;
 import com.github.kuro46.scriptblockimproved.storage.JSONStorage;
-import com.github.kuro46.scriptblockimproved.storage.NoOpStorage;
-import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.logging.Logger;
 import lombok.Getter;
 import lombok.NonNull;
@@ -79,9 +75,6 @@ public final class ScriptBlockImproved {
             .name("world")
             .factory(data -> data.getPosition().getWorld())
             .build());
-
-        final Script script = new Script(Author.system("test"), OffsetDateTime.now(ZoneId.systemDefault()), "move", ImmutableList.of(new Script.Option("cancelEvent", ImmutableList.of())));
-        scriptList.add(new BlockPosition("world", 0, 4, 0), script);
     }
 
     static void init(@NonNull Bootstrap bootstrap) throws InitException {

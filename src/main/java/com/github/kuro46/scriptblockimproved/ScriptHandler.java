@@ -4,10 +4,8 @@ import com.github.kuro46.scriptblockimproved.handler.OptionHandler;
 import com.github.kuro46.scriptblockimproved.placeholder.SourceData;
 import com.google.common.collect.ImmutableList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 

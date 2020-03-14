@@ -1,6 +1,5 @@
 package com.github.kuro46.scriptblockimproved.placeholder;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
