@@ -1,9 +1,13 @@
 package com.github.kuro46.scriptblockimproved;
 
 import com.github.kuro46.scriptblockimproved.handler.OptionHandler;
+import com.github.kuro46.scriptblockimproved.placeholder.SourceData;
+import com.google.common.collect.ImmutableList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 
@@ -28,10 +32,13 @@ public final class ScriptHandler {
             for (Script.Option option : script.getOptions()) {
                 final OptionHandler optionHandler = optionHandlers.get(option.getName());
                 if (optionHandler != null) {
+                    final ImmutableList<String> replacedArgs = option.getArgs().stream()
+                        .map(source -> sbi.getPlaceholderGroup().replace(source, SourceData.builder().player(player).position(position).build()))
+                        .collect(ImmutableList.toImmutableList());
                     if (triggerInfo.shouldSuppress()) {
-                        optionHandler.onSuppressed(triggerInfo, player, option.getArgs());
+                        optionHandler.onSuppressed(triggerInfo, player, replacedArgs);
                     } else {
-                        optionHandler.handleOption(triggerInfo, player, option.getArgs());
+                        optionHandler.handleOption(triggerInfo, player, replacedArgs);
                     }
                 } else {
                     sbi.getLogger()

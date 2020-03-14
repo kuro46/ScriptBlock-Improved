@@ -9,6 +9,8 @@ import com.github.kuro46.scriptblockimproved.handler.ConsoleHandler;
 import com.github.kuro46.scriptblockimproved.handler.SayHandler;
 import com.github.kuro46.scriptblockimproved.listener.PlayerInteractListener;
 import com.github.kuro46.scriptblockimproved.listener.PlayerMoveListener;
+import com.github.kuro46.scriptblockimproved.placeholder.Placeholder;
+import com.github.kuro46.scriptblockimproved.placeholder.PlaceholderGroup;
 import com.github.kuro46.scriptblockimproved.storage.JSONStorage;
 import com.github.kuro46.scriptblockimproved.storage.NoOpStorage;
 import com.google.common.collect.ImmutableList;
@@ -35,6 +37,8 @@ public final class ScriptBlockImproved {
     private final ScriptList scriptList;
     @Getter
     private final ScriptHandler scriptHandler = new ScriptHandler();
+    @Getter
+    private final PlaceholderGroup placeholderGroup = new PlaceholderGroup();
     @Getter
     private final Plugin plugin;
 
@@ -66,6 +70,15 @@ public final class ScriptBlockImproved {
         scriptHandler.registerHandler("say", new SayHandler());
         scriptHandler.registerHandler("cancelEvent", new CancelEventHandler());
         scriptHandler.registerHandler("bypassCommand", new BypassCommandHandler());
+
+        placeholderGroup.add(Placeholder.builder()
+            .name("player")
+            .factory(data -> data.getPlayer().getName())
+            .build());
+        placeholderGroup.add(Placeholder.builder()
+            .name("world")
+            .factory(data -> data.getPosition().getWorld())
+            .build());
 
         final Script script = new Script(Author.system("test"), OffsetDateTime.now(ZoneId.systemDefault()), "move", ImmutableList.of(new Script.Option("cancelEvent", ImmutableList.of())));
         scriptList.add(new BlockPosition("world", 0, 4, 0), script);
