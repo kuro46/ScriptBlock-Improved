@@ -53,6 +53,12 @@ public final class JSONStorage implements Storage {
     }
 
     @Override
+    public synchronized void addAll(ListMultimap<BlockPosition, Script> multimap) throws IOException {
+        multimap.putAll(multimap);
+        save();
+    }
+
+    @Override
     public synchronized void delete(BlockPosition position) throws IOException {
         multimap.removeAll(position);
         save();
@@ -63,7 +69,8 @@ public final class JSONStorage implements Storage {
         return ImmutableListMultimap.copyOf(multimap);
     }
 
-    private synchronized void save() throws IOException {
+    @Override
+    public synchronized void save() throws IOException {
         if (!Files.exists(filePath)) {
             Files.createDirectories(filePath.getParent());
             Files.createFile(filePath);

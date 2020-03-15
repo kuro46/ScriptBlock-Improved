@@ -13,9 +13,11 @@ repositories {
     mavenCentral()
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots' }
     maven { url 'https://jitpack.io' }
+    maven { url 'https://shirokuro.xyz/maven/repos/releases/' }
 }
 
 dependencies {
+    implementation 'com.github.kuro46:CommandUtility:0.4.0'
     // Bukkit
     compileOnly 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
     // Gson

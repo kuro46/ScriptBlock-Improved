@@ -1,6 +1,6 @@
 package com.github.kuro46.scriptblockimproved;
 
-import com.github.kuro46.scriptblockimproved.command.SBICommandExecutor;
+import com.github.kuro46.scriptblockimproved.command.SBIRootCommand;
 import com.github.kuro46.scriptblockimproved.handler.BroadcastHandler;
 import com.github.kuro46.scriptblockimproved.handler.BypassCommandHandler;
 import com.github.kuro46.scriptblockimproved.handler.CancelEventHandler;
@@ -22,6 +22,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 public final class ScriptBlockImproved {
+
+    public static final String PREFIX = "[SBI] ";
 
     @Getter
     private static ScriptBlockImproved instance;
@@ -46,7 +48,7 @@ public final class ScriptBlockImproved {
         } catch (IOException e) {
             throw new InitException("Unable to load ScriptList from Storage", e);
         }
-        Bukkit.getPluginCommand("sbi").setExecutor(new SBICommandExecutor());
+        SBIRootCommand.register();
         Bukkit.getPluginManager().registerEvents(new PlayerInteractListener(), bootstrap);
         Bukkit.getPluginManager().registerEvents(new PlayerMoveListener(), bootstrap);
 

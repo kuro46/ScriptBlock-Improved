@@ -3,6 +3,7 @@ package com.github.kuro46.scriptblockimproved;
 import com.github.kuro46.scriptblockimproved.handler.OptionHandler;
 import com.github.kuro46.scriptblockimproved.placeholder.SourceData;
 import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -19,6 +20,10 @@ public final class ScriptHandler {
 
     public void registerHandler(@NonNull final String optionName, @NonNull final OptionHandler handler) {
         optionHandlers.put(optionName, handler);
+    }
+
+    public Map<String, OptionHandler> getHandlers() {
+        return Collections.unmodifiableMap(optionHandlers);
     }
 
     public void handle(@NonNull final Player player, @NonNull final BlockPosition position, @NonNull final TriggerInfo triggerInfo) {

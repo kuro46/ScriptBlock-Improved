@@ -4,10 +4,13 @@ import com.github.kuro46.scriptblockimproved.storage.Storage;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
 
@@ -15,6 +18,7 @@ import lombok.ToString;
 public final class ScriptList {
 
     private final ListMultimap<BlockPosition, Script> multimap = ArrayListMultimap.create();
+    @Getter
     private final Storage storage;
 
     private ScriptList(@NonNull final Storage storage) throws IOException {
@@ -24,6 +28,10 @@ public final class ScriptList {
 
     public static ScriptList load(@NonNull final Storage storage) throws IOException {
         return new ScriptList(storage);
+    }
+
+    public Map<BlockPosition, Collection<Script>> asUnmodifiableMap() {
+        return Collections.unmodifiableMap(multimap.asMap());
     }
 
     public List<Script> get(@NonNull final BlockPosition position) {
@@ -39,6 +47,17 @@ public final class ScriptList {
         SBIThreadPool.execute(() -> {
             try {
                 storage.add(position, script);
+            } catch (IOException e) {
+                ScriptBlockImproved.getInstance().getLogger().log(Level.SEVERE, "Failed to add script to storage", e);
+            }
+        });
+    }
+
+    public void addAll(@NonNull final ScriptList scriptList) {
+        multimap.putAll(scriptList.multimap);
+        SBIThreadPool.execute(() -> {
+            try {
+                storage.addAll(scriptList.multimap);
             } catch (IOException e) {
                 ScriptBlockImproved.getInstance().getLogger().log(Level.SEVERE, "Failed to add script to storage", e);
             }
