@@ -60,8 +60,8 @@ public final class ViewAtCommand extends Command {
             script.getTriggerName());
         sendMessage(sender, "args:");
         script.getOptions().forEach(option -> {
-            sendMessage(sender, "  %s: ", option.getName());
-            option.getArgs().forEach(value -> sendMessage(sender, "    %s", value));
+            final String args = String.join(" ", option.getArgs());
+            sendMessage(sender, "  @%s %s", option.getName(), args);
         });
     }
 
