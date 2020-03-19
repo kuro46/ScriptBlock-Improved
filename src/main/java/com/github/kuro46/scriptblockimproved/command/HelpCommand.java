@@ -54,8 +54,8 @@ public final class HelpCommand extends Command {
     private static final ImmutableList<String> TOPIC_OTHER_MESSAGE = ImmutableList.of(
         ChatColor.BOLD + "list available options and triggers",
         "  availables",
-        ChatColor.BOLD + "save scripts into specified file or scripts.json",
-        "  save [fileName]",
+        ChatColor.BOLD + "save scripts into scripts.json",
+        "  save",
         ChatColor.BOLD + "associate permission for command",
         "  map-perm <permission> <command>",
         ChatColor.BOLD + "migrate scripts from ScriptBlock",
