@@ -13,7 +13,7 @@ repositories {
     mavenCentral()
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots' }
     maven { url 'https://jitpack.io' }
-    maven { url 'https://shirokuro.xyz/maven/repos/releases/' }
+    maven { url 'https://maven.shirokuro.xyz/repos/releases/' }
 }
 
 dependencies {
