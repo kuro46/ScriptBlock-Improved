@@ -26,10 +26,19 @@ public final class ScriptHandler {
         return Collections.unmodifiableMap(optionHandlers);
     }
 
-    public void handle(@NonNull final Player player, @NonNull final BlockPosition position, @NonNull final TriggerInfo triggerInfo) {
+    public void handle(@NonNull final Player player, @NonNull final BlockPosition position, @NonNull final TriggerData triggerData) {
         final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
+        final TriggerRegistry triggerRegistry = sbi.getTriggerRegistry();
+        if (!triggerRegistry.isRegistered(triggerData.getTrigger())) {
+            final Trigger trigger = triggerData.getTrigger();
+            throw new IllegalArgumentException(String.format("Trigger '%s' (id of '%s') is not registered.", trigger.getName(), trigger.getId()));
+        }
         for (Script script : sbi.getScriptList().get(position)) {
-            if (!script.getTriggerName().equals(triggerInfo.getName())) {
+            final Trigger trigger = triggerRegistry.getTrigger(script.getTriggerName()).orElse(null);
+            if (trigger == null) {
+                throw new IllegalArgumentException("Unable to find trigger named '" + script.getTriggerName() + "'");
+            }
+            if (trigger.getId() != triggerData.getTrigger().getId()) {
                 continue;
             }
             for (Script.Option option : script.getOptions()) {
@@ -38,10 +47,10 @@ public final class ScriptHandler {
                     final ImmutableList<String> replacedArgs = option.getArgs().stream()
                         .map(source -> sbi.getPlaceholderGroup().replace(source, SourceData.builder().player(player).position(position).build()))
                         .collect(ImmutableList.toImmutableList());
-                    if (triggerInfo.shouldSuppress()) {
-                        optionHandler.onSuppressed(triggerInfo, player, replacedArgs);
+                    if (triggerData.shouldSuppress()) {
+                        optionHandler.onSuppressed(triggerData, player, replacedArgs);
                     } else {
-                        optionHandler.handleOption(triggerInfo, player, replacedArgs);
+                        optionHandler.handleOption(triggerData, player, replacedArgs);
                     }
                 } else {
                     sbi.getLogger()

@@ -11,15 +11,15 @@ import org.bukkit.event.Event;
 @EqualsAndHashCode
 @ToString
 @Builder
-public final class TriggerInfo {
+public final class TriggerData {
 
     @Getter
-    private final String name;
+    private final Trigger trigger;
     private final boolean shouldSuppress;
     private final Event event;
 
-    public TriggerInfo(@NonNull final String name, final boolean shouldSuppress, Event event) {
-        this.name = name;
+    public TriggerData(@NonNull final Trigger trigger, final boolean shouldSuppress, Event event) {
+        this.trigger = trigger;
         this.shouldSuppress = shouldSuppress;
         this.event = event;
     }

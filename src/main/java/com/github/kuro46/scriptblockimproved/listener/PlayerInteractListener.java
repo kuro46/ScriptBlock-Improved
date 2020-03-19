@@ -4,7 +4,9 @@ import com.github.kuro46.scriptblockimproved.ActionQueue;
 import com.github.kuro46.scriptblockimproved.BlockPosition;
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.ScriptHandler;
-import com.github.kuro46.scriptblockimproved.TriggerInfo;
+import com.github.kuro46.scriptblockimproved.Trigger;
+import com.github.kuro46.scriptblockimproved.TriggerData;
+import com.github.kuro46.scriptblockimproved.TriggerRegistry;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import java.time.Duration;
@@ -22,40 +24,59 @@ public final class PlayerInteractListener implements Listener {
         .expireAfterWrite(Duration.ofMillis(300))
         .build();
 
+    private final Trigger sbInteractTrigger = new Trigger("sbinteract", () -> {
+    });
+    private final Trigger clickRightTrigger = new Trigger("rclick", () -> {
+    });
+    private final Trigger clickLeftTrigger = new Trigger("lclick", () -> {
+    });
+    private final Trigger pressTrigger = new Trigger("press", () -> {
+    });
+
+    public PlayerInteractListener(@NonNull final TriggerRegistry triggerRegistry) {
+        triggerRegistry.register(sbInteractTrigger);
+        triggerRegistry.register(clickRightTrigger);
+        triggerRegistry.register(clickLeftTrigger);
+        triggerRegistry.register(pressTrigger);
+    }
+
     @EventHandler
     public void onInteract(@NonNull final PlayerInteractEvent event) {
         final Player player = event.getPlayer();
         final ActionQueue actionQueue = ScriptBlockImproved.getInstance().getActionQueue();
         final ScriptHandler scriptHandler = ScriptBlockImproved.getInstance().getScriptHandler();
-        if (event.getClickedBlock() != null) {
-            final TriggerInfo triggerInfo = TriggerInfo.builder()
-                .name("sbinteract")
+        if (event.getClickedBlock() != null && !sbInteractTrigger.isUnregistered()) {
+            final TriggerData triggerData = TriggerData.builder()
+                .trigger(sbInteractTrigger)
                 .shouldSuppress(false)
                 .event(event)
                 .build();
-            scriptHandler.handle(player, BlockPosition.ofLocation(event.getClickedBlock().getLocation()), triggerInfo);
+            scriptHandler.handle(player, BlockPosition.ofLocation(event.getClickedBlock().getLocation()), triggerData);
         }
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (actionQueue.isQueued(player)) {
                 actionQueue.executeIfQueued(player, event.getClickedBlock().getLocation());
                 return;
             }
-            handle(event, "rclick");
+            handle(event, clickRightTrigger);
         } else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            handle(event, "lclick");
+            handle(event, clickLeftTrigger);
         } else if (event.getAction() == Action.PHYSICAL) {
-            handle(event, "press");
+            handle(event, pressTrigger);
         }
     }
 
-    private void handle(@NonNull final PlayerInteractEvent event, @NonNull final String triggerName) {
+    private void handle(@NonNull final PlayerInteractEvent event, @NonNull final Trigger trigger) {
+        if (trigger.isUnregistered()) {
+            return;
+        }
         final BlockPosition position = BlockPosition.ofLocation(event.getClickedBlock().getLocation());
         final boolean shouldSuppress = isInInterval(event.getPlayer());
         if (!shouldSuppress) {
             addInterval(event.getPlayer());
         }
         final ScriptHandler scriptHandler = ScriptBlockImproved.getInstance().getScriptHandler();
-        scriptHandler.handle(event.getPlayer(), position, TriggerInfo.builder().shouldSuppress(shouldSuppress).event(event).name(triggerName).build());
+        scriptHandler.handle(event.getPlayer(), position, TriggerData.builder().shouldSuppress(shouldSuppress).event(event).trigger(trigger).build());
     }
 
     private boolean isInInterval(@NonNull final Player player) {

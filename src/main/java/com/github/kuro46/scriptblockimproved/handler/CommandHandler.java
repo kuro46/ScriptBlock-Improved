@@ -1,6 +1,6 @@
 package com.github.kuro46.scriptblockimproved.handler;
 
-import com.github.kuro46.scriptblockimproved.TriggerInfo;
+import com.github.kuro46.scriptblockimproved.TriggerData;
 import com.github.kuro46.scriptblockimproved.common.Utils;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 public class CommandHandler implements OptionHandler {
     @Override
-    public void handleOption(TriggerInfo triggerInfo, Player player, ImmutableList<String> args) {
+    public void handleOption(TriggerData triggerData, Player player, ImmutableList<String> args) {
         player.performCommand(Utils.removeSlashIfNeeded(String.join(" ", args)));
     }
 

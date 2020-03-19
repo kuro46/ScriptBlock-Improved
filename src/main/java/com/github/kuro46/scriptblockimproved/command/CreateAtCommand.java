@@ -12,11 +12,13 @@ import com.github.kuro46.scriptblockimproved.BlockPosition;
 import com.github.kuro46.scriptblockimproved.OptionListParser;
 import com.github.kuro46.scriptblockimproved.Script;
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
+import com.github.kuro46.scriptblockimproved.Trigger;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import com.google.common.collect.ImmutableList;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
@@ -72,6 +74,12 @@ public final class CreateAtCommand extends Command {
     public List<String> complete(final CompletionData data) {
         return new CandidateBuilder()
             .when("world", CandidateFactories.worlds())
+            .when("trigger", s -> {
+                return ScriptBlockImproved.getInstance().getTriggerRegistry().getTriggers().stream()
+                    .filter(t -> t.getName().startsWith(s))
+                    .map(Trigger::getName)
+                    .collect(Collectors.toList());
+            })
             .build(data.getArgName(), data.getCurrentValue());
     }
 }

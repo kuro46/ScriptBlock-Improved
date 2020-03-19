@@ -23,8 +23,6 @@ import org.bukkit.plugin.Plugin;
 
 public final class ScriptBlockImproved {
 
-    public static final String PREFIX = "[SBI] ";
-
     @Getter
     private static ScriptBlockImproved instance;
     @Getter
@@ -38,6 +36,8 @@ public final class ScriptBlockImproved {
     @Getter
     private final PlaceholderGroup placeholderGroup = new PlaceholderGroup();
     @Getter
+    private final TriggerRegistry triggerRegistry = new TriggerRegistry();
+    @Getter
     private final Plugin plugin;
 
     private ScriptBlockImproved(@NonNull Bootstrap bootstrap) throws InitException {
@@ -49,8 +49,8 @@ public final class ScriptBlockImproved {
             throw new InitException("Unable to load ScriptList from Storage", e);
         }
         SBIRootCommand.register();
-        Bukkit.getPluginManager().registerEvents(new PlayerInteractListener(), bootstrap);
-        Bukkit.getPluginManager().registerEvents(new PlayerMoveListener(), bootstrap);
+        Bukkit.getPluginManager().registerEvents(new PlayerInteractListener(triggerRegistry), bootstrap);
+        Bukkit.getPluginManager().registerEvents(new PlayerMoveListener(triggerRegistry), bootstrap);
 
         final Path dataFolder = plugin.getDataFolder().toPath();
         if (!Files.exists(dataFolder.resolve("permission-mappings.yml"))) {
