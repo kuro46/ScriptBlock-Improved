@@ -6,7 +6,7 @@ plugins {
     id 'java'
 }
 
-group = 'com.github.kuro46'
+group = 'xyz.shirokuro'
 version = '2.0.0-SNAPSHOT'
 
 repositories {
@@ -61,12 +61,12 @@ shadowJar {
     minimize()
     archiveFileName = "ScriptBlock-Improved.jar"
 
-    relocate 'com.google', 'com.github.kuro46.scriptblockimproved.libs.google'
-    relocate 'me.xdrop', 'com.github.kuro46.scriptblockimproved.libs.me.xdrop'
-    relocate 'org.apache.commons.lang3', 'com.github.kuro46.scriptblockimproved.libs.commons.lang'
-    relocate 'org.apache.commons.text', 'com.github.kuro46.scriptblockimproved.libs.commons.text'
-    relocate 'org.checkerframework', 'com.github.kuro46.scriptblockimproved.libs.checkerframework'
-    relocate 'com.github.kuro46.commandutility', 'com.github.kuro46.scriptblockimproved.libs.commandutility'
+    relocate 'com.google', 'xyz.shirokuro.scriptblockimproved.libs.google'
+    relocate 'me.xdrop', 'xyz.shirokuro.scriptblockimproved.libs.me.xdrop'
+    relocate 'org.apache.commons.lang3', 'xyz.shirokuro.scriptblockimproved.libs.commons.lang'
+    relocate 'org.apache.commons.text', 'xyz.shirokuro.scriptblockimproved.libs.commons.text'
+    relocate 'org.checkerframework', 'xyz.shirokuro.scriptblockimproved.libs.checkerframework'
+    relocate 'com.github.kuro46.commandutility', 'xyz.shirokuro.scriptblockimproved.libs.commandutility'
 }
 
 test {
