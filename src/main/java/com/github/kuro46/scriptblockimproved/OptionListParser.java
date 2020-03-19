@@ -1,5 +1,6 @@
 package com.github.kuro46.scriptblockimproved;
 
+import com.github.kuro46.scriptblockimproved.common.MessageUtils;
 import com.github.kuro46.scriptblockimproved.handler.OptionHandler;
 import com.github.kuro46.scriptblockimproved.handler.ValidationResult;
 import com.google.common.base.Splitter;
@@ -40,7 +41,9 @@ public final class OptionListParser {
         if (!optionMatcher.find()) {
             throw new ParseException(String.format("Cannot parse option: %s", source));
         }
-        return new Script.Option(optionMatcher.group(1), ImmutableList.copyOf(OPTION_SPLITTER.split(optionMatcher.group(2))));
+        return new Script.Option(
+            optionMatcher.group(1),
+            ImmutableList.copyOf(OPTION_SPLITTER.split(MessageUtils.translateColorCodes('&', optionMatcher.group(2)))));
     }
 
     private static ImmutableList<String> stringOptions(@NonNull final String source) {
