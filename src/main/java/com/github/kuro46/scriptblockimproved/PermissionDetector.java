@@ -39,23 +39,17 @@ public final class PermissionDetector {
 
     private PermissionDetector(@NonNull final Plugin plugin, @NonNull final Path dataFolder) throws IOException {
         this.filePath = dataFolder.resolve("permission-mappings.yml");
-        try {
-            // Use runTask for reproduce POST_WORLD
-            Bukkit.getScheduler().callSyncMethod(plugin, () -> {
-                // Load defaults
-                mapCommands();
-                // Load from file and override defaults
+        // Use runTask for reproduce POST_WORLD
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            // Load defaults
+            mapCommands();
+            // Load from file and override defaults
+            try {
                 overrideByFile();
-                return null;
-            }).get();
-        } catch (final ExecutionException e) {
-            if (e.getCause() instanceof IOException) {
-                throw new IOException(e);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            e.printStackTrace();
-        } catch (final InterruptedException e) {
-            e.printStackTrace();
-        }
+        });
     }
 
     public static void init(@NonNull final Plugin plugin, @NonNull final Path dataFolder) throws IOException {
