@@ -1,5 +1,6 @@
 package com.github.kuro46.scriptblockimproved.common;
 
+import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -15,30 +16,17 @@ public final class Debouncer {
     private static final AtomicInteger THREAD_COUNT = new AtomicInteger();
     private final Lock lock = new ReentrantLock();
     @NonNull
-    private final Runnable task;
-    @NonNull
     private final ScheduledExecutorService executor;
-    @NonNull
-    private final TimeUnit delayUnit;
-    private final long delay;
+    private final Duration delay;
     private volatile boolean shutdown = false;
 
     private ScheduledFuture<?> scheduled;
 
-    public Debouncer(
-        @NonNull final Runnable task,
-        final long delay,
-        @NonNull final TimeUnit delayUnit) {
-        this.task = task;
+    public Debouncer(@NonNull final Duration delay) {
         this.delay = delay;
-        this.delayUnit = delayUnit;
         this.executor = Executors.newSingleThreadScheduledExecutor(r -> {
             return new Thread(r, "sbi-debouncer-" + THREAD_COUNT.incrementAndGet());
         });
-    }
-
-    public void runLater() {
-        runLater(task);
     }
 
     public void runLater(final Runnable task) {
@@ -46,7 +34,7 @@ public final class Debouncer {
         lock.lock();
         try {
             if (scheduled != null) scheduled.cancel(false);
-            scheduled = executor.schedule(task, delay, delayUnit);
+            scheduled = executor.schedule(task, delay.toNanos(), TimeUnit.NANOSECONDS);
         } finally {
             lock.unlock();
         }

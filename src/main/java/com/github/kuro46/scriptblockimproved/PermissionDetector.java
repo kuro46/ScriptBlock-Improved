@@ -13,10 +13,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
@@ -32,26 +34,27 @@ public final class PermissionDetector {
 
     private static PermissionDetector instance;
     private final Path filePath;
-    private final Debouncer saveDebouncer;
+    private final Debouncer saveDebouncer = new Debouncer(Duration.ofSeconds(1));;
     private final SetMultimap<Command, Permission> mappings = HashMultimap.create();
 
     private PermissionDetector(@NonNull final Plugin plugin, @NonNull final Path dataFolder) throws IOException {
         this.filePath = dataFolder.resolve("permission-mappings.yml");
-        this.saveDebouncer = new Debouncer(() -> {
-        }, 1, TimeUnit.SECONDS);
         try {
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                try {
-                    // Load defaults
-                    mapCommands();
-                    // Load from file and override defaults
-                    overrideByFile();
-                } catch (final IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-            });
-        } catch (final UncheckedIOException e) {
-            throw new IOException(e);
+            // Use runTask for reproduce POST_WORLD
+            Bukkit.getScheduler().callSyncMethod(plugin, () -> {
+                // Load defaults
+                mapCommands();
+                // Load from file and override defaults
+                overrideByFile();
+                return null;
+            }).get();
+        } catch (final ExecutionException e) {
+            if (e.getCause() instanceof IOException) {
+                throw new IOException(e);
+            }
+            e.printStackTrace();
+        } catch (final InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
