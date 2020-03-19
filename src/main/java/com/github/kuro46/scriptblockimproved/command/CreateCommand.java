@@ -7,11 +7,13 @@ import com.github.kuro46.commandutility.CompletionData;
 import com.github.kuro46.commandutility.ExecutionData;
 import com.github.kuro46.commandutility.ParsedArgs;
 import com.github.kuro46.scriptblockimproved.BlockPosition;
+import com.github.kuro46.scriptblockimproved.OptionListParser;
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.Trigger;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
@@ -23,7 +25,7 @@ public final class CreateCommand extends Command {
             "create",
             Args.builder()
                 .required("trigger")
-                .required("args")
+                .required("options")
                 .build()
         );
     }
@@ -40,6 +42,12 @@ public final class CreateCommand extends Command {
         final ParsedArgs args = data.getArgs();
         final Player player = (Player) sender;
         sendMessage(sender, "Click any block to create script to the block");
+        try {
+            OptionListParser.parse(data.getArgs().getOrFail("options"));
+        } catch (OptionListParser.ParseException e) {
+            sendMessage(sender, ChatColor.RED + "Incorrect script!: " + e.getMessage());
+            return;
+        }
         ScriptBlockImproved.getInstance().getActionQueue().queue(player, location -> {
             final BlockPosition position = BlockPosition.ofLocation(location);
             player.performCommand(String.format("sbi createat %s %s %s %s %s %s",
@@ -48,7 +56,7 @@ public final class CreateCommand extends Command {
                 position.getY(),
                 position.getZ(),
                 args.getOrFail("trigger"),
-                args.getOrFail("args")));
+                args.getOrFail("options")));
         });
     }
 
