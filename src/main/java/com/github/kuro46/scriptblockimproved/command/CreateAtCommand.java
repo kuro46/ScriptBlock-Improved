@@ -1,50 +1,37 @@
 package com.github.kuro46.scriptblockimproved.command;
 
+import com.github.kuro46.commandutility.Args;
+import com.github.kuro46.commandutility.CandidateBuilder;
+import com.github.kuro46.commandutility.CandidateFactories;
+import com.github.kuro46.commandutility.Command;
+import com.github.kuro46.commandutility.CompletionData;
+import com.github.kuro46.commandutility.ExecutionData;
+import com.github.kuro46.commandutility.ParsedArgs;
+import com.github.kuro46.scriptblockimproved.Author;
+import com.github.kuro46.scriptblockimproved.BlockPosition;
+import com.github.kuro46.scriptblockimproved.OptionListParser;
+import com.github.kuro46.scriptblockimproved.Script;
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
+import com.github.kuro46.scriptblockimproved.Trigger;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
-import com.github.kuro46.scriptblockimproved.common.command.Args;
-import com.github.kuro46.scriptblockimproved.common.command.CandidateBuilder;
-import com.github.kuro46.scriptblockimproved.common.command.CandidateFactories;
-import com.github.kuro46.scriptblockimproved.common.command.Command;
-import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
-import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
-import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
-import com.github.kuro46.scriptblockimproved.script.BlockPosition;
-import com.github.kuro46.scriptblockimproved.script.InvalidNumberException;
-import com.github.kuro46.scriptblockimproved.script.Script;
-import com.github.kuro46.scriptblockimproved.script.ScriptMap;
-import com.github.kuro46.scriptblockimproved.script.author.Author;
-import com.github.kuro46.scriptblockimproved.script.option.OptionHandlerMap;
-import com.github.kuro46.scriptblockimproved.script.option.OptionList;
-import com.github.kuro46.scriptblockimproved.script.option.ParseException;
-import com.github.kuro46.scriptblockimproved.script.trigger.TriggerName;
-import com.github.kuro46.scriptblockimproved.script.trigger.TriggerRegistry;
+import com.google.common.collect.ImmutableList;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.NonNull;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
 public final class CreateAtCommand extends Command {
-
-    @NonNull
-    private final OptionHandlerMap handlers;
-    @NonNull
-    private final ScriptMap scripts;
-    @NonNull
-    private final TriggerRegistry triggerRegistry;
 
     public CreateAtCommand() {
         super(
             "createAt",
             Args.builder()
-                .requiredArgs("world", "x", "y", "z", "trigger", "options")
+                .required("world", "x", "y", "z", "trigger", "options")
                 .build()
         );
-        final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
-        this.handlers = sbi.getOptionHandlers();
-        this.scripts = sbi.getScripts();
-        this.triggerRegistry = sbi.getTriggerRegistry();
     }
 
     @Override
@@ -52,41 +39,34 @@ public final class CreateAtCommand extends Command {
         final ParsedArgs args = data.getArgs();
         final CommandSender sender = data.getDispatcher();
         // Parse options
-        final OptionList options;
+        final List<Script.Option> options;
         try {
             final String rawOptions = args.getOrFail("options");
-            options = OptionList.parse(handlers, rawOptions);
-        } catch (final ParseException e) {
+            options = OptionListParser.parse(rawOptions);
+        } catch (final OptionListParser.ParseException e) {
             sendMessage(sender, MessageKind.ERROR, e.getMessage());
             return;
         }
         // Parse position
-        final BlockPosition position;
-        try {
-            position = BlockPosition.fromArgs(args);
-        } catch (final InvalidNumberException e) {
-            sendMessage(sender, MessageKind.ERROR, e.getMessage());
+        final BlockPosition position = BlockPosition.parseArgs(sender, args).orElse(null);
+        if (position == null) {
             return;
         }
-        // Get and validate trigger name
-        final TriggerName triggerName = TriggerName.of(args.getOrFail("trigger"));
-        if (!triggerRegistry.isRegistered(triggerName)) {
-            sendMessage(
-                    sender,
-                    MessageKind.ERROR,
-                    "Trigger: '%s' is not registered",
-                    triggerName);
-            return;
+        final String trigger = args.getOrFail("trigger");
+        final Author author;
+        if (sender instanceof Player) {
+            author = Author.player((Player) sender);
+        } else {
+            author = Author.system("console");
         }
         // Build script
         final Script script = Script.builder()
-                    .author(Author.fromCommandSender(sender))
-                    .createdAt(System.currentTimeMillis())
-                    .triggerName(triggerName)
-                    .position(position)
-                    .options(options)
-                    .build();
-        scripts.add(script);
+            .author(author)
+            .createdAt(OffsetDateTime.now(ZoneId.systemDefault()))
+            .triggerName(trigger)
+            .options(ImmutableList.copyOf(options))
+            .build();
+        ScriptBlockImproved.getInstance().getScriptList().add(position, script);
         sendMessage(sender, MessageKind.SUCCESS, "The script has been created");
     }
 
@@ -94,11 +74,12 @@ public final class CreateAtCommand extends Command {
     public List<String> complete(final CompletionData data) {
         return new CandidateBuilder()
             .when("world", CandidateFactories.worlds())
-            .when("trigger", CandidateFactories.filter(value -> {
-                return triggerRegistry.getView().keySet().stream()
-                    .map(TriggerName::toString)
+            .when("trigger", s -> {
+                return ScriptBlockImproved.getInstance().getTriggerRegistry().getTriggers().stream()
+                    .filter(t -> t.getName().startsWith(s))
+                    .map(Trigger::getName)
                     .collect(Collectors.toList());
-            }))
+            })
             .build(data.getArgName(), data.getCurrentValue());
     }
 }

@@ -1,12 +1,12 @@
 package com.github.kuro46.scriptblockimproved.command;
 
+import com.github.kuro46.commandutility.Args;
+import com.github.kuro46.commandutility.CandidateBuilder;
+import com.github.kuro46.commandutility.CandidateFactories;
+import com.github.kuro46.commandutility.Command;
+import com.github.kuro46.commandutility.CompletionData;
+import com.github.kuro46.commandutility.ExecutionData;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
-import com.github.kuro46.scriptblockimproved.common.command.Args;
-import com.github.kuro46.scriptblockimproved.common.command.CandidateBuilder;
-import com.github.kuro46.scriptblockimproved.common.command.CandidateFactories;
-import com.github.kuro46.scriptblockimproved.common.command.Command;
-import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
-import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.util.Arrays;

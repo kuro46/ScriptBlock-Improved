@@ -1,6 +1,5 @@
 package com.github.kuro46.scriptblockimproved.command.migration;
 
-import com.github.kuro46.scriptblockimproved.script.trigger.TriggerName;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -10,13 +9,13 @@ enum EventType {
 
     @Getter
     @NonNull
-    private final TriggerName triggerName;
+    private final String triggerName;
     @Getter
     @NonNull
     private final String fileName;
 
     private EventType(@NonNull final String triggerName, @NonNull final String fileName) {
-        this.triggerName = TriggerName.of(triggerName);
+        this.triggerName = triggerName;
         this.fileName = fileName;
     }
 }

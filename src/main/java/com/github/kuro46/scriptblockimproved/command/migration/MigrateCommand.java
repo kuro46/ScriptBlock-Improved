@@ -1,16 +1,20 @@
 package com.github.kuro46.scriptblockimproved.command.migration;
 
+import com.github.kuro46.commandutility.Args;
+import com.github.kuro46.commandutility.Command;
+import com.github.kuro46.commandutility.ExecutionData;
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
+import com.github.kuro46.scriptblockimproved.ScriptList;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
-import com.github.kuro46.scriptblockimproved.common.command.Args;
-import com.github.kuro46.scriptblockimproved.common.command.Command;
-import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
-import com.github.kuro46.scriptblockimproved.script.ScriptMap;
+import com.github.kuro46.scriptblockimproved.storage.NoOpStorage;
+import com.google.common.util.concurrent.Futures;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import lombok.NonNull;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
@@ -18,14 +22,8 @@ public final class MigrateCommand extends Command {
 
     private static final String MIGRATED_MARKER_FILE_NAME = "mark_migrated_from_sb";
 
-    private final ScriptMap scripts;
-    private final Path dataFolder;
-
     public MigrateCommand() {
         super("migrate", Args.empty());
-        final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
-        this.scripts = sbi.getScripts();
-        this.dataFolder = sbi.getDataFolder();
     }
 
     @Override
@@ -37,13 +35,18 @@ public final class MigrateCommand extends Command {
                 sendMessage(sender, MessageKind.ERROR, "Cannot migrate from ScriptBlock!");
                 sendMessage(sender, MessageKind.ERROR, "SBI has migrated in the past.");
                 sendMessage(sender,
-                        MessageKind.ERROR,
-                        "If you want to re-migrate, "
+                    MessageKind.ERROR,
+                    "If you want to re-migrate, "
                         + "please delete file '%s' in 'plugins/ScriptBlock-Improved/'.",
-                        MIGRATED_MARKER_FILE_NAME);
+                    MIGRATED_MARKER_FILE_NAME);
                 return;
             }
-            final ScriptMap loadedScriptMap = new ScriptMap();
+            final ScriptList loadedScriptMap;
+            try {
+                loadedScriptMap = ScriptList.load(new NoOpStorage());
+            } catch (IOException e) {
+                throw new RuntimeException("Unreachable", e);
+            }
             try {
                 for (final EventType eventType : EventType.values()) {
                     sendMessage(sender, "Migrating %s scripts...", eventType.name().toLowerCase());
@@ -51,10 +54,14 @@ public final class MigrateCommand extends Command {
                 }
             } catch (final MigrationException e) {
                 sendMessage(sender, MessageKind.ERROR, "Failed to migrate scripts: "
-                        + e.getMessage());
+                    + e.getMessage());
                 return;
             }
-            scripts.addAll(loadedScriptMap);
+            final Future<Object> future = Bukkit.getScheduler().callSyncMethod(ScriptBlockImproved.getInstance().getPlugin(), () -> {
+                ScriptBlockImproved.getInstance().getScriptList().addAll(loadedScriptMap);
+                return null;
+            });
+            Futures.getUnchecked(future);
             sendMessage(sender, MessageKind.SUCCESS, "Successfully migrated!");
             try {
                 markAsMigrated();
@@ -66,21 +73,21 @@ public final class MigrateCommand extends Command {
     }
 
     private void loadScripts(
-            @NonNull final EventType eventType,
-            @NonNull final ScriptMap dest) throws MigrationException {
-        final Path filePath = dataFolder
+        @NonNull final EventType eventType,
+        @NonNull final ScriptList dest) throws MigrationException {
+        final Path filePath = ScriptBlockImproved.getInstance().getPlugin().getDataFolder().toPath()
             .resolve("../ScriptBlock/BlocksData/")
             .resolve(eventType.getFileName());
-        final ScriptMap loadedScriptMap = SBScriptLoader.load(eventType.getTriggerName(), filePath);
+        final ScriptList loadedScriptMap = SBScriptLoader.load(eventType.getTriggerName(), filePath);
         // merge loaded scripts to current scripts
         dest.addAll(loadedScriptMap);
     }
 
     private void markAsMigrated() throws IOException {
-        Files.createFile(dataFolder.resolve(MIGRATED_MARKER_FILE_NAME));
+        Files.createFile(ScriptBlockImproved.getInstance().getPlugin().getDataFolder().toPath().resolve(MIGRATED_MARKER_FILE_NAME));
     }
 
     private boolean hasMigrated() {
-        return Files.exists(dataFolder.resolve(MIGRATED_MARKER_FILE_NAME));
+        return Files.exists(ScriptBlockImproved.getInstance().getPlugin().getDataFolder().toPath().resolve(MIGRATED_MARKER_FILE_NAME));
     }
 }

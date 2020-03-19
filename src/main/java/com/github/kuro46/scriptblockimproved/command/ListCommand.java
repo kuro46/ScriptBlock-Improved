@@ -1,37 +1,31 @@
 package com.github.kuro46.scriptblockimproved.command;
 
+import com.github.kuro46.commandutility.Args;
+import com.github.kuro46.commandutility.CandidateBuilder;
+import com.github.kuro46.commandutility.CandidateFactories;
+import com.github.kuro46.commandutility.Command;
+import com.github.kuro46.commandutility.CompletionData;
+import com.github.kuro46.commandutility.ExecutionData;
+import com.github.kuro46.scriptblockimproved.BlockPosition;
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
-import com.github.kuro46.scriptblockimproved.common.command.Args;
-import com.github.kuro46.scriptblockimproved.common.command.CandidateBuilder;
-import com.github.kuro46.scriptblockimproved.common.command.CandidateFactories;
-import com.github.kuro46.scriptblockimproved.common.command.Command;
-import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
-import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
-import com.github.kuro46.scriptblockimproved.script.BlockPosition;
-import com.github.kuro46.scriptblockimproved.script.ScriptMap;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.NonNull;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
 public final class ListCommand extends Command {
 
-    @NonNull
-    private final ScriptMap scripts;
-
     public ListCommand() {
         super("list", Args.builder().optional("world").build());
-        this.scripts = ScriptBlockImproved.getInstance().getScripts();
     }
 
     @Override
     public void execute(final ExecutionData data) {
         final CommandSender sender = data.getDispatcher();
         final String world = data.getArgs().getOrNull("world");
-        final List<BlockPosition> positions = scripts.getPositions().stream()
-            .filter(position -> world == null || world.equals(position.getWorld()))
+        final List<BlockPosition> positions = ScriptBlockImproved.getInstance().getScriptList().asUnmodifiableMap().keySet().stream()
+            .filter(position -> world == null || world.equalsIgnoreCase(position.getWorld()))
             .sorted()
             .collect(Collectors.toList());
         if (positions.isEmpty()) {
@@ -41,12 +35,12 @@ public final class ListCommand extends Command {
         int count = 0;
         for (final BlockPosition position : positions) {
             sendMessage(sender,
-                    "[%s] %s/%s/%s/%s",
-                    ++count,
-                    position.getWorld(),
-                    position.getX(),
-                    position.getY(),
-                    position.getZ());
+                "[%s] %s/%s/%s/%s",
+                ++count,
+                position.getWorld(),
+                position.getX(),
+                position.getY(),
+                position.getZ());
         }
     }
 
@@ -54,7 +48,7 @@ public final class ListCommand extends Command {
     public List<String> complete(final CompletionData data) {
         return new CandidateBuilder()
             .when("world", CandidateFactories.filter(value -> {
-                return scripts.getPositions().stream()
+                return ScriptBlockImproved.getInstance().getScriptList().asUnmodifiableMap().keySet().stream()
                     .map(BlockPosition::getWorld)
                     .distinct()
                     .collect(Collectors.toList());

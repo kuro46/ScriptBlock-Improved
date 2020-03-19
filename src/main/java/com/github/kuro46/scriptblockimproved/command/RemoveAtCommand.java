@@ -1,35 +1,29 @@
 package com.github.kuro46.scriptblockimproved.command;
 
+import com.github.kuro46.commandutility.Args;
+import com.github.kuro46.commandutility.CandidateBuilder;
+import com.github.kuro46.commandutility.CandidateFactories;
+import com.github.kuro46.commandutility.Command;
+import com.github.kuro46.commandutility.CompletionData;
+import com.github.kuro46.commandutility.ExecutionData;
+import com.github.kuro46.commandutility.ParsedArgs;
+import com.github.kuro46.scriptblockimproved.BlockPosition;
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
+import com.github.kuro46.scriptblockimproved.ScriptList;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
-import com.github.kuro46.scriptblockimproved.common.command.Args;
-import com.github.kuro46.scriptblockimproved.common.command.CandidateBuilder;
-import com.github.kuro46.scriptblockimproved.common.command.CandidateFactories;
-import com.github.kuro46.scriptblockimproved.common.command.Command;
-import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
-import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
-import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
-import com.github.kuro46.scriptblockimproved.script.BlockPosition;
-import com.github.kuro46.scriptblockimproved.script.InvalidNumberException;
-import com.github.kuro46.scriptblockimproved.script.ScriptMap;
 import java.util.List;
-import lombok.NonNull;
 import org.bukkit.command.CommandSender;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
 public final class RemoveAtCommand extends Command {
 
-    @NonNull
-    private final ScriptMap scripts;
-
     public RemoveAtCommand() {
         super(
             "removeat",
             Args.builder()
-                .requiredArgs("world", "x", "y", "z")
+                .required("world", "x", "y", "z")
                 .build()
         );
-        this.scripts = ScriptBlockImproved.getInstance().getScripts();
     }
 
     @Override
@@ -37,16 +31,14 @@ public final class RemoveAtCommand extends Command {
         final CommandSender sender = data.getDispatcher();
         final ParsedArgs args = data.getArgs();
 
-        final BlockPosition position;
-        try {
-            position = BlockPosition.fromArgs(args);
-        } catch (final InvalidNumberException e) {
-            sendMessage(sender, MessageKind.ERROR, e.getMessage());
+        final BlockPosition position = BlockPosition.parseArgs(sender, args).orElse(null);
+        if (position == null) {
             return;
         }
 
-        if (scripts.contains(position)) {
-            scripts.removeAll(position);
+        final ScriptList scriptList = ScriptBlockImproved.getInstance().getScriptList();
+        if (!scriptList.get(position).isEmpty()) {
+            scriptList.remove(position);
             sendMessage(sender, MessageKind.SUCCESS, "Script(s) has been removed");
         } else {
             sendMessage(sender, MessageKind.ERROR, "Script not exists");

@@ -26,6 +26,7 @@ import lombok.ToString;
 import org.bukkit.Bukkit;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
 public final class PermissionDetector {
 
@@ -34,12 +35,12 @@ public final class PermissionDetector {
     private final Debouncer saveDebouncer;
     private final SetMultimap<Command, Permission> mappings = HashMultimap.create();
 
-    private PermissionDetector(@NonNull final Path dataFolder) throws IOException {
+    private PermissionDetector(@NonNull final Plugin plugin, @NonNull final Path dataFolder) throws IOException {
         this.filePath = dataFolder.resolve("permission-mappings.yml");
         this.saveDebouncer = new Debouncer(() -> {
         }, 1, TimeUnit.SECONDS);
         try {
-            Bukkit.getScheduler().runTask(ScriptBlockImproved.getInstance().getPlugin(), () -> {
+            Bukkit.getScheduler().runTask(plugin, () -> {
                 try {
                     // Load defaults
                     mapCommands();
@@ -52,6 +53,15 @@ public final class PermissionDetector {
         } catch (final UncheckedIOException e) {
             throw new IOException(e);
         }
+    }
+
+    public static void init(@NonNull final Plugin plugin, @NonNull final Path dataFolder) throws IOException {
+        if (instance != null) throw new IllegalStateException("Already initialized");
+        instance = new PermissionDetector(plugin, dataFolder);
+    }
+
+    public static PermissionDetector getInstance() {
+        return instance;
     }
 
     private void mapCommands() {
@@ -97,15 +107,6 @@ public final class PermissionDetector {
             loaded.clear();
             loaded.addAll(permissions);
         }
-    }
-
-    public static void init(@NonNull final Path dataFolder) throws IOException {
-        if (instance != null) throw new IllegalStateException("Already initialized");
-        instance = new PermissionDetector(dataFolder);
-    }
-
-    public static PermissionDetector getInstance() {
-        return instance;
     }
 
     private void save(@NonNull final SetMultimap<Command, Permission> mappings) throws IOException {

@@ -1,42 +1,31 @@
 package com.github.kuro46.scriptblockimproved.command;
 
+import com.github.kuro46.commandutility.Args;
+import com.github.kuro46.commandutility.CandidateBuilder;
+import com.github.kuro46.commandutility.Command;
+import com.github.kuro46.commandutility.CompletionData;
+import com.github.kuro46.commandutility.ExecutionData;
+import com.github.kuro46.commandutility.ParsedArgs;
+import com.github.kuro46.scriptblockimproved.BlockPosition;
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
-import com.github.kuro46.scriptblockimproved.command.clickaction.ActionCreate;
-import com.github.kuro46.scriptblockimproved.command.clickaction.ActionQueue;
+import com.github.kuro46.scriptblockimproved.Trigger;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
-import com.github.kuro46.scriptblockimproved.common.command.Args;
-import com.github.kuro46.scriptblockimproved.common.command.CandidateBuilder;
-import com.github.kuro46.scriptblockimproved.common.command.CandidateFactories;
-import com.github.kuro46.scriptblockimproved.common.command.Command;
-import com.github.kuro46.scriptblockimproved.common.command.CompletionData;
-import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
-import com.github.kuro46.scriptblockimproved.script.trigger.TriggerName;
-import com.github.kuro46.scriptblockimproved.script.trigger.TriggerRegistry;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.NonNull;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
 public final class CreateCommand extends Command {
 
-    @NonNull
-    private final ActionQueue actionQueue;
-    @NonNull
-    private final TriggerRegistry triggerRegistry;
-
     public CreateCommand() {
         super(
             "create",
             Args.builder()
                 .required("trigger")
-                .required("options")
+                .required("args")
                 .build()
         );
-        final ScriptBlockImproved sbi = ScriptBlockImproved.getInstance();
-        this.actionQueue = sbi.getActionQueue();
-        this.triggerRegistry = sbi.getTriggerRegistry();
     }
 
     @Override
@@ -44,23 +33,33 @@ public final class CreateCommand extends Command {
         final CommandSender sender = data.getDispatcher();
         if (!(sender instanceof Player)) {
             sendMessage(sender,
-                    MessageKind.ERROR,
-                    "Cannot perform this command from the console");
+                MessageKind.ERROR,
+                "Cannot perform this command from the console");
             return;
         }
+        final ParsedArgs args = data.getArgs();
         final Player player = (Player) sender;
         sendMessage(sender, "Click any block to create script to the block");
-        actionQueue.add(player, new ActionCreate(data.getArgs()));
+        ScriptBlockImproved.getInstance().getActionQueue().queue(player, location -> {
+            final BlockPosition position = BlockPosition.ofLocation(location);
+            player.performCommand(String.format("sbi createat %s %s %s %s %s %s",
+                position.getWorld(),
+                position.getX(),
+                position.getY(),
+                position.getZ(),
+                args.getOrFail("trigger"),
+                args.getOrFail("args")));
+        });
     }
 
     @Override
-    public List<String> complete(final CompletionData data) {
+    public List<String> complete(CompletionData data) {
         return new CandidateBuilder()
-            .when("trigger", CandidateFactories.filter(value -> {
-                return triggerRegistry.getView().keySet().stream()
-                    .map(TriggerName::toString)
+            .when("trigger", s -> {
+                return ScriptBlockImproved.getInstance().getTriggerRegistry().getTriggers().stream()
+                    .map(Trigger::getName)
                     .collect(Collectors.toList());
-            }))
+            })
             .build(data.getArgName(), data.getCurrentValue());
     }
 }

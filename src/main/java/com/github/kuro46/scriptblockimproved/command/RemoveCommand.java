@@ -1,25 +1,19 @@
 package com.github.kuro46.scriptblockimproved.command;
 
+import com.github.kuro46.commandutility.Args;
+import com.github.kuro46.commandutility.Command;
+import com.github.kuro46.commandutility.ExecutionData;
+import com.github.kuro46.scriptblockimproved.BlockPosition;
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
-import com.github.kuro46.scriptblockimproved.command.clickaction.ActionQueue;
-import com.github.kuro46.scriptblockimproved.command.clickaction.ActionRemove;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
-import com.github.kuro46.scriptblockimproved.common.command.Args;
-import com.github.kuro46.scriptblockimproved.common.command.Command;
-import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
-import lombok.NonNull;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import static com.github.kuro46.scriptblockimproved.common.MessageUtils.sendMessage;
 
 public final class RemoveCommand extends Command {
 
-    @NonNull
-    private final ActionQueue actionQueue;
-
     public RemoveCommand() {
         super("remove", Args.empty());
-        this.actionQueue = ScriptBlockImproved.getInstance().getActionQueue();
     }
 
     @Override
@@ -32,6 +26,13 @@ public final class RemoveCommand extends Command {
         }
         final Player player = (Player) sender;
         sendMessage(sender, "Click any block to remove scripts from the block");
-        actionQueue.add(player, new ActionRemove());
+        ScriptBlockImproved.getInstance().getActionQueue().queue(player, location -> {
+            final BlockPosition position = BlockPosition.ofLocation(location);
+            player.performCommand(String.format("sbi removeat %s %s %s %s",
+                position.getWorld(),
+                position.getX(),
+                position.getY(),
+                position.getZ()));
+        });
     }
 }

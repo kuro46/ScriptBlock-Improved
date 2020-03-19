@@ -12,9 +12,12 @@ version = '2.0.0-SNAPSHOT'
 repositories {
     mavenCentral()
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots' }
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://shirokuro.xyz/maven/repos/releases/' }
 }
 
 dependencies {
+    implementation 'com.github.kuro46:CommandUtility:0.4.0'
     // Bukkit
     compileOnly 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
     // Gson
@@ -67,6 +70,7 @@ shadowJar {
     relocate 'org.apache.commons.lang3', 'com.github.kuro46.scriptblockimproved.libs.commons.lang'
     relocate 'org.apache.commons.text', 'com.github.kuro46.scriptblockimproved.libs.commons.text'
     relocate 'org.checkerframework', 'com.github.kuro46.scriptblockimproved.libs.checkerframework'
+    relocate 'com.github.kuro46.commandutility', 'com.github.kuro46.scriptblockimproved.libs.commandutility'
 }
 
 artifacts {

@@ -26,9 +26,9 @@ public final class Debouncer {
     private ScheduledFuture<?> scheduled;
 
     public Debouncer(
-            @NonNull final Runnable task,
-            final long delay,
-            @NonNull final TimeUnit delayUnit) {
+        @NonNull final Runnable task,
+        final long delay,
+        @NonNull final TimeUnit delayUnit) {
         this.task = task;
         this.delay = delay;
         this.delayUnit = delayUnit;

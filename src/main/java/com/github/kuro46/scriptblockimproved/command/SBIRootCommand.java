@@ -1,14 +1,14 @@
 package com.github.kuro46.scriptblockimproved.command;
 
+import com.github.kuro46.commandutility.Args;
+import com.github.kuro46.commandutility.Command;
+import com.github.kuro46.commandutility.CommandName;
+import com.github.kuro46.commandutility.ExecutionData;
+import com.github.kuro46.commandutility.ParsedArgs;
+import com.github.kuro46.commandutility.RootCommand;
 import com.github.kuro46.scriptblockimproved.ScriptBlockImproved;
 import com.github.kuro46.scriptblockimproved.command.migration.MigrateCommand;
 import com.github.kuro46.scriptblockimproved.common.MessageKind;
-import com.github.kuro46.scriptblockimproved.common.command.Args;
-import com.github.kuro46.scriptblockimproved.common.command.Command;
-import com.github.kuro46.scriptblockimproved.common.command.CommandName;
-import com.github.kuro46.scriptblockimproved.common.command.ExecutionData;
-import com.github.kuro46.scriptblockimproved.common.command.ParsedArgs;
-import com.github.kuro46.scriptblockimproved.common.command.RootCommand;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -58,10 +58,10 @@ public final class SBIRootCommand extends RootCommand {
             .map(CommandName::toString)
             .collect(Collectors.joining(" "));
         sendMessage(sender,
-                MessageKind.ERROR,
-                "Usage: /%s %s",
-                pathStr,
-                command.getArgs());
+            MessageKind.ERROR,
+            "Usage: /%s %s",
+            pathStr,
+            command.getArgs());
     }
 
     @Override
