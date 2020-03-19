@@ -113,6 +113,9 @@ public final class PermissionDetector {
                 .filter(Permission::doSave)
                 .map(Permission::getName)
                 .collect(Collectors.toList());
+            if (stringPerms.isEmpty()) {
+                return;
+            }
             configuration.set(command.getName(), stringPerms);
         });
         try (final BufferedWriter writer = Files.newBufferedWriter(filePath)) {
