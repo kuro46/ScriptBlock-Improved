@@ -67,6 +67,7 @@ public final class CreateCommand extends Command {
             .when("trigger", s -> {
                 return ScriptBlockImproved.getInstance().getTriggerRegistry().getTriggers().stream()
                     .map(Trigger::getName)
+                    .filter(name -> name.startsWith(s))
                     .collect(Collectors.toList());
             })
             .build(data.getArgName(), data.getCurrentValue());
