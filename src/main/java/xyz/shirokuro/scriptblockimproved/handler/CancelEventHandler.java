@@ -1,7 +1,6 @@
 package xyz.shirokuro.scriptblockimproved.handler;
 
 import xyz.shirokuro.scriptblockimproved.TriggerData;
-import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -10,7 +9,7 @@ import org.bukkit.event.Event;
 public class CancelEventHandler implements OptionHandler {
 
     @Override
-    public void onSuppressed(TriggerData triggerData, Player player, ImmutableList<String> args) {
+    public void onSuppressed(TriggerData triggerData, Player player, List<String> args) {
         boolean cancel = true;
         if (args.size() > 0) {
             cancel = Boolean.parseBoolean(args.get(0));
@@ -25,7 +24,7 @@ public class CancelEventHandler implements OptionHandler {
     }
 
     @Override
-    public void handleOption(TriggerData triggerData, Player player, ImmutableList<String> args) {
+    public void handleOption(TriggerData triggerData, Player player, List<String> args) {
     }
 
     @Override

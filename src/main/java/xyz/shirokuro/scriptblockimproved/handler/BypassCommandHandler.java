@@ -4,7 +4,6 @@ import xyz.shirokuro.scriptblockimproved.PermissionDetector;
 import xyz.shirokuro.scriptblockimproved.ScriptBlockImproved;
 import xyz.shirokuro.scriptblockimproved.TriggerData;
 import xyz.shirokuro.scriptblockimproved.common.Utils;
-import com.google.common.collect.ImmutableList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +13,7 @@ import org.bukkit.permissions.PermissionAttachment;
 
 public class BypassCommandHandler implements OptionHandler {
     @Override
-    public void handleOption(TriggerData triggerData, Player player, ImmutableList<String> args) {
+    public void handleOption(TriggerData triggerData, Player player, List<String> args) {
         final PermissionAttachment attachment = player.addAttachment(ScriptBlockImproved.getInstance().getPlugin());
         try {
             final String maybePerm = args.get(0);
