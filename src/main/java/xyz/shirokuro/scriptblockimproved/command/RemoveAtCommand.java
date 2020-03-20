@@ -39,7 +39,7 @@ public final class RemoveAtCommand extends Command {
 
         final ScriptList scriptList = ScriptBlockImproved.getInstance().getScriptList();
         if (!scriptList.get(position).isEmpty()) {
-            scriptList.remove(position);
+            scriptList.removeAll(position);
             MessageUtils.sendMessage(sender, MessageKind.SUCCESS, "Script(s) has been removed");
         } else {
             MessageUtils.sendMessage(sender, MessageKind.ERROR, "Script not exists");

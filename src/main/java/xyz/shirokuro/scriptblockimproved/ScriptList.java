@@ -64,7 +64,7 @@ public final class ScriptList {
         });
     }
 
-    public void remove(@NonNull final BlockPosition position) {
+    public void removeAll(@NonNull final BlockPosition position) {
         multimap.removeAll(position);
         SBIThreadPool.execute(() -> {
             try {
