@@ -47,6 +47,8 @@ if (!JavaVersion.current().isJava9Compatible()) {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+    withJavadocJar()
+    withSourcesJar()
 }
 
 processResources {
@@ -78,4 +80,34 @@ test {
 
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
+}
+
+// maven
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = rootProject.name
+            from components.java
+            pom {
+                name = 'ScriptBlock-Improved'
+                description = 'A improved version of ScriptBlock'
+                url = 'https://github.com/kuro46/ScriptBlock-Improved'
+            }
+        }
+    }
+    repositories {
+        maven {
+            def rootDir = property("sbi.publish.rootdir")
+            def releasesRepoUrl = "$rootDir/repos/releases"
+            def snapshotsRepoUrl = "$rootDir/repos/snapshots"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+        }
+    }
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
 }
