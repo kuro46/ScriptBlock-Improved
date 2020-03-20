@@ -20,10 +20,8 @@ public final class PlayerMoveListener implements Listener {
 
     private final Map<Player, BlockPosition> moveLastTriggeredMap = new WeakHashMap<>();
     private final Map<Player, BlockPosition> sbWalkLastTriggeredMap = new WeakHashMap<>();
-    private final Trigger triggerMove = new Trigger("move", () -> {
-    });
-    private final Trigger triggerSBWalk = new Trigger("sbwalk", () -> {
-    });
+    private final Trigger triggerMove = new Trigger("move");
+    private final Trigger triggerSBWalk = new Trigger("sbwalk");
 
     public PlayerMoveListener(@NonNull final TriggerRegistry registry) {
         registry.register(triggerSBWalk);

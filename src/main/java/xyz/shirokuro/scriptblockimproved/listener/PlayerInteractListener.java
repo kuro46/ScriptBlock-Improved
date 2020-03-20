@@ -24,14 +24,10 @@ public final class PlayerInteractListener implements Listener {
         .expireAfterWrite(Duration.ofMillis(300))
         .build();
 
-    private final Trigger sbInteractTrigger = new Trigger("sbinteract", () -> {
-    });
-    private final Trigger clickRightTrigger = new Trigger("rclick", () -> {
-    });
-    private final Trigger clickLeftTrigger = new Trigger("lclick", () -> {
-    });
-    private final Trigger pressTrigger = new Trigger("press", () -> {
-    });
+    private final Trigger sbInteractTrigger = new Trigger("sbinteract");
+    private final Trigger clickRightTrigger = new Trigger("rclick");
+    private final Trigger clickLeftTrigger = new Trigger("lclick");
+    private final Trigger pressTrigger = new Trigger("press");
 
     public PlayerInteractListener(@NonNull final TriggerRegistry triggerRegistry) {
         triggerRegistry.register(sbInteractTrigger);

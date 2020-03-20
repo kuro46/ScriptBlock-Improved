@@ -18,6 +18,10 @@ public final class Trigger {
     @Getter
     private boolean isUnregistered = false;
 
+    public Trigger(@NonNull final String name) {
+        this(name, () -> {});
+    }
+
     public Trigger(@NonNull final String name, @NonNull final Runnable onUnregistered) {
         currentId++;
         this.id = currentId;
