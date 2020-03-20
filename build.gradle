@@ -98,9 +98,11 @@ publishing {
     }
     repositories {
         maven {
-            def rootDir = properties.getOrDefault("sbi.publish.rootdir", "$buildDir")
-            def releasesRepoUrl = "$rootDir/repos/releases"
-            def snapshotsRepoUrl = "$rootDir/repos/snapshots"
+            def publishRootDir = hasProperty("sbi.publish.rootdir")
+                ? property("sbi.publish.rootdir").toString()
+                : buildDir.toString()
+            def releasesRepoUrl = "$publishRootDir/repos/releases"
+            def snapshotsRepoUrl = "$publishRootDir/repos/snapshots"
             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
         }
     }
