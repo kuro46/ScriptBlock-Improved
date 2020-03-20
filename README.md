@@ -1,6 +1,6 @@
 日本語 | [English](docs/README_EN.md)
 
-# ScriptBlock-Improved [![jitpack](https://jitpack.io/v/kuro46/ScriptBlock-Improved.svg)](https://jitpack.io/#kuro46/ScriptBlock-Improved)[![jitci](https://jitci.com/gh/kuro46/ScriptBlock-Improved/svg)](https://jitci.com/gh/kuro46/ScriptBlock-Improved)[![GitHub Workflows](https://github.com/kuro46/ScriptBlock-Improved/workflows/Build/badge.svg)](https://github.com/kuro46/ScriptBlock-Improved/actions)
+# ScriptBlock-Improved [![Latest release](https://img.shields.io/github/v/release/kuro46/ScriptBlock-Improved)](https://github.com/kuro46/ScriptBlock-Improved/releases)[![GitHub Workflows](https://github.com/kuro46/ScriptBlock-Improved/workflows/Build/badge.svg)](https://github.com/kuro46/ScriptBlock-Improved/actions)
 
 [ScriptBlock](https://dev.bukkit.org/projects/scriptblock)の設計や機能を改善したプラグインです。  
 使い方など、詳細は[Wiki](https://github.com/kuro46/ScriptBlock-Improved/wiki/)を参照してください。
@@ -24,3 +24,7 @@
 このリポジトリをクローンしたあと、  
 サーバー導入用のjarファイルを生成したい場合は`./gradlew shadowjar`を、  
 各種テスト(単体テストなど)を実行したい場合は`./gradlew build`を実行してください。
+
+## APIを使う
+
+[Wikiのページ](https://github.com/kuro46/ScriptBlock-Improved/wiki/%E9%96%8B%E7%99%BA%E8%80%85%E5%90%91%E3%81%91)を参照してください。
