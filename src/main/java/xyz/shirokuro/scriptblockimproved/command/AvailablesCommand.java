@@ -37,7 +37,7 @@ public final class AvailablesCommand extends Command {
 
     private void triggers(final CommandSender sender) {
         final List<String> names = ScriptBlockImproved.getInstance().getTriggerRegistry().getTriggers().stream()
-            .map(Trigger::toString)
+            .map(Trigger::getName)
             .collect(Collectors.toList());
         if (names.isEmpty()) {
             MessageUtils.sendMessage(sender, "No available trigger exists");
