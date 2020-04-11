@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 
 public final class MessageUtils {
 
-    private static final String PREFIX = ChatColor.GRAY
+    public static final String PREFIX = ChatColor.GRAY
         + "["
         + ChatColor.DARK_AQUA
         + "SB"

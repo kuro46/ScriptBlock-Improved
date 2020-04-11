@@ -1,52 +1,38 @@
 package xyz.shirokuro.scriptblockimproved.command;
 
-import com.github.kuro46.commandutility.Args;
-import com.github.kuro46.commandutility.CandidateBuilder;
-import com.github.kuro46.commandutility.Command;
-import com.github.kuro46.commandutility.CompletionData;
-import com.github.kuro46.commandutility.ExecutionData;
-import com.github.kuro46.commandutility.ParsedArgs;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import xyz.shirokuro.commandutility.CompletionData;
+import xyz.shirokuro.commandutility.ExecutionData;
+import xyz.shirokuro.commandutility.annotation.Completer;
+import xyz.shirokuro.commandutility.annotation.Executor;
 import xyz.shirokuro.scriptblockimproved.BlockPosition;
 import xyz.shirokuro.scriptblockimproved.OptionListParser;
 import xyz.shirokuro.scriptblockimproved.ScriptBlockImproved;
 import xyz.shirokuro.scriptblockimproved.Trigger;
 import xyz.shirokuro.scriptblockimproved.common.MessageKind;
+import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
-import static xyz.shirokuro.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class CreateCommand extends Command {
+public final class CreateCommand {
 
-    public CreateCommand() {
-        super(
-            "create",
-            Args.builder()
-                .required("trigger")
-                .required("options")
-                .build()
-        );
-    }
-
-    @Override
+    @Executor(command = "sbi create <trigger> <options>", description = "TODO")
     public void execute(final ExecutionData data) {
-        final CommandSender sender = data.getDispatcher();
-        if (!(sender instanceof Player)) {
-            MessageUtils.sendMessage(sender,
+        final Player player = data.getSenderAsPlayer();
+        if (player == null) {
+            MessageUtils.sendMessage(data.getSender(),
                 MessageKind.ERROR,
                 "Cannot perform this command from the console");
             return;
         }
-        final ParsedArgs args = data.getArgs();
-        final Player player = (Player) sender;
-        MessageUtils.sendMessage(sender, "Click any block to create script to the block");
+        MessageUtils.sendMessage(player, "Click any block to create script to the block");
         try {
-            OptionListParser.parse(data.getArgs().getOrFail("options"));
+            OptionListParser.parse(data.get("options"));
         } catch (OptionListParser.ParseException e) {
-            MessageUtils.sendMessage(sender, ChatColor.RED + "Incorrect script!: " + e.getMessage());
+            MessageUtils.sendMessage(player, ChatColor.RED + "Incorrect script!: " + e.getMessage());
             return;
         }
         ScriptBlockImproved.getInstance().getActionQueue().queue(player, location -> {
@@ -56,20 +42,20 @@ public final class CreateCommand extends Command {
                 position.getX(),
                 position.getY(),
                 position.getZ(),
-                args.getOrFail("trigger"),
-                args.getOrFail("options")));
+                data.get("trigger"),
+                data.get("options")));
         });
     }
 
-    @Override
-    public List<String> complete(CompletionData data) {
-        return new CandidateBuilder()
-            .when("trigger", s -> {
-                return ScriptBlockImproved.getInstance().getTriggerRegistry().getTriggers().stream()
-                    .map(Trigger::getName)
-                    .filter(name -> name.startsWith(s))
-                    .collect(Collectors.toList());
-            })
-            .build(data.getArgName(), data.getCurrentValue());
+    @Completer(command = "sbi create <trigger> <options>")
+    public List<String> complete(final CompletionData data) {
+        if (data.getName().equals("trigger")) {
+            return ScriptBlockImproved.getInstance().getTriggerRegistry().getTriggers().stream()
+                .map(Trigger::getName)
+                .filter(s -> s.startsWith(data.getCurrentValue()))
+                .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
     }
 }

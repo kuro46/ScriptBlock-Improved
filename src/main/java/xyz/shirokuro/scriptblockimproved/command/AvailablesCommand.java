@@ -1,26 +1,21 @@
 package xyz.shirokuro.scriptblockimproved.command;
 
-import com.github.kuro46.commandutility.Args;
-import com.github.kuro46.commandutility.Command;
-import com.github.kuro46.commandutility.ExecutionData;
+import org.bukkit.command.CommandSender;
+import xyz.shirokuro.commandutility.ExecutionData;
+import xyz.shirokuro.commandutility.annotation.Executor;
 import xyz.shirokuro.scriptblockimproved.ScriptBlockImproved;
 import xyz.shirokuro.scriptblockimproved.Trigger;
+import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
+
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.bukkit.command.CommandSender;
-import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
-import static xyz.shirokuro.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class AvailablesCommand extends Command {
+public final class AvailablesCommand {
 
-    public AvailablesCommand() {
-        super("availables", Args.empty());
-    }
-
-    @Override
+    @Executor(command = "sbi availables", description = "TODO")
     public void execute(final ExecutionData data) {
-        final CommandSender sender = data.getDispatcher();
+        final CommandSender sender = data.getSender();
         options(sender);
         triggers(sender);
     }

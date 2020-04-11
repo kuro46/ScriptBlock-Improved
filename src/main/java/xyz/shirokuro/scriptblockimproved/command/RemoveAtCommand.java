@@ -1,42 +1,33 @@
 package xyz.shirokuro.scriptblockimproved.command;
 
-import com.github.kuro46.commandutility.Args;
-import com.github.kuro46.commandutility.CandidateBuilder;
-import com.github.kuro46.commandutility.CandidateFactories;
-import com.github.kuro46.commandutility.Command;
-import com.github.kuro46.commandutility.CompletionData;
-import com.github.kuro46.commandutility.ExecutionData;
-import com.github.kuro46.commandutility.ParsedArgs;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.command.CommandSender;
+import xyz.shirokuro.commandutility.CompletionData;
+import xyz.shirokuro.commandutility.ExecutionData;
+import xyz.shirokuro.commandutility.annotation.Completer;
+import xyz.shirokuro.commandutility.annotation.Executor;
 import xyz.shirokuro.scriptblockimproved.BlockPosition;
 import xyz.shirokuro.scriptblockimproved.ScriptBlockImproved;
 import xyz.shirokuro.scriptblockimproved.ScriptList;
 import xyz.shirokuro.scriptblockimproved.common.MessageKind;
-import java.util.List;
-import org.bukkit.command.CommandSender;
 import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
-import static xyz.shirokuro.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class RemoveAtCommand extends Command {
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-    public RemoveAtCommand() {
-        super(
-            "removeat",
-            Args.builder()
-                .required("world", "x", "y", "z")
-                .build()
-        );
-    }
+public final class RemoveAtCommand {
 
-    @Override
+    @Executor(command = "sbi removeat <world> <x> <y> <z>", description = "TODO")
     public void execute(final ExecutionData data) {
-        final CommandSender sender = data.getDispatcher();
-        final ParsedArgs args = data.getArgs();
-
+        final CommandSender sender = data.getSender();
+        final Map<String, String> args = data.getArgs();
         final BlockPosition position = BlockPosition.parseArgs(sender, args).orElse(null);
         if (position == null) {
             return;
         }
-
         final ScriptList scriptList = ScriptBlockImproved.getInstance().getScriptList();
         if (!scriptList.get(position).isEmpty()) {
             scriptList.removeAll(position);
@@ -46,10 +37,15 @@ public final class RemoveAtCommand extends Command {
         }
     }
 
-    @Override
+    @Completer(command = "sbi removeat <world> <x> <y> <z>")
     public List<String> complete(final CompletionData data) {
-        return new CandidateBuilder()
-            .when("world", CandidateFactories.worlds())
-            .build(data.getArgName(), data.getCurrentValue());
+        if (data.getName().equals("world")) {
+            return Bukkit.getWorlds().stream()
+                .map(World::getName)
+                .filter(s -> s.startsWith(data.getCurrentValue()))
+                .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
     }
 }

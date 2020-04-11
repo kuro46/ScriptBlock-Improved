@@ -1,35 +1,32 @@
 package xyz.shirokuro.scriptblockimproved.command.migration;
 
-import com.github.kuro46.commandutility.Args;
-import com.github.kuro46.commandutility.Command;
-import com.github.kuro46.commandutility.ExecutionData;
+import com.google.common.util.concurrent.Futures;
+import lombok.NonNull;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import xyz.shirokuro.commandutility.ExecutionData;
+import xyz.shirokuro.commandutility.annotation.Executor;
 import xyz.shirokuro.scriptblockimproved.ScriptBlockImproved;
 import xyz.shirokuro.scriptblockimproved.ScriptList;
 import xyz.shirokuro.scriptblockimproved.common.MessageKind;
+import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
 import xyz.shirokuro.scriptblockimproved.storage.NoOpStorage;
-import com.google.common.util.concurrent.Futures;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
-import lombok.NonNull;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
+
 import static xyz.shirokuro.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class MigrateCommand extends Command {
+public final class MigrateCommand {
 
     private static final String MIGRATED_MARKER_FILE_NAME = "mark_migrated_from_sb";
 
-    public MigrateCommand() {
-        super("migrate", Args.empty());
-    }
-
-    @Override
+    @Executor(command = "sbi migrate", description = "TODO")
     public void execute(final ExecutionData data) {
-        final CommandSender sender = data.getDispatcher();
+        final CommandSender sender = data.getSender();
         MessageUtils.sendMessage(sender, "Migrating...");
         new Thread(() -> {
             if (hasMigrated()) {

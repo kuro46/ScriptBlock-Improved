@@ -1,28 +1,22 @@
 package xyz.shirokuro.scriptblockimproved.command;
 
-import com.github.kuro46.commandutility.Args;
-import com.github.kuro46.commandutility.CandidateBuilder;
-import com.github.kuro46.commandutility.CandidateFactories;
-import com.github.kuro46.commandutility.Command;
-import com.github.kuro46.commandutility.CompletionData;
-import com.github.kuro46.commandutility.ExecutionData;
-import xyz.shirokuro.scriptblockimproved.common.MessageKind;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import xyz.shirokuro.commandutility.CompletionData;
+import xyz.shirokuro.commandutility.ExecutionData;
+import xyz.shirokuro.commandutility.annotation.Completer;
+import xyz.shirokuro.commandutility.annotation.Executor;
+import xyz.shirokuro.scriptblockimproved.common.MessageKind;
 import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
-import static xyz.shirokuro.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class HelpCommand extends Command {
+import java.util.*;
+import java.util.stream.Collectors;
+
+public final class HelpCommand {
 
     private static final ImmutableList<String> ROOT_MESSAGE = ImmutableList.of(
         ChatColor.BOLD + "[modify] modify scripts",
@@ -63,19 +57,13 @@ public final class HelpCommand extends Command {
         "  migrate"
     );
 
-    public HelpCommand() {
-        super("help", Args.builder().optional("topic").build());
-    }
-
-    @Override
-    public void execute(@NonNull final ExecutionData data) {
-        final CommandSender sender = data.getDispatcher();
-        final Optional<String> topicOptional = data.getArgs().get("topic");
-        if (topicOptional.isPresent()) {
-            helpTopic(sender, topicOptional.get());
-            return;
+    @Executor(command = "sbi help [topic]", description = "TODO")
+    public void execute(final ExecutionData data) {
+        if (data.getArgs().containsKey("topic")) {
+            helpTopic(data.getSender(), data.get("topic"));
+        } else {
+            MessageUtils.sendMessage(data.getSender(), ROOT_MESSAGE);
         }
-        MessageUtils.sendMessage(sender, ROOT_MESSAGE);
     }
 
     private void helpTopic(@NonNull final CommandSender sender, @NonNull final String topicStr) {
@@ -87,16 +75,16 @@ public final class HelpCommand extends Command {
         MessageUtils.sendMessage(sender, topic.getMessage());
     }
 
-    @Override
+    @Completer(command = "sbi help [topic]")
     public List<String> complete(final CompletionData data) {
-        return new CandidateBuilder()
-            .when("topic", CandidateFactories.filter(ignored -> {
-                return Arrays.stream(Topic.values())
-                    .map(Topic::name)
-                    .map(String::toLowerCase)
-                    .collect(Collectors.toList());
-            }))
-            .build(data.getArgName(), data.getCurrentValue());
+        if (data.getName().equals("topic")) {
+            return Arrays.stream(Topic.values())
+                .map(Topic::name)
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     private enum Topic {

@@ -1,50 +1,36 @@
 package xyz.shirokuro.scriptblockimproved.command;
 
-import com.github.kuro46.commandutility.Args;
-import com.github.kuro46.commandutility.CandidateBuilder;
-import com.github.kuro46.commandutility.CandidateFactories;
-import com.github.kuro46.commandutility.Command;
-import com.github.kuro46.commandutility.CompletionData;
-import com.github.kuro46.commandutility.ExecutionData;
-import com.github.kuro46.commandutility.ParsedArgs;
+import org.bukkit.Bukkit;
+import org.bukkit.permissions.Permission;
+import xyz.shirokuro.commandutility.CompletionData;
+import xyz.shirokuro.commandutility.ExecutionData;
+import xyz.shirokuro.commandutility.annotation.Completer;
+import xyz.shirokuro.commandutility.annotation.Executor;
 import xyz.shirokuro.scriptblockimproved.PermissionDetector;
+import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
-import static xyz.shirokuro.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class PermMapCommand extends Command {
+public final class PermMapCommand {
 
-    public PermMapCommand() {
-        super(
-            "map-perm",
-            Args.builder()
-                .required("permission", "command")
-                .build()
-        );
-    }
-
-    @Override
+    @Executor(command = "sbi map-perm <permission> <command>", description = "TODO")
     public void execute(final ExecutionData data) {
-        final ParsedArgs args = data.getArgs();
-        final CommandSender sender = data.getDispatcher();
-        final String permission = args.getOrFail("permission");
-        final String command = args.getOrFail("command");
-        PermissionDetector.getInstance().associate(command, permission);
-        MessageUtils.sendMessage(sender, "Mapped");
+        final String permission = data.get("permission");
+        final String associateCommand = data.get("command");
+        PermissionDetector.getInstance().associate(associateCommand, permission);
+        MessageUtils.sendMessage(data.getSender(), "Mapped");
     }
 
-    @Override
+    @Completer(command = "sbi map-perm <permission> <command>")
     public List<String> complete(final CompletionData data) {
-        return new CandidateBuilder()
-            .when("permission", CandidateFactories.filter(value -> {
-                return Bukkit.getPluginManager().getPermissions().stream()
-                    .map(Permission::getName)
-                    .collect(Collectors.toList());
-            }))
-            .build(data.getArgName(), data.getCurrentValue());
+        if (data.getName().equals("permission")) {
+            return Bukkit.getPluginManager().getPermissions().stream()
+                .map(Permission::getName)
+                .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
     }
 }

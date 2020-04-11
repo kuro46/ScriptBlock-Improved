@@ -1,28 +1,19 @@
 package xyz.shirokuro.scriptblockimproved.command;
 
-import com.github.kuro46.commandutility.Args;
-import com.github.kuro46.commandutility.Command;
-import com.github.kuro46.commandutility.ExecutionData;
+import org.bukkit.command.CommandSender;
+import xyz.shirokuro.commandutility.ExecutionData;
+import xyz.shirokuro.commandutility.annotation.Executor;
 import xyz.shirokuro.scriptblockimproved.ScriptBlockImproved;
 import xyz.shirokuro.scriptblockimproved.common.MessageKind;
-import java.io.IOException;
-import org.bukkit.command.CommandSender;
 import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
-import static xyz.shirokuro.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class SaveCommand extends Command {
+import java.io.IOException;
 
-    public SaveCommand() {
-        super(
-            "save",
-            Args.empty()
-        );
-    }
+public final class SaveCommand {
 
-    @Override
+    @Executor(command = "sbi save", description = "TODO")
     public void execute(final ExecutionData data) {
-        final CommandSender sender = data.getDispatcher();
-
+        final CommandSender sender = data.getSender();
         MessageUtils.sendMessage(sender,
             "Saving scripts into '/ScriptBlock-Improved/scripts.json'");
         new Thread(() -> {

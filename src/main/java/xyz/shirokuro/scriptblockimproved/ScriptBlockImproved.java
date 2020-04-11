@@ -1,25 +1,24 @@
 package xyz.shirokuro.scriptblockimproved;
 
-import xyz.shirokuro.scriptblockimproved.command.SBIRootCommand;
-import xyz.shirokuro.scriptblockimproved.handler.BroadcastHandler;
-import xyz.shirokuro.scriptblockimproved.handler.BypassCommandHandler;
-import xyz.shirokuro.scriptblockimproved.handler.CancelEventHandler;
-import xyz.shirokuro.scriptblockimproved.handler.CommandHandler;
-import xyz.shirokuro.scriptblockimproved.handler.ConsoleHandler;
-import xyz.shirokuro.scriptblockimproved.handler.SayHandler;
+import lombok.Getter;
+import lombok.NonNull;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+import xyz.shirokuro.commandutility.CommandGroup;
+import xyz.shirokuro.scriptblockimproved.command.*;
+import xyz.shirokuro.scriptblockimproved.command.migration.MigrateCommand;
+import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
+import xyz.shirokuro.scriptblockimproved.handler.*;
 import xyz.shirokuro.scriptblockimproved.listener.PlayerInteractListener;
 import xyz.shirokuro.scriptblockimproved.listener.PlayerMoveListener;
 import xyz.shirokuro.scriptblockimproved.placeholder.Placeholder;
 import xyz.shirokuro.scriptblockimproved.placeholder.PlaceholderGroup;
 import xyz.shirokuro.scriptblockimproved.storage.JSONStorage;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Logger;
-import lombok.Getter;
-import lombok.NonNull;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 
 public final class ScriptBlockImproved {
 
@@ -48,7 +47,7 @@ public final class ScriptBlockImproved {
         } catch (IOException e) {
             throw new InitException("Unable to load ScriptList from Storage", e);
         }
-        SBIRootCommand.register();
+        registerCommands();
         Bukkit.getPluginManager().registerEvents(new PlayerInteractListener(triggerRegistry), bootstrap);
         Bukkit.getPluginManager().registerEvents(new PlayerMoveListener(triggerRegistry), bootstrap);
 
@@ -77,6 +76,22 @@ public final class ScriptBlockImproved {
             .name("world")
             .factory(data -> data.getPosition().getWorld())
             .build());
+    }
+
+    private void registerCommands() {
+        new CommandGroup(MessageUtils.PREFIX)
+            .addAll(new HelpCommand())
+            .addAll(new MigrateCommand())
+            .addAll(new ListCommand())
+            .addAll(new AvailablesCommand())
+            .addAll(new SaveCommand())
+            .addAll(new PermMapCommand())
+            .addAll(new CreateCommand())
+            .addAll(new CreateAtCommand())
+            .addAll(new RemoveCommand())
+            .addAll(new RemoveAtCommand())
+            .addAll(new ViewCommand())
+            .addAll(new ViewAtCommand());
     }
 
     static void init(@NonNull Bootstrap bootstrap) throws InitException {

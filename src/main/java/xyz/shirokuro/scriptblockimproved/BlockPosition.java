@@ -1,20 +1,16 @@
 package xyz.shirokuro.scriptblockimproved;
 
-import com.github.kuro46.commandutility.ParsedArgs;
-import xyz.shirokuro.scriptblockimproved.common.MessageKind;
 import com.google.common.primitives.Ints;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.ToString;
+import lombok.*;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
+import xyz.shirokuro.scriptblockimproved.common.MessageKind;
 import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
-import static xyz.shirokuro.scriptblockimproved.common.MessageUtils.sendMessage;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @AllArgsConstructor
 @ToString
@@ -31,14 +27,14 @@ public final class BlockPosition implements Comparable<BlockPosition> {
         return new BlockPosition(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 
-    public static Optional<BlockPosition> parseArgs(@NonNull final CommandSender sender, @NonNull final ParsedArgs args) {
-        final String world = args.getOrFail("world");
+    public static Optional<BlockPosition> parseArgs(@NonNull final CommandSender sender, @NonNull final Map<String, String> args) {
+        final String world = args.get("world");
         final List<String> parseFailedList = new ArrayList<>(3);
-        final Integer x = Ints.tryParse(args.getOrFail("x"));
+        final Integer x = Ints.tryParse(args.get("x"));
         if (x == null) parseFailedList.add("x");
-        final Integer y = Ints.tryParse(args.getOrFail("y"));
+        final Integer y = Ints.tryParse(args.get("y"));
         if (y == null) parseFailedList.add("y");
-        final Integer z = Ints.tryParse(args.getOrFail("z"));
+        final Integer z = Ints.tryParse(args.get("z"));
         if (z == null) parseFailedList.add("z");
         if (!parseFailedList.isEmpty()) {
             MessageUtils.sendMessage(sender, MessageKind.ERROR, String.join(", ", parseFailedList) + " is invalid number.");

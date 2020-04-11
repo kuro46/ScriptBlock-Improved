@@ -1,39 +1,31 @@
 package xyz.shirokuro.scriptblockimproved.command;
 
-import com.github.kuro46.commandutility.Args;
-import com.github.kuro46.commandutility.CandidateBuilder;
-import com.github.kuro46.commandutility.CandidateFactories;
-import com.github.kuro46.commandutility.Command;
-import com.github.kuro46.commandutility.CompletionData;
-import com.github.kuro46.commandutility.ExecutionData;
-import com.github.kuro46.commandutility.ParsedArgs;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.World;
+import org.bukkit.command.CommandSender;
+import xyz.shirokuro.commandutility.CompletionData;
+import xyz.shirokuro.commandutility.ExecutionData;
+import xyz.shirokuro.commandutility.annotation.Completer;
+import xyz.shirokuro.commandutility.annotation.Executor;
 import xyz.shirokuro.scriptblockimproved.BlockPosition;
 import xyz.shirokuro.scriptblockimproved.Script;
 import xyz.shirokuro.scriptblockimproved.ScriptBlockImproved;
 import xyz.shirokuro.scriptblockimproved.common.MessageKind;
-import java.util.List;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static xyz.shirokuro.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class ViewAtCommand extends Command {
+public final class ViewAtCommand {
 
-    public ViewAtCommand() {
-        super(
-            "viewat",
-            Args.builder()
-                .required("world", "x", "y", "z")
-                .build()
-        );
-    }
-
-    @Override
+    @Executor(command = "sbi viewat <world> <x> <y> <z>", description = "TODO")
     public void execute(final ExecutionData data) {
-        final CommandSender sender = data.getDispatcher();
-        final ParsedArgs args = data.getArgs();
-
-        final BlockPosition position = BlockPosition.parseArgs(sender, args).orElse(null);
+        final CommandSender sender = data.getSender();
+        final BlockPosition position = BlockPosition.parseArgs(sender, data.getArgs()).orElse(null);
         if (position == null) {
             return;
         }
@@ -66,10 +58,15 @@ public final class ViewAtCommand extends Command {
         });
     }
 
-    @Override
+    @Completer(command = "sbi viewat <world> <x> <y> <z>")
     public List<String> complete(final CompletionData data) {
-        return new CandidateBuilder()
-            .when("world", CandidateFactories.worlds())
-            .build(data.getArgName(), data.getCurrentValue());
+        if (data.getName().equals("world")) {
+            return Bukkit.getWorlds().stream()
+                .map(World::getName)
+                .filter(s -> s.startsWith(data.getCurrentValue()))
+                .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
     }
 }

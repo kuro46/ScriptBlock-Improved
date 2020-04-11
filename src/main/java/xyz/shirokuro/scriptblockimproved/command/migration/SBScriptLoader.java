@@ -1,12 +1,17 @@
 package xyz.shirokuro.scriptblockimproved.command.migration;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
+import lombok.NonNull;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import xyz.shirokuro.scriptblockimproved.Author;
 import xyz.shirokuro.scriptblockimproved.BlockPosition;
 import xyz.shirokuro.scriptblockimproved.Script;
 import xyz.shirokuro.scriptblockimproved.ScriptList;
 import xyz.shirokuro.scriptblockimproved.storage.NoOpStorage;
-import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableList;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,10 +21,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lombok.NonNull;
-import org.bukkit.configuration.Configuration;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 final class SBScriptLoader {
 
