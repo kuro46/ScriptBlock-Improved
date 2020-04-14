@@ -2,6 +2,7 @@ package xyz.shirokuro.scriptblockimproved.command;
 
 import com.google.common.collect.ImmutableList;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -21,10 +22,53 @@ import java.util.stream.Collectors;
 
 import static xyz.shirokuro.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class CreateAtCommand {
+/**
+ * A class for handle {@code "/sbi createat"} and {@code "/sbi create"}
+ */
+public final class CreateCommands {
+
+    @Executor(command = "sbi create <trigger> <options>", description = "TODO")
+    public void executeCreate(final ExecutionData data) {
+        final Player player = data.getSenderAsPlayer();
+        if (player == null) {
+            MessageUtils.sendMessage(data.getSender(),
+                MessageKind.ERROR,
+                "Cannot perform this command from the console");
+            return;
+        }
+        MessageUtils.sendMessage(player, "Click any block to create script to the block");
+        try {
+            OptionListParser.parse(data.get("options"));
+        } catch (OptionListParser.ParseException e) {
+            MessageUtils.sendMessage(player, ChatColor.RED + "Incorrect script!: " + e.getMessage());
+            return;
+        }
+        ScriptBlockImproved.getInstance().getActionQueue().queue(player, location -> {
+            final BlockPosition position = BlockPosition.ofLocation(location);
+            player.performCommand(String.format("sbi createat %s %s %s %s %s %s",
+                position.getWorld(),
+                position.getX(),
+                position.getY(),
+                position.getZ(),
+                data.get("trigger"),
+                data.get("options")));
+        });
+    }
+
+    @Completer(command = "sbi create <trigger> <options>")
+    public List<String> completeCreate(final CompletionData data) {
+        if (data.getName().equals("trigger")) {
+            return ScriptBlockImproved.getInstance().getTriggerRegistry().getTriggers().stream()
+                .map(Trigger::getName)
+                .filter(s -> s.startsWith(data.getCurrentValue()))
+                .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
 
     @Executor(command = "sbi createat <world> <x> <y> <z> <trigger> <options>", description = "TODO")
-    public void execute(final ExecutionData data) {
+    public void executeCreateAt(final ExecutionData data) {
         final CommandSender sender = data.getSender();
         // Parse options
         final List<Script.Option> options;
@@ -59,7 +103,7 @@ public final class CreateAtCommand {
     }
 
     @Completer(command = "sbi createat <world> <x> <y> <z> <trigger> <options>")
-    public List<String> complete(final CompletionData data) {
+    public List<String> completeCreateAt(final CompletionData data) {
         final String name = data.getName();
         final String currentValue = data.getCurrentValue();
         switch (name) {

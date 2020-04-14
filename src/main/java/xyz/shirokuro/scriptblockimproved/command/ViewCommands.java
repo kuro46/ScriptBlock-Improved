@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import xyz.shirokuro.commandutility.CompletionData;
 import xyz.shirokuro.commandutility.ExecutionData;
 import xyz.shirokuro.commandutility.annotation.Completer;
@@ -20,10 +21,30 @@ import java.util.stream.Collectors;
 
 import static xyz.shirokuro.scriptblockimproved.common.MessageUtils.sendMessage;
 
-public final class ViewAtCommand {
+/**
+ * A class for handle {@code "/sbi viewat"} and {@code "/sbi view"}
+ */
+public final class ViewCommands {
+
+    @Executor(command = "sbi view", description = "TODO")
+    public void executeView(final ExecutionData data) {
+        final Player player = data.getSenderAsPlayer();
+        if (player == null) {
+            MessageUtils.sendMessage(data.getSender(), MessageKind.ERROR, "Cannot perform this command from the console");
+            return;
+        }
+        MessageUtils.sendMessage(player, "Click any block to view information about scripts in the block");
+        ScriptBlockImproved.getInstance().getActionQueue().queue(player, location -> {
+            player.performCommand(String.format("sbi viewat %s %s %s %s",
+                location.getWorld().getName(),
+                location.getBlockX(),
+                location.getBlockY(),
+                location.getBlockZ()));
+        });
+    }
 
     @Executor(command = "sbi viewat <world> <x> <y> <z>", description = "TODO")
-    public void execute(final ExecutionData data) {
+    public void executeViewAt(final ExecutionData data) {
         final CommandSender sender = data.getSender();
         final BlockPosition position = BlockPosition.parseArgs(sender, data.getArgs()).orElse(null);
         if (position == null) {
@@ -59,7 +80,7 @@ public final class ViewAtCommand {
     }
 
     @Completer(command = "sbi viewat <world> <x> <y> <z>")
-    public List<String> complete(final CompletionData data) {
+    public List<String> completeViewAt(final CompletionData data) {
         if (data.getName().equals("world")) {
             return Bukkit.getWorlds().stream()
                 .map(World::getName)

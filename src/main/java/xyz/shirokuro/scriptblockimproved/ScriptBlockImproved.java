@@ -86,12 +86,9 @@ public final class ScriptBlockImproved {
             .addAll(new AvailablesCommand())
             .addAll(new SaveCommand())
             .addAll(new PermMapCommand())
-            .addAll(new CreateCommand())
-            .addAll(new CreateAtCommand())
-            .addAll(new RemoveCommand())
-            .addAll(new RemoveAtCommand())
-            .addAll(new ViewCommand())
-            .addAll(new ViewAtCommand());
+            .addAll(new CreateCommands())
+            .addAll(new RemoveCommands())
+            .addAll(new ViewCommands());
     }
 
     static void init(@NonNull Bootstrap bootstrap) throws InitException {
