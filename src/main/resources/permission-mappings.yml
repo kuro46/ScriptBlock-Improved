@@ -9,8 +9,3 @@
 #
 # NOTE: Permissions described in command.permission of plugin.yml
 #       and vanilla commands are detected automatically.
-sbi:
-  perm: "sbi.admin"
-  children:
-    remove:
-      perm: "special-permission"
