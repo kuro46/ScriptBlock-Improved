@@ -45,9 +45,6 @@ public final class PermissionDetector {
      */
     public PermissionDetector(@NonNull final Plugin plugin, @NonNull final Path filePath) throws IOException {
         this.filePath = filePath;
-        if (!Files.isRegularFile(filePath)) {
-            throw new NotRegularFileException(filePath);
-        }
         if (Files.notExists(filePath)) {
             final String resourceName = filePath.getFileName().toString();
             final InputStream resource = plugin.getResource(resourceName);
@@ -56,6 +53,8 @@ public final class PermissionDetector {
             } else {
                 Files.copy(resource, filePath);
             }
+        } else if (!Files.isRegularFile(filePath)) {
+            throw new NotRegularFileException(filePath);
         }
         // Use runTask for reproduce POST_WORLD
         Bukkit.getScheduler().runTask(plugin, () -> {
@@ -115,10 +114,14 @@ public final class PermissionDetector {
             final Branch child = branch.branch(command);
             final ConfigurationSection commandInfo = section.getConfigurationSection(command);
             final String permission = commandInfo.getString("permission");
-            child.setPermission(permission);
-            child.setProvided(false);
+            if (permission != null) {
+                child.setPermission(permission);
+                child.setProvided(false);
+            }
             final ConfigurationSection childrenSec = commandInfo.getConfigurationSection("children");
-            overrideByFile(child, childrenSec);
+            if (childrenSec != null) {
+                overrideByFile(child, childrenSec);
+            }
         }
     }
 

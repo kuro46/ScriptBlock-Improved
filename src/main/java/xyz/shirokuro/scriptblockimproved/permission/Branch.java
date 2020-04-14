@@ -13,12 +13,13 @@ public final class Branch {
     private boolean provided;
 
     public Branch(final String name) {
-        this(name, null);
+        this(name, null, false);
     }
 
-    public Branch(final String name, final String permission) {
+    public Branch(final String name, final String permission, final boolean provided) {
         this.name = Objects.requireNonNull(name);
         this.permission = permission;
+        this.provided = provided;
     }
 
     public ConcurrentMap<String, Branch> getBranches() {
