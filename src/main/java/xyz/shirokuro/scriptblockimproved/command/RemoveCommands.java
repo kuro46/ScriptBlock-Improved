@@ -13,6 +13,7 @@ import xyz.shirokuro.scriptblockimproved.ScriptBlockImproved;
 import xyz.shirokuro.scriptblockimproved.ScriptList;
 import xyz.shirokuro.scriptblockimproved.common.MessageKind;
 import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
+import xyz.shirokuro.scriptblockimproved.common.StringFormatter;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,11 +35,13 @@ public final class RemoveCommands {
         MessageUtils.sendMessage(data.getSender(), "Click any block to remove scripts from the block");
         ScriptBlockImproved.getInstance().getActionQueue().queue(player, location -> {
             final BlockPosition position = BlockPosition.ofLocation(location);
-            player.performCommand(String.format("sbi removeat %s %s %s %s",
-                position.getWorld(),
-                position.getX(),
-                position.getY(),
-                position.getZ()));
+            final String cmd = new StringFormatter("sbi removeat %s %s %s %s")
+                .argument(position.getWorld())
+                .argument(position.getX())
+                .argument(position.getY())
+                .argument(position.getZ())
+                .build();
+            player.performCommand(cmd);
         });
     }
 

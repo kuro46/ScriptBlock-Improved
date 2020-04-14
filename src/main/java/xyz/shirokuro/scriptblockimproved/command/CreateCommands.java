@@ -13,6 +13,7 @@ import xyz.shirokuro.commandutility.annotation.Executor;
 import xyz.shirokuro.scriptblockimproved.*;
 import xyz.shirokuro.scriptblockimproved.common.MessageKind;
 import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
+import xyz.shirokuro.scriptblockimproved.common.StringFormatter;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -45,13 +46,15 @@ public final class CreateCommands {
         }
         ScriptBlockImproved.getInstance().getActionQueue().queue(player, location -> {
             final BlockPosition position = BlockPosition.ofLocation(location);
-            player.performCommand(String.format("sbi createat %s %s %s %s %s %s",
-                position.getWorld(),
-                position.getX(),
-                position.getY(),
-                position.getZ(),
-                data.get("trigger"),
-                data.get("options")));
+            final String cmd = new StringFormatter("sbi createat %s %s %s %s %s %s")
+                .argument(position.getWorld())
+                .argument(position.getX())
+                .argument(position.getY())
+                .argument(position.getZ())
+                .argument(data.get("trigger"))
+                .argument(data.get("options"))
+                .build();
+            player.performCommand(cmd);
         });
     }
 

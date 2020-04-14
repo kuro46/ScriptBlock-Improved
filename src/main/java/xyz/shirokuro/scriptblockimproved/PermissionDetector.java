@@ -1,7 +1,6 @@
 package xyz.shirokuro.scriptblockimproved;
 
 import xyz.shirokuro.scriptblockimproved.common.Debouncer;
-import xyz.shirokuro.scriptblockimproved.common.ListUtils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.SetMultimap;
@@ -147,7 +146,8 @@ public final class PermissionDetector {
             } else if (command.getParts().isEmpty()) {
                 return Optional.empty();
             } else {
-                command = new Command(ListUtils.removeLastElement(command.getParts()));
+                final List<String> parts = command.getParts();
+                command = new Command(parts.subList(0, parts.size() - 1));
             }
         }
         final List<String> mapped = permissions.stream()
@@ -178,12 +178,12 @@ public final class PermissionDetector {
         private static String removeSlashIfNeeded(final String name) {
             if (name.isEmpty()) return name;
             final char first = name.charAt(0);
-            if (first == '/') return name.substring(1, name.length());
+            if (first == '/') return name.substring(1);
             return name;
         }
 
         public String getName() {
-            if (name == null) name = parts.stream().collect(Collectors.joining(" "));
+            if (name == null) name = String.join(" ", parts);
             return name;
         }
     }

@@ -14,6 +14,7 @@ import xyz.shirokuro.scriptblockimproved.Script;
 import xyz.shirokuro.scriptblockimproved.ScriptBlockImproved;
 import xyz.shirokuro.scriptblockimproved.common.MessageKind;
 import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
+import xyz.shirokuro.scriptblockimproved.common.StringFormatter;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,11 +36,13 @@ public final class ViewCommands {
         }
         MessageUtils.sendMessage(player, "Click any block to view information about scripts in the block");
         ScriptBlockImproved.getInstance().getActionQueue().queue(player, location -> {
-            player.performCommand(String.format("sbi viewat %s %s %s %s",
-                location.getWorld().getName(),
-                location.getBlockX(),
-                location.getBlockY(),
-                location.getBlockZ()));
+            final String cmd = new StringFormatter("sbi viewat %s %s %s %s")
+                .argument(location.getWorld().getName())
+                .argument(location.getBlockX())
+                .argument(location.getBlockY())
+                .argument(location.getBlockZ())
+                .build();
+            player.performCommand(cmd);
         });
     }
 
