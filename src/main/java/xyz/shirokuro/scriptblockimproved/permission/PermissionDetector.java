@@ -147,25 +147,42 @@ public final class PermissionDetector {
         }
     }
 
-    private void save(final Configuration configuration, final Branch branch) {
+    private boolean save(final Configuration configuration, final Branch branch) {
         final Configuration section = new MemoryConfiguration();
-        if (!branch.isProvided()) {
+        boolean needSave = false;
+        if (branch.getPermission() != null && !branch.isProvided()) {
             section.set("permission", branch.getPermission());
+            needSave = true;
         }
-        final List<Configuration> children = new ArrayList<>();
+        final Configuration childConf = new MemoryConfiguration();
         for (Branch child : branch.getBranches().values()) {
-            final Configuration childConf = new MemoryConfiguration();
-            save(childConf, child);
-            children.add(childConf);
+            if (save(childConf, child)) {
+                needSave = true;
+            }
         }
-        if (!children.isEmpty()) {
-            section.set("children", children);
+        if (!childConf.getKeys(false).isEmpty()) {
+            section.set("children", childConf);
         }
-        configuration.set(branch.getName(), section);
+        if (needSave) {
+            configuration.set(branch.getName(), section);
+        }
+        return needSave;
     }
 
-    public void associate(@NonNull final String command, @NonNull final String permission) {
+    public void map(@NonNull final String command, @NonNull final String permission) {
         updatePath(SPACE_SPLITTER.split(trimSlash(command)), permission, false);
+        saveDebouncer.runLater(() -> {
+            try {
+                save();
+            } catch (final IOException e) {
+                // TODO
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    public void unmap(@NonNull final String command) {
+        updatePath(SPACE_SPLITTER.split(trimSlash(command)), null, false);
         saveDebouncer.runLater(() -> {
             try {
                 save();
@@ -184,15 +201,17 @@ public final class PermissionDetector {
             if (current == null) {
                 break;
             }
-            permission.add(current.getPermission());
+            if (current.getPermission() != null) {
+                permission.add(current.getPermission());
+            }
         }
         return permission;
     }
 
-    private static String trimSlash(final String name) {
-        if (name.isEmpty()) return name;
-        final char first = name.charAt(0);
-        if (first == '/') return name.substring(1);
-        return name;
+    private static String trimSlash(final String str) {
+        if (str.isEmpty()) return str;
+        final char first = str.charAt(0);
+        if (first == '/') return str.substring(1);
+        return str;
     }
 }

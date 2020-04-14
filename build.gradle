@@ -13,10 +13,11 @@ repositories {
     mavenCentral()
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots' }
     maven { url 'https://maven.shirokuro.xyz/repos/releases/' }
+    maven { url 'https://maven.shirokuro.xyz/repos/snapshots/' }
 }
 
 dependencies {
-    implementation 'xyz.shirokuro:commandutility:0.6.0'
+    implementation 'xyz.shirokuro:commandutility:0.6.1-SNAPSHOT'
     // Bukkit
     compileOnly 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
     // Gson
