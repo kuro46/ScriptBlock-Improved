@@ -84,7 +84,7 @@ public final class ScriptBlockImproved {
             .addAll(new ListCommand())
             .addAll(new AvailablesCommand())
             .addAll(new SaveCommand())
-            .addAll(new PermMapCommand())
+            .addAll(new PermissionCommands())
             .addAll(new CreateCommands())
             .addAll(new RemoveCommands())
             .addAll(new ViewCommands());

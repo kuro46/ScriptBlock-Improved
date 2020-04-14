@@ -70,6 +70,10 @@ public final class PermissionDetector {
         });
     }
 
+    public Branch getRootBranch() {
+        return rootBranch;
+    }
+
     private void mapCommands() {
         // Abort if running server is not based on CraftBukkit.
         final Class<?> serverClass = Bukkit.getServer().getClass();
