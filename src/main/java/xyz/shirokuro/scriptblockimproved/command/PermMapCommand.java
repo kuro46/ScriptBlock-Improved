@@ -6,7 +6,8 @@ import xyz.shirokuro.commandutility.CompletionData;
 import xyz.shirokuro.commandutility.ExecutionData;
 import xyz.shirokuro.commandutility.annotation.Completer;
 import xyz.shirokuro.commandutility.annotation.Executor;
-import xyz.shirokuro.scriptblockimproved.PermissionDetector;
+import xyz.shirokuro.scriptblockimproved.ScriptBlockImproved;
+import xyz.shirokuro.scriptblockimproved.permission.PermissionDetector;
 import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
 
 import java.util.Collections;
@@ -19,7 +20,7 @@ public final class PermMapCommand {
     public void execute(final ExecutionData data) {
         final String permission = data.get("permission");
         final String associateCommand = data.get("command");
-        PermissionDetector.getInstance().associate(associateCommand, permission);
+        ScriptBlockImproved.getInstance().getPermissionDetector().associate(associateCommand, permission);
         MessageUtils.sendMessage(data.getSender(), "Mapped");
     }
 

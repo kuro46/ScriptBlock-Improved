@@ -11,12 +11,12 @@ import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
 import xyz.shirokuro.scriptblockimproved.handler.*;
 import xyz.shirokuro.scriptblockimproved.listener.PlayerInteractListener;
 import xyz.shirokuro.scriptblockimproved.listener.PlayerMoveListener;
+import xyz.shirokuro.scriptblockimproved.permission.PermissionDetector;
 import xyz.shirokuro.scriptblockimproved.placeholder.Placeholder;
 import xyz.shirokuro.scriptblockimproved.placeholder.PlaceholderGroup;
 import xyz.shirokuro.scriptblockimproved.storage.JSONStorage;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
@@ -37,6 +37,8 @@ public final class ScriptBlockImproved {
     @Getter
     private final TriggerRegistry triggerRegistry = new TriggerRegistry();
     @Getter
+    private final PermissionDetector permissionDetector;
+    @Getter
     private final Plugin plugin;
 
     private ScriptBlockImproved(@NonNull Bootstrap bootstrap) throws InitException {
@@ -52,11 +54,8 @@ public final class ScriptBlockImproved {
         Bukkit.getPluginManager().registerEvents(new PlayerMoveListener(triggerRegistry), bootstrap);
 
         final Path dataFolder = plugin.getDataFolder().toPath();
-        if (!Files.exists(dataFolder.resolve("permission-mappings.yml"))) {
-            plugin.saveResource("permission-mappings.yml", false);
-        }
         try {
-            PermissionDetector.init(plugin, dataFolder);
+            permissionDetector = new PermissionDetector(plugin, dataFolder.resolve("permission-mappings.yml"));
         } catch (IOException e) {
             throw new InitException("Unable to init PermissionDetector", e);
         }
