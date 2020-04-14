@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import lombok.Getter;
@@ -44,7 +45,7 @@ public final class ScriptList {
 
     public void add(@NonNull final BlockPosition position, @NonNull final Script script) {
         multimap.put(position, script);
-        SBIThreadPool.execute(() -> {
+        CompletableFuture.runAsync(() -> {
             try {
                 storage.add(position, script);
             } catch (IOException e) {
@@ -55,7 +56,7 @@ public final class ScriptList {
 
     public void addAll(@NonNull final ScriptList scriptList) {
         multimap.putAll(scriptList.multimap);
-        SBIThreadPool.execute(() -> {
+        CompletableFuture.runAsync(() -> {
             try {
                 storage.addAll(scriptList.multimap);
             } catch (IOException e) {
@@ -66,7 +67,7 @@ public final class ScriptList {
 
     public void removeAll(@NonNull final BlockPosition position) {
         multimap.removeAll(position);
-        SBIThreadPool.execute(() -> {
+        CompletableFuture.runAsync(() -> {
             try {
                 storage.delete(position);
             } catch (IOException e) {

@@ -8,6 +8,7 @@ import xyz.shirokuro.scriptblockimproved.common.MessageKind;
 import xyz.shirokuro.scriptblockimproved.common.MessageUtils;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 public final class SaveCommand {
 
@@ -16,13 +17,13 @@ public final class SaveCommand {
         final CommandSender sender = data.getSender();
         MessageUtils.sendMessage(sender,
             "Saving scripts into '/ScriptBlock-Improved/scripts.json'");
-        new Thread(() -> {
+        CompletableFuture.runAsync(() -> {
             try {
                 ScriptBlockImproved.getInstance().getScriptList().getStorage().save();
                 MessageUtils.sendMessage(sender, MessageKind.SUCCESS, "Successfully saved");
             } catch (final IOException e) {
                 MessageUtils.sendMessage(sender, MessageKind.ERROR, "Save failed!");
             }
-        }, "sbi-command-sbi-save").start();
+        });
     }
 }

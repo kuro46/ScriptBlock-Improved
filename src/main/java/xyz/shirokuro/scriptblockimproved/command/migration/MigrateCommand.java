@@ -15,6 +15,7 @@ import xyz.shirokuro.scriptblockimproved.storage.NoOpStorage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 
@@ -28,7 +29,7 @@ public final class MigrateCommand {
     public void execute(final ExecutionData data) {
         final CommandSender sender = data.getSender();
         MessageUtils.sendMessage(sender, "Migrating...");
-        new Thread(() -> {
+        CompletableFuture.runAsync(() -> {
             if (hasMigrated()) {
                 MessageUtils.sendMessage(sender, MessageKind.ERROR, "Cannot migrate from ScriptBlock!");
                 MessageUtils.sendMessage(sender, MessageKind.ERROR, "SBI has migrated in the past.");
@@ -67,7 +68,7 @@ public final class MigrateCommand {
                 ScriptBlockImproved.getInstance().getLogger()
                     .log(Level.SEVERE, "Failed to mark as migrated from ScriptBlock", e);
             }
-        }, "sbi-migrator-thread").start();
+        });
     }
 
     private void loadScripts(
