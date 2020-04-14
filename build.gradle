@@ -22,7 +22,7 @@ dependencies {
     // Gson
     implementation 'com.google.code.gson:gson:2.8.6'
     // Guava
-    implementation 'com.google.guava:guava:28.2-jre'
+    implementation 'com.google.guava:guava:29.0-jre'
     // Apache Commons Lang
     implementation 'org.apache.commons:commons-lang3:3.9'
     // Apache Commons Text
