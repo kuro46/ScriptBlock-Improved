@@ -97,13 +97,15 @@ publishing {
         }
     }
     repositories {
-        maven {
-            def publishRootDir = project.hasProperty("sbi.publish.rootdir")
-                ? project.getProperty("sbi.publish.rootdir").toString()
-                : buildDir.toString()
-            def releasesRepoUrl = "$publishRootDir/repos/releases"
-            def snapshotsRepoUrl = "$publishRootDir/repos/snapshots"
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+        if (version.endsWith("SNAPSHOT")) {
+            mavenLocal()
+        } else {
+            maven {
+                def publishRootDir = project.hasProperty("sbi.publish.rootdir")
+                    ? project.getProperty("sbi.publish.rootdir").toString()
+                    : buildDir.toString()
+                url = "$publishRootDir/repos/releases"
+            }
         }
     }
 }
