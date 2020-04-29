@@ -51,6 +51,9 @@ java {
     withSourcesJar()
 }
 
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+
 processResources {
     filter { String line ->
         line.replace '$version', version.toString()
@@ -111,6 +114,7 @@ publishing {
 }
 
 javadoc {
+    options.encoding = "UTF-8"
     if(JavaVersion.current().isJava9Compatible()) {
         options.addBooleanOption('html5', true)
     }
