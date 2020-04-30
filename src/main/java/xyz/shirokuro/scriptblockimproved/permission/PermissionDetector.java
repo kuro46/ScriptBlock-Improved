@@ -51,6 +51,7 @@ public final class PermissionDetector {
             if (resource == null) {
                 throw new ResourceNotFoundException(resourceName);
             } else {
+                Files.createDirectory(filePath.getParent());
                 Files.copy(resource, filePath);
             }
         } else if (!Files.isRegularFile(filePath)) {
