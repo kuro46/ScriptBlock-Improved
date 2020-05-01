@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-final class SBScriptLoader {
+public final class SBScriptLoader {
 
     private static final Splitter COORD_SPLITTER = Splitter.on(',');
     private static final Pattern AUTHOR_PATTERN = Pattern.compile("Author:(.*?)/.*");
@@ -94,7 +94,7 @@ final class SBScriptLoader {
         return new BlockPosition(world, x, y, z);
     }
 
-    private SBOption parseOption(@NonNull final String option) throws MigrationException {
+    public static SBOption parseOption(@NonNull final String option) throws MigrationException {
         final Matcher matcher = OPTION_PATTERN.matcher(option);
         if (!matcher.find()) {
             throw new MigrationException(String.format("Invalid option: '%s'", option));
@@ -106,7 +106,7 @@ final class SBScriptLoader {
         return new SBOption(name, additionalArgument, argument);
     }
 
-    private Script.Option convertToSBIOption(@NonNull final SBOption sbOption) throws MigrationException {
+    public static Script.Option convertToSBIOption(@NonNull final SBOption sbOption) throws MigrationException {
         final String name;
         final ImmutableList.Builder<String> argsBuilder = ImmutableList.builder();
         switch (sbOption.getName().toLowerCase()) {

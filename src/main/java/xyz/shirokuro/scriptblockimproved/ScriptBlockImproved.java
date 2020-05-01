@@ -87,7 +87,8 @@ public final class ScriptBlockImproved {
             .addAll(new PermissionCommands())
             .addAll(new CreateCommands())
             .addAll(new RemoveCommands())
-            .addAll(new ViewCommands());
+            .addAll(new ViewCommands())
+            .addAll(new SBCreateCommand());
     }
 
     static void init(@NonNull Bootstrap bootstrap) throws InitException {
