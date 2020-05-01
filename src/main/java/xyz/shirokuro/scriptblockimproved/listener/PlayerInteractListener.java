@@ -40,15 +40,6 @@ public final class PlayerInteractListener implements Listener {
     public void onInteract(@NonNull final PlayerInteractEvent event) {
         final Player player = event.getPlayer();
         final ActionQueue actionQueue = ScriptBlockImproved.getInstance().getActionQueue();
-        final ScriptHandler scriptHandler = ScriptBlockImproved.getInstance().getScriptHandler();
-        if (event.getClickedBlock() != null && !sbInteractTrigger.isUnregistered()) {
-            final TriggerData triggerData = TriggerData.builder()
-                .trigger(sbInteractTrigger)
-                .shouldSuppress(false)
-                .event(event)
-                .build();
-            scriptHandler.handle(player, BlockPosition.ofLocation(event.getClickedBlock().getLocation()), triggerData);
-        }
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (actionQueue.isQueued(player)) {
                 actionQueue.executeIfQueued(player, event.getClickedBlock().getLocation());
@@ -60,6 +51,7 @@ public final class PlayerInteractListener implements Listener {
         } else if (event.getAction() == Action.PHYSICAL) {
             handle(event, pressTrigger);
         }
+        handle(event, sbInteractTrigger);
     }
 
     private void handle(@NonNull final PlayerInteractEvent event, @NonNull final Trigger trigger) {
