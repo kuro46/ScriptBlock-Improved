@@ -67,7 +67,7 @@ public final class ScriptList {
                 throw new UncheckedIOException(e);
             }
         }).exceptionally(t -> {
-            ScriptBlockImproved.getInstance().getLogger().log(Level.SEVERE, "Failed to add script to storage", t);
+            ScriptBlockImproved.getInstance().getLogger().log(Level.SEVERE, "Failed to add scripts to storage", t);
             return null;
         });
     }
@@ -81,7 +81,7 @@ public final class ScriptList {
                 throw new UncheckedIOException(e);
             }
         }).exceptionally(t -> {
-            ScriptBlockImproved.getInstance().getLogger().log(Level.SEVERE, "Failed to add script to storage", t);
+            ScriptBlockImproved.getInstance().getLogger().log(Level.SEVERE, "Failed to remove script to storage", t);
             return null;
         });
     }
