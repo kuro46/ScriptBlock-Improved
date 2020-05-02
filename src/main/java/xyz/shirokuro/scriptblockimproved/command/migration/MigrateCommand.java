@@ -68,6 +68,10 @@ public final class MigrateCommand {
                 ScriptBlockImproved.getInstance().getLogger()
                     .log(Level.SEVERE, "Failed to mark as migrated from ScriptBlock", e);
             }
+        }).exceptionally(t -> {
+            t.printStackTrace();
+            MessageUtils.sendMessage(sender, MessageKind.SUCCESS, "Migration failed!");
+            return null;
         });
     }
 
