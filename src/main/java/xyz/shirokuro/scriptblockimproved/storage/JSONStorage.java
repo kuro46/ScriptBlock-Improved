@@ -54,7 +54,7 @@ public final class JSONStorage implements Storage {
 
     @Override
     public synchronized void addAll(ListMultimap<BlockPosition, Script> multimap) throws IOException {
-        multimap.putAll(multimap);
+        this.multimap.putAll(multimap);
         save();
     }
 
