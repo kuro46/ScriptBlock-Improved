@@ -28,7 +28,7 @@ public final class Author {
         return new Author(Type.SYSTEM, name, null);
     }
 
-    public static Author player(@NonNull final String name, @NonNull final UUID uniqueId) {
+    public static Author player(@NonNull final String name, final UUID uniqueId) {
         return new Author(Type.PLAYER, name, uniqueId);
     }
 
