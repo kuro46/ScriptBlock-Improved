@@ -4,6 +4,7 @@ import xyz.shirokuro.scriptblockimproved.storage.Storage;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -49,8 +50,11 @@ public final class ScriptList {
             try {
                 storage.add(position, script);
             } catch (IOException e) {
-                ScriptBlockImproved.getInstance().getLogger().log(Level.SEVERE, "Failed to add script to storage", e);
+                throw new UncheckedIOException(e);
             }
+        }).exceptionally(t -> {
+            ScriptBlockImproved.getInstance().getLogger().log(Level.SEVERE, "Failed to add script to storage", t);
+            return null;
         });
     }
 
@@ -60,8 +64,11 @@ public final class ScriptList {
             try {
                 storage.addAll(scriptList.multimap);
             } catch (IOException e) {
-                ScriptBlockImproved.getInstance().getLogger().log(Level.SEVERE, "Failed to add script to storage", e);
+                throw new UncheckedIOException(e);
             }
+        }).exceptionally(t -> {
+            ScriptBlockImproved.getInstance().getLogger().log(Level.SEVERE, "Failed to add script to storage", t);
+            return null;
         });
     }
 
@@ -71,8 +78,11 @@ public final class ScriptList {
             try {
                 storage.delete(position);
             } catch (IOException e) {
-                ScriptBlockImproved.getInstance().getLogger().log(Level.SEVERE, "Failed to delete script from storage", e);
+                throw new UncheckedIOException(e);
             }
+        }).exceptionally(t -> {
+            ScriptBlockImproved.getInstance().getLogger().log(Level.SEVERE, "Failed to add script to storage", t);
+            return null;
         });
     }
 }
