@@ -31,7 +31,14 @@ public final class PermissionDetector {
     private static final Splitter SPACE_SPLITTER = Splitter.on(' ');
 
     private final Path filePath;
-    private final Debouncer saveDebouncer = new Debouncer(Duration.ofSeconds(1));
+    private final Debouncer<Void> saveDebouncer = new Debouncer<>(Duration.ofSeconds(1), nothing -> {
+        try {
+            save();
+        } catch (final IOException e) {
+            // TODO
+            throw new RuntimeException("Failed to save permission mappings", e);
+        }
+    });
     private final Branch rootBranch = new Branch("root");
 
     /**
@@ -172,26 +179,12 @@ public final class PermissionDetector {
 
     public void map(@NonNull final String command, @NonNull final String permission) {
         updatePath(SPACE_SPLITTER.split(trimSlash(command)), permission, false);
-        saveDebouncer.runLater(() -> {
-            try {
-                save();
-            } catch (final IOException e) {
-                // TODO
-                throw new RuntimeException(e);
-            }
-        });
+        saveDebouncer.runLater(null);
     }
 
     public void unmap(@NonNull final String command) {
         updatePath(SPACE_SPLITTER.split(trimSlash(command)), null, false);
-        saveDebouncer.runLater(() -> {
-            try {
-                save();
-            } catch (final IOException e) {
-                // TODO
-                throw new RuntimeException(e);
-            }
-        });
+        saveDebouncer.runLater(null);
     }
 
     public Set<String> getPermissionsByCommand(@NonNull final String strCommand) {

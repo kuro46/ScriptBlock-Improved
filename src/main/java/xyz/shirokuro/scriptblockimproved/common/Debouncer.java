@@ -9,37 +9,50 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import lombok.NonNull;
 
-public final class Debouncer {
+public final class Debouncer<V> {
 
     private static final AtomicInteger THREAD_COUNT = new AtomicInteger();
     private final Lock lock = new ReentrantLock();
     @NonNull
     private final ScheduledExecutorService executor;
     private final Duration delay;
+    private final Consumer<V> task;
     private volatile boolean shutdown = false;
 
     private ScheduledFuture<?> scheduled;
 
-    public Debouncer(@NonNull final Duration delay) {
+    public Debouncer(@NonNull final Duration delay, @NonNull final Consumer<V> task) {
+        this.task = task;
         this.delay = delay;
         this.executor = Executors.newSingleThreadScheduledExecutor(r -> {
             return new Thread(r, "sbi-debouncer-" + THREAD_COUNT.incrementAndGet());
         });
     }
 
-    public void runLater(final Runnable task) {
-        if (shutdown) throw new IllegalStateException("This debouncer is shut down!");
+    /**
+     * This method queues a task, which is specified in the constructor, into ScheduledExecutorService.
+     * If previous task is already queued, it will be cancelled.
+     */
+    public void runLater(final V value) {
+        if (shutdown) throw new IllegalStateException("This debouncer is unavailable!");
         lock.lock();
         try {
             if (scheduled != null) scheduled.cancel(false);
-            scheduled = executor.schedule(task, delay.toNanos(), TimeUnit.NANOSECONDS);
+            scheduled = executor.schedule(() -> {
+                task.accept(value);
+            }, delay.toNanos(), TimeUnit.NANOSECONDS);
         } finally {
             lock.unlock();
         }
     }
 
+    /**
+     * This method shuts down this debouncer.
+     * This debouncer cannot be used in the future.
+     */
     public void shutdown() {
         shutdown = true;
         try {
