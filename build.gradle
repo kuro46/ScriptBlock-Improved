@@ -12,8 +12,8 @@ version = '2.1.0-SNAPSHOT'
 repositories {
     mavenCentral()
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots' }
-    maven { url 'https://maven.shirokuro.xyz/repos/releases/' }
-    maven { url 'https://maven.shirokuro.xyz/repos/snapshots/' }
+    maven { url 'https://kuro46.github.io/maven/repos/releases/' }
+    maven { url 'https://kuro46.github.io/maven/repos/snapshots/' }
 }
 
 dependencies {
