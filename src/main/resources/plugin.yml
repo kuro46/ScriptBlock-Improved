@@ -14,6 +14,10 @@ commands:
     description: Main command of ScriptBlock-Improved
     usage: "Usage: /<command> help"
     permission: sbi.admin
+  sbinteract:
+    permission: sbi.admin
+  sbwalk:
+    permission: sbi.admin
 permissions:
   sbi.*:
     default: op

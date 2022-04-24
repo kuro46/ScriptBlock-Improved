@@ -46,7 +46,7 @@ public final class OptionListParser {
             ImmutableList.copyOf(OPTION_SPLITTER.split(MessageUtils.translateColorCodes('&', optionMatcher.group(2)))));
     }
 
-    private static ImmutableList<String> stringOptions(@NonNull final String source) {
+    public static ImmutableList<String> stringOptions(@NonNull final String source) {
         final Matcher optionsMatcher = OPTIONS_PATTERN.matcher(source);
         final List<String> options = new ArrayList<>();
         while (optionsMatcher.find()) {
